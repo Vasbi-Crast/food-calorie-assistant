@@ -8,15 +8,8 @@ from search import IngredientNutritionSearch
 # Initialize FastAPI app
 app = FastAPI()
 
-system_prompt = "\n".join(
-    [
-        "Identify the food shown in the photo and write the list of ingredients and their approximate weight.",
-        "In response, return a JSON object that contains the name of the ingredient and its weight in grams.",
-        "If there is no food in the image, return an empty JSON object.",
-        "Just return the JSON object, don't write anything else.",
-    ]
-)
-
+with open('./prompt.txt', 'r') as f:
+    system_prompt = ''.join(f.readlines())
 assistant = LLMAssistant(system_prompt, temperature=0.01, max_tokens=250, top_p=0.5)
 engine = IngredientNutritionSearch("nutrition.csv")
 
