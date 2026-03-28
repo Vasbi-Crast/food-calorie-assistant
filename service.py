@@ -10,7 +10,8 @@ app = FastAPI()
 
 with open('./prompt.txt', 'r') as f:
     system_prompt = ''.join(f.readlines())
-assistant = LLMAssistant(system_prompt, temperature=0.01, max_tokens=250, top_p=0.5)
+
+assistant = LLMAssistant(system_prompt, temperature=0.01, max_tokens=250, top_p=0.1)
 engine = IngredientNutritionSearch("nutrition.csv")
 
 

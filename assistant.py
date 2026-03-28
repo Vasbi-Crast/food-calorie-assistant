@@ -110,11 +110,3 @@ class LLMAssistant:
                 "result": {},
                 "error": f"An error occurred during prediction: {str(e)}",
             }
-
-    # def generate_response(self, image_base64: str, timeout: int = 60) -> Dict[str, Any]:
-    #     """
-    #     Generates a response from the LLM model using a Base64-encoded image.
-        
-    #     Sync wrapper around the async implementation.
-    #     """
-    #     return asyncio.run(self._generate_response_async(image_base64, timeout))
