@@ -9,13 +9,14 @@ import json
 SERVER_URL = "http://127.0.0.1:8000/generate_response"
 
 
-def get_nutritional_info(image_base64: str):
+def get_nutritional_info(image_base64: str, user_desk: str):
     """
     Sends a POST request to the FastAPI service to retrieve nutritional information
     for a given base64 encoded image.
 
     Args:
         image_base64 (str): The base64 encoded image string.
+        user_description (str): Custom description of the dish in the image.
 
     Returns:
         dict or None: A dictionary containing nutritional information with the keys
@@ -25,7 +26,7 @@ def get_nutritional_info(image_base64: str):
     """
     try:
         # Prepare payload and headers for the request
-        payload = {"image_base64": image_base64}
+        payload = {"image_base64": image_base64, "user_description": user_description}
         headers = {"Content-Type": "application/json"}
 
         # Send POST request
@@ -162,10 +163,20 @@ if uploaded_file is not None:
         img.save(buffered, format="JPEG")
         image_base64 = base64.b64encode(buffered.getvalue()).decode("utf-8")
 
-        # Send Base64-encoded image to FastAPI
-        nutritional_info = get_nutritional_info(image_base64)
+    except Exception as e:
+        st.error(f"Error processing image: {e}")
 
+user_description = st.text_input(
+    "Describe the dish (max 250 characters)", max_chars=250
+)
+
+_, midle, _ = st.columns(3)
+
+if midle.button("Upload", use_container_width=True):
+    try:
+        # Send Base64-encoded image to FastAPI
+        nutritional_info = get_nutritional_info(image_base64, user_description)
         if nutritional_info:
             plot_nutritional_info(nutritional_info)
     except Exception as e:
-        st.error(f"Error processing image: {e}")
+        st.error(f"Error api request or plot_nutritional_info: {e}")
