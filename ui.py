@@ -5,11 +5,23 @@ from io import BytesIO
 import matplotlib.pyplot as plt
 import base64
 import json
+from dotenv import load_dotenv
+import os
 
-SERVER_URL = "http://127.0.0.1:8000/generate_response"
+
+load_dotenv()
+
+SERVER_URL = os.getenv("SERVER_URL")
+
+if "logged_in" not in st.session_state:
+    st.session_state["logged_in"] = False
+if "username" not in st.session_state:
+    st.session_state["username"] = ""
+if "new_user" not in st.session_state:
+    st.session_state["new_user"] = False
 
 
-def get_nutritional_info(image_base64: str, user_desk: str):
+def get_nutritional_info(image_base64: str, user_description: str):
     """
     Sends a POST request to the FastAPI service to retrieve nutritional information
     for a given base64 encoded image.
@@ -30,7 +42,7 @@ def get_nutritional_info(image_base64: str, user_desk: str):
         headers = {"Content-Type": "application/json"}
 
         # Send POST request
-        raw_response = requests.post(SERVER_URL, json=payload, headers=headers)
+        raw_response = requests.post(SERVER_URL+'/generate_response', json=payload, headers=headers)
 
         # Handle response
         if raw_response.status_code == 200:
@@ -145,38 +157,97 @@ def plot_nutritional_info(nutritional_info):
     st.pyplot(fig, transparent=True)
 
 
-# Streamlit app
-st.title("Calorie Tracker")
+def login_page():
+    """Authorization window"""
+    # Streamlit app
+    st.title("Login")
 
-# File uploader for image
-st.config.set_option("server.maxUploadSize", 3)
-uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
+    user_name = st.text_input("Username", key="username_l")
+    password = st.text_input("Password", type="password", key="password_l")
+    _, midle, _ = st.columns(3)
+    if midle.button("Sign in", use_container_width=True):
+        if user_name == "Test" and password == "Test":
+            st.session_state["logged_in"] = True
+            st.session_state["sername"] = user_name
+            st.rerun()
+        else:
+            st.error("Invalid credentials")
 
-if uploaded_file is not None:
-    try:
-        # Display uploaded image
-        img = Image.open(uploaded_file)
-        st.image(img, use_column_width=True)
+    if midle.button("Sign up", use_container_width=True, key="sign_up_l"):
+        st.session_state["new_user"] = True
+        st.rerun()
 
-        # Convert image to Base64
-        buffered = BytesIO()
-        img.save(buffered, format="JPEG")
-        image_base64 = base64.b64encode(buffered.getvalue()).decode("utf-8")
 
-    except Exception as e:
-        st.error(f"Error processing image: {e}")
+def register_page():
+    """Registration window"""
+    st.title("Registration")
 
-user_description = st.text_input(
-    "Describe the dish (max 250 characters)", max_chars=250
-)
+    genre = st.radio(
+        "What gender are you?",
+        [":blue[Man]", ":red[Woman]", "Don't specify"],
+        index=None,
+    )
+    col1, col2 = st.columns(2)
+    weight = col1.text_input("How much weight do you have?")
+    height = col2.text_input("How tall are you?")
 
-_, midle, _ = st.columns(3)
+    user_name = st.text_input("Username", key="username_r")
+    password = st.text_input("Password", type="password", key="password_r")
+    re_password = st.text_input("Repeat the password", type="password")
 
-if midle.button("Upload", use_container_width=True):
-    try:
-        # Send Base64-encoded image to FastAPI
-        nutritional_info = get_nutritional_info(image_base64, user_description)
-        if nutritional_info:
-            plot_nutritional_info(nutritional_info)
-    except Exception as e:
-        st.error(f"Error api request or plot_nutritional_info: {e}")
+    _, midle, _ = st.columns(3)
+    if midle.button("Sign up", use_container_width=True, key="sign_up_r"):
+        st.session_state["new_user"] = False
+        st.rerun()
+
+
+def main_app():
+    """A window containing the main functionality of the application"""
+    # Streamlit app
+    st.title("Calorie Tracker")
+
+    # File uploader for image
+    st.config.set_option("server.maxUploadSize", 3)
+    uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
+
+    if uploaded_file is not None:
+        try:
+            # Display uploaded image
+            img = Image.open(uploaded_file)
+            st.image(img, use_column_width=True)
+
+            # Convert image to Base64
+            buffered = BytesIO()
+            img.save(buffered, format="JPEG")
+            image_base64 = base64.b64encode(buffered.getvalue()).decode("utf-8")
+
+        except Exception as e:
+            st.error(f"Error processing image: {e}")
+
+    user_description = st.text_input(
+        "Describe the dish (max 250 characters)", max_chars=250
+    )
+
+    _, midle, _ = st.columns(3)
+
+    if midle.button("Upload", use_container_width=True):
+        try:
+            # Send Base64-encoded image to FastAPI
+            nutritional_info = get_nutritional_info(image_base64, user_description)
+            if nutritional_info:
+                plot_nutritional_info(nutritional_info)
+        except Exception as e:
+            st.error(f"Error api request or plot_nutritional_info: {e}")
+
+
+def main():
+    if st.session_state["new_user"]:
+        register_page()
+    elif not st.session_state["logged_in"]:
+        login_page()
+    else:
+        main_app()
+
+
+if __name__ == "__main__":
+    main()
