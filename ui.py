@@ -42,7 +42,9 @@ def get_nutritional_info(image_base64: str, user_description: str):
         headers = {"Content-Type": "application/json"}
 
         # Send POST request
-        raw_response = requests.post(SERVER_URL+'/generate_response', json=payload, headers=headers)
+        raw_response = requests.post(
+            SERVER_URL + "/generate_response", json=payload, headers=headers
+        )
 
         # Handle response
         if raw_response.status_code == 200:
@@ -157,21 +159,157 @@ def plot_nutritional_info(nutritional_info):
     st.pyplot(fig, transparent=True)
 
 
+def authorization(user_name: str, password: str) -> bool:
+    """
+    Sends a POST request to the FastAPI service to authorize the user.
+
+    Args:
+        user_name (str): A unique username for authorization.
+        password (str): User's password.
+
+    Returns:
+        bool: Returns verification of user authentication.
+    """
+
+    if not user_name.strip():
+        st.error(f"The user's name is missing.")
+        return False
+    elif not password.strip():
+        st.error(f"The password is missing.")
+        return False
+
+    # Prepare payload and headers for the request
+    payload = {"user_name": user_name, "password": password}
+    headers = {"Content-Type": "application/json"}
+
+    try:
+        # Send POST request
+        raw_response = requests.post(
+            SERVER_URL + "/authentication", json=payload, headers=headers
+        )
+
+        # Handle response
+        if raw_response.status_code == 200:
+            response = raw_response.json().get("response")
+            if response == "SUCCESSFUL":
+                return True
+            elif response == "INVALID_PASSWORD":
+                st.error(f"The password is entered incorrectly.")
+            elif response == "USER_NOT_FOUND":
+                st.error(f"The user does not exist. Please register.")
+            else:
+                st.error(f"Unexpected error.")
+            return False
+
+        else:
+            st.error(f"Error: {raw_response.status_code}, {raw_response.text}")
+            return False
+
+    except Exception as e:
+        st.error(f"Error: {e}")
+        return False
+
+
+def registration(
+    genre: str,
+    weight: float,
+    height: float,
+    user_name: str,
+    password: str,
+    re_password: str,
+):
+    """
+    Sends a POST request to the FastAPI service to register the user.
+
+    Args:
+        genre (str): User's gender
+        weight (float): User's weight
+        height (float): User growth
+        user_name (str): A unique username for authorization.
+        password (str): User's password.
+        re_password (str): Repeated password
+
+    Returns:
+        bool: returns successful registration
+    """
+
+    if not user_name.strip():
+        st.error(f"The user's name is missing.")
+        return False
+
+    elif not password.strip():
+        st.error(f"The password is missing.")
+        return False
+
+    elif not re_password.strip():
+        st.error(f"The re-password is missing.")
+        return False
+
+    elif not weight:
+        st.error(f"The weight is missing.")
+        return False
+
+    elif not height:
+        st.error(f"The height is missing.")
+        return False
+
+    elif re_password != password:
+        st.error(f"Passwords didn't match.")
+        return False
+
+    if genre == ":blue[Man]":
+        genre = "M"
+    elif genre == ":red[Woman]":
+        genre = "W"
+    else:
+        genre = "None"
+
+    # Prepare payload and headers for the request
+    payload = {
+        "user_name": user_name,
+        "password": password,
+        "genre": genre,
+        "weight": weight,
+        "height": height,
+    }
+    headers = {"Content-Type": "application/json"}
+
+    try:
+        # Send POST request
+        raw_response = requests.post(
+            SERVER_URL + "/registration", json=payload, headers=headers
+        )
+
+        # Handle response
+        if raw_response.status_code == 200:
+            return bool(raw_response.json().get("response", False))
+
+        else:
+            st.error(f"Error: {raw_response.status_code}, {raw_response.text}")
+            return False
+
+    except Exception as e:
+        st.error(f"Error: {e}")
+        return False
+
+
 def login_page():
     """Authorization window"""
     # Streamlit app
     st.title("Login")
 
-    user_name = st.text_input("Username", key="username_l")
-    password = st.text_input("Password", type="password", key="password_l")
+    user_name = st.text_input(
+        "Username", placeholder="Type a user's name...", key="username_l"
+    )
+    password = st.text_input(
+        "Password", placeholder="Type a password...", type="password", key="password_l"
+    )
     _, midle, _ = st.columns(3)
     if midle.button("Sign in", use_container_width=True):
-        if user_name == "Test" and password == "Test":
+        if authorization(user_name, password):
             st.session_state["logged_in"] = True
             st.session_state["sername"] = user_name
             st.rerun()
-        else:
-            st.error("Invalid credentials")
 
     if midle.button("Sign up", use_container_width=True, key="sign_up_l"):
         st.session_state["new_user"] = True
@@ -187,18 +325,45 @@ def register_page():
         [":blue[Man]", ":red[Woman]", "Don't specify"],
         index=None,
     )
-    col1, col2 = st.columns(2)
-    weight = col1.text_input("How much weight do you have?")
-    height = col2.text_input("How tall are you?")
 
-    user_name = st.text_input("Username", key="username_r")
-    password = st.text_input("Password", type="password", key="password_r")
-    re_password = st.text_input("Repeat the password", type="password")
+    col1, col2 = st.columns(2)
+    weight = col1.number_input(
+        "How much weight do you have?",
+        min_value=20.,
+        max_value=500.,
+        value=None,
+        step=1.,
+        placeholder="Type a weight...",
+        format="%.1f",
+        key="weight_r",
+    )
+
+    height = col2.number_input(
+        "How tall are you in cm?",
+        min_value=50.,
+        max_value=250.,
+        value=None,
+        step=1.,
+        placeholder="Type a height...",
+        format="%.1f",
+        key="height_r",
+    )
+
+    user_name = st.text_input(
+        "Username", key="username_r", placeholder="Type a username..."
+    )
+    password = st.text_input(
+        "Password", type="password", placeholder="Type a password...", key="password_r"
+    )
+    re_password = st.text_input(
+        "Repeat the password", placeholder="Type a re-password...", type="password"
+    )
 
     _, midle, _ = st.columns(3)
     if midle.button("Sign up", use_container_width=True, key="sign_up_r"):
-        st.session_state["new_user"] = False
-        st.rerun()
+        if registration(genre, weight, height, user_name, password, re_password):
+            st.session_state["new_user"] = False
+            st.rerun()       
 
 
 def main_app():

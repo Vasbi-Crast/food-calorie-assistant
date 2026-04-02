@@ -4,9 +4,13 @@ from typing import Any
 
 from assistant import LLMAssistant
 from search import IngredientNutritionSearch
+from db_connector import DB_connector
 
 # Initialize FastAPI app
 app = FastAPI()
+
+# Initialize db connector
+connector = DB_connector()
 
 with open("./prompt.txt", "r") as f:
     system_prompt = "".join(f.readlines())
@@ -22,7 +26,7 @@ async def generate_response(request: Request) -> Any:
 
     Args:
         The request should contain a JSON body with a 'image_base64' field that contains
-        the Base64 encoded image data and 'user_description' field that contains Custom
+        the base64 encoded image data and 'user_description' field that contains custom
         description of the dish in the image.
 
     Returns:
@@ -65,6 +69,105 @@ async def generate_response(request: Request) -> Any:
             llm_response["result"] = search_results
 
         return llm_response
+
+    except TimeoutError as te:
+        raise HTTPException(
+            status_code=504, detail="Request timed out: " + str(te)
+        ) from te
+
+    except HTTPException as he:
+        raise HTTPException(status_code=he.status_code, detail=he.detail) from he
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail=f"An unexpected error occurred: {str(e)}"
+        ) from e
+
+
+@app.post("/authentication")
+async def authentication(request: Request) -> Any:
+    """
+    User authorization based on a request with user_name and password
+
+    Args:
+        The request should contain a JSON body with a 'user_name' field that contains
+        a unique username for authorization and 'password' field that contains user's password.
+
+    Returns:
+        dict: A JSON-serializable dictionary with authentication status.
+            - 'response' (str): One of: 'SUCCESSFUL', 'USER_NOT_FOUND', 'INVALID_PASSWORD'.
+            - 'status_code' (int): HTTP status code (200 for success, 401/500 for errors).
+
+        Response status values:
+            - 'SUCCESSFUL': Credentials are valid, user is authenticated.
+            - 'USER_NOT_FOUND': No user with the given username exists in the database.
+            - 'INVALID_PASSWORD': Username exists, but password does not match.
+
+    Raises:
+        HTTPException:
+            - 504: If a TimeoutError occurs.
+            - 500: If an unexpected error occurs.
+    """
+    try:
+        data = await request.json()
+        user_name = data.get("user_name")
+        password = data.get("password")
+
+        return {
+            "status_code": 200,
+            "response": await connector.verify(user_name, password, 20),
+        }
+
+    except TimeoutError as te:
+        raise HTTPException(
+            status_code=504, detail="Request timed out: " + str(te)
+        ) from te
+
+    except HTTPException as he:
+        raise HTTPException(status_code=he.status_code, detail=he.detail) from he
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail=f"An unexpected error occurred: {str(e)}"
+        ) from e
+
+
+@app.post("/registration")
+async def registration(request: Request) -> Any:
+    """
+    Register a new user
+
+    Args:
+        The request should contain a JSON body with:
+            - genre: User's gender
+            - weight: User's weight
+            - height: User growth
+            - user_name: A unique username for authorization.
+            - password: User's password.
+            - re_password: Repeated password
+
+    Returns:
+        dict: A JSON-serializable dictionary with authentication status.
+            - 'response' (bool): True - if the addition of new users is successful,
+                                 False - if adding new users is not successful.
+
+    Raises:
+        HTTPException:
+            - 504: If a TimeoutError occurs.
+            - 500: If an unexpected error occurs.
+    """
+    try:
+        data = await request.json()
+        user_name = data.get("user_name")
+        password = data.get("password")
+        genre = data.get("genre")
+        weight = float(data.get("weight"))
+        height = float(data.get("height"))
+
+        return {
+            "response": await connector.add_user(
+                user_name, password, genre, weight, height)
+        }
 
     except TimeoutError as te:
         raise HTTPException(
