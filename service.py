@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException, Request
+from contextlib import asynccontextmanager
 import base64
 from typing import Any
 
@@ -6,11 +7,15 @@ from assistant import LLMAssistant
 from search import IngredientNutritionSearch
 from db_connector import DB_connector
 
-# Initialize FastAPI app
-app = FastAPI()
-
-# Initialize db connector
 connector = DB_connector()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await connector.connection()
+    yield
+    await connector.close()
+
+app = FastAPI(lifespan=lifespan)
 
 with open("./prompt.txt", "r") as f:
     system_prompt = "".join(f.readlines())
@@ -139,7 +144,7 @@ async def registration(request: Request) -> Any:
 
     Args:
         The request should contain a JSON body with:
-            - genre: User's gender
+            - gender: User's gender
             - weight: User's weight
             - height: User growth
             - user_name: A unique username for authorization.
@@ -160,13 +165,13 @@ async def registration(request: Request) -> Any:
         data = await request.json()
         user_name = data.get("user_name")
         password = data.get("password")
-        genre = data.get("genre")
+        gender = data.get("gender")
         weight = float(data.get("weight"))
         height = float(data.get("height"))
 
         return {
             "response": await connector.add_user(
-                user_name, password, genre, weight, height)
+                user_name, password, gender, weight, height)
         }
 
     except TimeoutError as te:

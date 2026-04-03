@@ -211,7 +211,7 @@ def authorization(user_name: str, password: str) -> bool:
 
 
 def registration(
-    genre: str,
+    gender: str,
     weight: float,
     height: float,
     user_name: str,
@@ -222,7 +222,7 @@ def registration(
     Sends a POST request to the FastAPI service to register the user.
 
     Args:
-        genre (str): User's gender
+        gender (str): User's gender
         weight (float): User's weight
         height (float): User growth
         user_name (str): A unique username for authorization.
@@ -257,18 +257,18 @@ def registration(
         st.error(f"Passwords didn't match.")
         return False
 
-    if genre == ":blue[Man]":
-        genre = "M"
-    elif genre == ":red[Woman]":
-        genre = "W"
+    if gender == ":blue[Man]":
+        gender = "m"
+    elif gender == ":red[Woman]":
+        gender = "w"
     else:
-        genre = "None"
+        gender = "None"
 
     # Prepare payload and headers for the request
     payload = {
         "user_name": user_name,
         "password": password,
-        "genre": genre,
+        "gender": gender,
         "weight": weight,
         "height": height,
     }
@@ -282,7 +282,12 @@ def registration(
 
         # Handle response
         if raw_response.status_code == 200:
-            return bool(raw_response.json().get("response", False))
+            result = bool(raw_response.json().get("response", False))
+            if result:               
+                return True
+            else:
+                st.error('A user with this name already exists.')
+                return False
 
         else:
             st.error(f"Error: {raw_response.status_code}, {raw_response.text}")
@@ -320,7 +325,7 @@ def register_page():
     """Registration window"""
     st.title("Registration")
 
-    genre = st.radio(
+    gender = st.radio(
         "What gender are you?",
         [":blue[Man]", ":red[Woman]", "Don't specify"],
         index=None,
@@ -361,9 +366,10 @@ def register_page():
 
     _, midle, _ = st.columns(3)
     if midle.button("Sign up", use_container_width=True, key="sign_up_r"):
-        if registration(genre, weight, height, user_name, password, re_password):
+        if registration(gender, weight, height, user_name, password, re_password):
             st.session_state["new_user"] = False
-            st.rerun()       
+            st.rerun()
+                
 
 
 def main_app():
