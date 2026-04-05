@@ -1,305 +1,32 @@
-import requests
 import streamlit as st
 from PIL import Image
 from io import BytesIO
-import matplotlib.pyplot as plt
 import base64
-import json
-from dotenv import load_dotenv
-import os
 
+import ui_processing as pui
 
-load_dotenv()
-
-SERVER_URL = os.getenv("SERVER_URL")
-
-if "logged_in" not in st.session_state:
-    st.session_state["logged_in"] = False
 if "username" not in st.session_state:
     st.session_state["username"] = ""
-if "new_user" not in st.session_state:
-    st.session_state["new_user"] = False
 
+if "login_page_sh" not in st.session_state:
+    st.session_state["login_page_sh"] = True
+if "register_page_sh" not in st.session_state:
+    st.session_state["register_page_sh"] = False
 
-def get_nutritional_info(image_base64: str, user_description: str):
-    """
-    Sends a POST request to the FastAPI service to retrieve nutritional information
-    for a given base64 encoded image.
-
-    Args:
-        image_base64 (str): The base64 encoded image string.
-        user_description (str): Custom description of the dish in the image.
-
-    Returns:
-        dict or None: A dictionary containing nutritional information with the keys
-        'calories', 'proteins', 'fats', and 'carbohydrates' if the request is
-        successful. Returns None if there is an error or if the nutritional information
-        is not available.
-    """
-    try:
-        # Prepare payload and headers for the request
-        payload = {"image_base64": image_base64, "user_description": user_description}
-        headers = {"Content-Type": "application/json"}
-
-        # Send POST request
-        raw_response = requests.post(
-            SERVER_URL + "/generate_response", json=payload, headers=headers
-        )
-
-        # Handle response
-        if raw_response.status_code == 200:
-            response = raw_response.json()
-
-            if response["status"] == "success":
-                result = response["result"]
-
-                if isinstance(result, str):
-                    result = json.loads(response["result"])
-
-                if result:
-                    return result
-                else:
-                    st.warning("Nutritional information not available for this image.")
-                    return None
-            else:
-                st.error(f"Unable to retrieve nutritional information: {response}.")
-                return None
-        else:
-            st.error(f"Error: {raw_response.status_code}, {raw_response.text}")
-            return None
-    except Exception as e:
-        st.error(f"Error: {e}")
-        return None
-
-
-def plot_nutritional_info(nutritional_info):
-    """Visualizes ingredient list and total nutrition (donut chart)."""
-    if not nutritional_info:
-        st.warning("No ingredients found.")
-        return
-
-    rows = []
-    total = {"calories": 0.0, "proteins": 0.0, "fats": 0.0, "carbohydrates": 0.0}
-
-    for item in nutritional_info:
-        if not isinstance(item, dict) or not item:
-            continue
-        original_name, payload = next(iter(item.items()))
-        if not payload:
-            rows.append(
-                {
-                    "ingredient": original_name,
-                    "match": "",
-                    "weight_g": "",
-                    "calories": "",
-                    "proteins": "",
-                    "fats": "",
-                    "carbohydrates": "",
-                }
-            )
-            continue
-
-        rows.append(
-            {
-                "ingredient": original_name,
-                "match": payload.get("match", ""),
-                "weight_g": payload.get("weight", ""),
-                "calories": payload.get("calories", ""),
-                "proteins": payload.get("proteins", ""),
-                "fats": payload.get("fats", ""),
-                "carbohydrates": payload.get("carbohydrates", ""),
-            }
-        )
-
-        for k in total:
-            try:
-                total[k] += float(payload.get(k, 0) or 0)
-            except (TypeError, ValueError):
-                pass
-
-    st.subheader("Ingredients")
-    st.table(rows)
-
-    st.subheader("Total nutrition")
-    labels = "Proteins", "Fats", "Carbohydrates"
-    sizes = [total["proteins"], total["fats"], total["carbohydrates"]]
-
-    fig, ax = plt.subplots()
-    fig.patch.set_alpha(0.0)
-
-    wedges, texts, autotexts = ax.pie(
-        sizes,
-        labels=labels,
-        autopct=lambda p: f"{p * sum(sizes) / 100:.0f}",
-        startangle=90,
-        wedgeprops={"width": 0.5},
-    )
-
-    ax.axis("equal")
-
-    for text in texts:
-        text.set_color("white")
-
-    for autotext in autotexts:
-        autotext.set_color("white")
-        autotext.set_fontsize(16)
-        x, y = autotext.get_position()
-        autotext.set_position((x * 1.2, y * 1.2))
-
-    plt.text(
-        0,
-        0,
-        f'{round(total["calories"], 0)}\nkcal',
-        horizontalalignment="center",
-        verticalalignment="center",
-        fontsize=20,
-        color="white",
-    )
-
-    st.pyplot(fig, transparent=True)
-
-
-def authorization(user_name: str, password: str) -> bool:
-    """
-    Sends a POST request to the FastAPI service to authorize the user.
-
-    Args:
-        user_name (str): A unique username for authorization.
-        password (str): User's password.
-
-    Returns:
-        bool: Returns verification of user authentication.
-    """
-
-    if not user_name.strip():
-        st.error(f"The user's name is missing.")
-        return False
-    elif not password.strip():
-        st.error(f"The password is missing.")
-        return False
-
-    # Prepare payload and headers for the request
-    payload = {"user_name": user_name, "password": password}
-    headers = {"Content-Type": "application/json"}
-
-    try:
-        # Send POST request
-        raw_response = requests.post(
-            SERVER_URL + "/authentication", json=payload, headers=headers
-        )
-
-        # Handle response
-        if raw_response.status_code == 200:
-            response = raw_response.json().get("response")
-            if response == "SUCCESSFUL":
-                return True
-            elif response == "INVALID_PASSWORD":
-                st.error(f"The password is entered incorrectly.")
-            elif response == "USER_NOT_FOUND":
-                st.error(f"The user does not exist. Please register.")
-            else:
-                st.error(f"Unexpected error.")
-            return False
-
-        else:
-            st.error(f"Error: {raw_response.status_code}, {raw_response.text}")
-            return False
-
-    except Exception as e:
-        st.error(f"Error: {e}")
-        return False
-
-
-def registration(
-    gender: str,
-    weight: float,
-    height: float,
-    user_name: str,
-    password: str,
-    re_password: str,
-):
-    """
-    Sends a POST request to the FastAPI service to register the user.
-
-    Args:
-        gender (str): User's gender
-        weight (float): User's weight
-        height (float): User growth
-        user_name (str): A unique username for authorization.
-        password (str): User's password.
-        re_password (str): Repeated password
-
-    Returns:
-        bool: returns successful registration
-    """
-
-    if not user_name.strip():
-        st.error(f"The user's name is missing.")
-        return False
-
-    elif not password.strip():
-        st.error(f"The password is missing.")
-        return False
-
-    elif not re_password.strip():
-        st.error(f"The re-password is missing.")
-        return False
-
-    elif not weight:
-        st.error(f"The weight is missing.")
-        return False
-
-    elif not height:
-        st.error(f"The height is missing.")
-        return False
-
-    elif re_password != password:
-        st.error(f"Passwords didn't match.")
-        return False
-
-    if gender == ":blue[Man]":
-        gender = "m"
-    elif gender == ":red[Woman]":
-        gender = "w"
-    else:
-        gender = "None"
-
-    # Prepare payload and headers for the request
-    payload = {
-        "user_name": user_name,
-        "password": password,
-        "gender": gender,
-        "weight": weight,
-        "height": height,
-    }
-    headers = {"Content-Type": "application/json"}
-
-    try:
-        # Send POST request
-        raw_response = requests.post(
-            SERVER_URL + "/registration", json=payload, headers=headers
-        )
-
-        # Handle response
-        if raw_response.status_code == 200:
-            result = bool(raw_response.json().get("response", False))
-            if result:               
-                return True
-            else:
-                st.error('A user with this name already exists.')
-                return False
-
-        else:
-            st.error(f"Error: {raw_response.status_code}, {raw_response.text}")
-            return False
-
-    except Exception as e:
-        st.error(f"Error: {e}")
-        return False
+if "home_page_sh" not in st.session_state:
+    st.session_state["home_page_sh"] = False
+if "daily_log_sh" not in st.session_state:
+    st.session_state["daily_log_sh"] = False
+if "recognition_page_sh" not in st.session_state:
+    st.session_state["recognition_page_sh"] = False
+if "general_stat_sh" not in st.session_state:
+    st.session_state["general_stat_sh"] = False
+if "settings_sh" not in st.session_state:
+    st.session_state["settings_sh"] = False
 
 
 def login_page():
-    """Authorization window"""
+    """Authorization page"""
     # Streamlit app
     st.title("Login")
 
@@ -311,18 +38,16 @@ def login_page():
     )
     _, midle, _ = st.columns(3)
     if midle.button("Sign in", use_container_width=True):
-        if authorization(user_name, password):
-            st.session_state["logged_in"] = True
-            st.session_state["sername"] = user_name
-            st.rerun()
+        if pui.authorization(user_name, password):
+            st.session_state["username"] = user_name
+            pui.change_page("login_page_sh", "home_page_sh")
 
     if midle.button("Sign up", use_container_width=True, key="sign_up_l"):
-        st.session_state["new_user"] = True
-        st.rerun()
+        pui.change_page("login_page_sh", "register_page_sh")
 
 
-def register_page():
-    """Registration window"""
+def registration_page():
+    """Registration page"""
     st.title("Registration")
 
     gender = st.radio(
@@ -366,28 +91,48 @@ def register_page():
 
     _, midle, _ = st.columns(3)
     if midle.button("Sign up", use_container_width=True, key="sign_up_r"):
-        if registration(gender, weight, height, user_name, password, re_password):
-            st.session_state["new_user"] = False
-            st.rerun()
+        if pui.registration(gender, weight, height, user_name, password, re_password):
+            pui.change_page("register_page_sh", "login_page_sh")
+    
+    if midle.button("Back", use_container_width=True, key="back_r"):
+        pui.change_page("register_page_sh", "login_page_sh")
+
                 
+def home_page():
+    """Home page containing information about today's consumption"""
+    st.title(f"Hi, {st.session_state["username"]}!")
 
+    pui.plot_norms_info({"calories":1248, "proteins":50, "fats":100, "carbohydrates":69},
+                {"calories":2535, "proteins":127, "fats":88, "carbohydrates":317})
+    
+    left, midle, right = st.columns(3)
+    if left.button('View daily log', use_container_width=True, key="daily_log"):
+        pui.change_page("home_page_sh", "daily_log_sh")
+    if midle.button('Add dishes', use_container_width=True, key="add_dishes"):
+        pui.change_page("home_page_sh", "recognition_page_sh")
+    if right.button('General statistics', use_container_width=True, key="statistics"):
+        pui.change_page("home_page_sh", "general_stat_sh")
 
-def main_app():
-    """A window containing the main functionality of the application"""
-    # Streamlit app
+    row1, row2 = st.columns(2)
+    if row1.button('Log out', use_container_width=True, key="log_out"):
+        st.session_state["username"] = ""
+        pui.change_page("home_page_sh", "login_page_sh")
+    if row2.button('Settings', use_container_width=True, key="settings"):
+        pui.change_page("home_page_sh", "settings_sh")
+    
+
+def recognition_page():
+    """A page containing the functionality for calculating the macros from a photo"""
     st.title("Calorie Tracker")
-
-    # File uploader for image
+    
     st.config.set_option("server.maxUploadSize", 3)
     uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
 
     if uploaded_file is not None:
         try:
-            # Display uploaded image
             img = Image.open(uploaded_file)
             st.image(img, use_column_width=True)
 
-            # Convert image to Base64
             buffered = BytesIO()
             img.save(buffered, format="JPEG")
             image_base64 = base64.b64encode(buffered.getvalue()).decode("utf-8")
@@ -404,20 +149,50 @@ def main_app():
     if midle.button("Upload", use_container_width=True):
         try:
             # Send Base64-encoded image to FastAPI
-            nutritional_info = get_nutritional_info(image_base64, user_description)
+            nutritional_info = pui.get_nutritional_info(image_base64, user_description)
             if nutritional_info:
-                plot_nutritional_info(nutritional_info)
+                pui.plot_nutritional_info(nutritional_info)
         except Exception as e:
             st.error(f"Error api request or plot_nutritional_info: {e}")
 
+    if midle.button('Back', use_container_width=True, key="back_rec"):
+        pui.change_page("recognition_page_sh", "home_page_sh")
+        
+
+
+def daily_log_page():
+    _, midle, _ = st.columns(3)
+    if midle.button('Back', use_container_width=True, key="back_dl"):
+        pui.change_page("daily_log_page", "home_page_sh")
+
+def general_stat_page():
+    _, midle, _ = st.columns(3)
+    if midle.button('Back', use_container_width=True, key="back_gs"):
+        pui.change_page("general_stat_page", "home_page_sh")
+
+def settings_page():
+    _, midle, _ = st.columns(3)
+    if midle.button('Back', use_container_width=True, key="back_set"):
+        pui.change_page("settings_page", "home_page_sh")
+
+
+
 
 def main():
-    if st.session_state["new_user"]:
-        register_page()
-    elif not st.session_state["logged_in"]:
+    if st.session_state["login_page_sh"]:
         login_page()
-    else:
-        main_app()
+    elif st.session_state["register_page_sh"]:
+        registration_page()
+    elif st.session_state["home_page_sh"]:
+        home_page()
+    elif st.session_state["daily_log_sh"]:
+        daily_log_page()
+    elif st.session_state["recognition_page_sh"]:
+        recognition_page()
+    elif st.session_state["general_stat_sh"]:
+        general_stat_page()
+    elif st.session_state["settings_sh"]:
+        settings_page()
 
 
 if __name__ == "__main__":
