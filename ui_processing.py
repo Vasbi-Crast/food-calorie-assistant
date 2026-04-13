@@ -1,314 +1,219 @@
 import requests
 import streamlit as st
-import matplotlib.pyplot as plt
 import json
-from threading import RLock
+import datetime as dt
+from typing import List
 from dotenv import load_dotenv
 import os
 
-_lock = RLock()
-
+# === Configuration ===
 load_dotenv()
-
 SERVER_URL = os.getenv("SERVER_URL")
 
-def change_page(old_page:str, new_page:str):
+# === Error Mappings (EN) ===
+HTTP_STATUS_MESSAGES = {
+    400: '⚠️ Bad Request',
+    401: '🔐 Authorization Failed',
+    403: '🚫 Access Denied',
+    404: '📍 Not Found',
+    422: '📝 Validation Error',
+    500: '💥 Internal Server Error',
+    504: '⏳ Gateway Timeout',
+}
+
+ERROR_TYPE_MESSAGES = {
+    'missing': 'This field is required',
+    'string_too_short': 'Value is too short (min 8 characters for password)',
+    'string_too_long': 'Value is too long',
+    'greater_than_equal': 'Value must be >= minimum allowed',
+    'less_than_equal': 'Value must be <= maximum allowed',
+    'greater_than': 'Value must be > minimum allowed',
+    'less_than': 'Value must be < maximum allowed',
+    'value_error': 'Invalid value format',
+    'int_parsing': 'Must be an integer number',
+    'float_parsing': 'Must be a decimal number',
+    'date_parsing': 'Invalid date format (YYYY-MM-DD)',
+    'enum': 'Invalid value (choose from options)',
+}
+
+def get_error_message(error_type: str) -> str:
+    """Returns user-friendly message for a given error type."""
+    return ERROR_TYPE_MESSAGES.get(error_type, 'Invalid value provided')
+
+# === Navigation ===
+def change_page(old_page: str, new_page: str):
+    """Switches active page in session state."""
     st.session_state[old_page] = False
     st.session_state[new_page] = True
     st.rerun()
 
-def get_nutritional_info(image_base64: str, user_description: str):
+# === API Wrapper ===
+def api_request(method: str, endpoint: str, old_page: str, **kwargs) -> dict | None:
     """
-    Sends a POST request to the FastAPI service to retrieve nutritional information
-    for a given base64 encoded image.
-
-    Args:
-        image_base64 (str): The base64 encoded image string.
-        user_description (str): Custom description of the dish in the image.
-
-    Returns:
-        dict or None: A dictionary containing nutritional information with the keys
-        'calories', 'proteins', 'fats', and 'carbohydrates' if the request is
-        successful. Returns None if there is an error or if the nutritional information
-        is not available.
+    Unified wrapper for API requests.
+    Handles network errors, HTTP errors, and validation errors.
+    Automatically adds Auth token if available.
+    Returns JSON response on success, None on error.
     """
+    # 1️⃣ Add Auth Header if token exists
+    headers = kwargs.get('headers', {})
+    token = st.session_state.get("token")
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
+    kwargs['headers'] = headers
+
+    # 2️⃣ Network Request
     try:
-        # Prepare payload and headers for the request
-        payload = {"image_base64": image_base64, "user_description": user_description}
-        headers = {"Content-Type": "application/json"}
-
-        # Send POST request
-        raw_response = requests.post(
-            SERVER_URL + "/generate_response", json=payload, headers=headers
+        resp = requests.request(
+            method,
+            f"{SERVER_URL}/{endpoint}",
+            timeout=20,
+            **kwargs
         )
-
-        # Handle response
-        if raw_response.status_code == 200:
-            response = raw_response.json()
-
-            if response["status"] == "success":
-                result = response["result"]
-
-                if isinstance(result, str):
-                    result = json.loads(response["result"])
-
-                if result:
-                    return result
-                else:
-                    st.warning("Nutritional information not available for this image.")
-                    return None
-            else:
-                st.error(f"Unable to retrieve nutritional information: {response}.")
-                return None
-        else:
-            st.error(f"Error: {raw_response.status_code}, {raw_response.text}")
-            return None
-    except Exception as e:
-        st.error(f"Error: {e}")
+    except requests.exceptions.Timeout:
+        st.error("⏳ Server timeout. Please try again.")
         return None
-
-
-def plot_nutritional_info(nutritional_info):
-    """Visualizes ingredient list and total nutrition (donut chart)."""
-    if not nutritional_info:
-        st.warning("No ingredients found.")
-        return
-
-    rows = []
-    total = {"calories": 0.0, "proteins": 0.0, "fats": 0.0, "carbohydrates": 0.0}
-
-    for item in nutritional_info:
-        if not isinstance(item, dict) or not item:
-            continue
-        original_name, payload = next(iter(item.items()))
-        if not payload:
-            rows.append(
-                {
-                    "ingredient": original_name,
-                    "match": "",
-                    "weight_g": "",
-                    "calories": "",
-                    "proteins": "",
-                    "fats": "",
-                    "carbohydrates": "",
-                }
-            )
-            continue
-
-        rows.append(
-            {
-                "ingredient": original_name,
-                "match": payload.get("match", ""),
-                "weight_g": payload.get("weight", ""),
-                "calories": payload.get("calories", ""),
-                "proteins": payload.get("proteins", ""),
-                "fats": payload.get("fats", ""),
-                "carbohydrates": payload.get("carbohydrates", ""),
-            }
-        )
-
-        for k in total:
-            try:
-                total[k] += float(payload.get(k, 0) or 0)
-            except (TypeError, ValueError):
-                pass
-
-    st.subheader("Ingredients")
-    st.table(rows)
-
-    st.subheader("Total nutrition")
-    labels = "Proteins", "Fats", "Carbohydrates"
-    sizes = [total["proteins"], total["fats"], total["carbohydrates"]]
-
-    with _lock:
-        fig, ax = plt.subplots()
-        fig.patch.set_alpha(0.0)
-
-        wedges, texts, autotexts = ax.pie(
-            sizes,
-            labels=labels,
-            autopct=lambda p: f"{p * sum(sizes) / 100:.0f}",
-            startangle=90,
-            wedgeprops={"width": 0.5},
-        )
-
-        ax.axis("equal")
-
-        for text in texts:
-            text.set_color("white")
-
-        for autotext in autotexts:
-            autotext.set_color("white")
-            autotext.set_fontsize(16)
-            x, y = autotext.get_position()
-            autotext.set_position((x * 1.2, y * 1.2))
-
-        plt.text(
-            0,
-            0,
-            f'{round(total["calories"], 0)}\nkcal',
-            horizontalalignment="center",
-            verticalalignment="center",
-            fontsize=20,
-            color="white",
-        )
-
-        st.pyplot(fig, use_container_width=True, transparent=True)
+    except requests.exceptions.ConnectionError:
+        st.error("🔌 Cannot connect to server. Is it running?")
+        return None
+    except requests.exceptions.RequestException as e:
+        st.error(f"❌ Request failed: {str(e)}")
+        return None
     
-    
-def plot_norms_info(days_info, norms_info):
-    st.subheader("Information of the day")
-
-    labels = ["calories", "proteins", "fats", "carbohydrates"]
-    values_day = [days_info[label] for label in labels]
-    norms_day = [norms_info[label] for label in labels]
-    colors = [[251, 251, 243], [29, 97, 221], [127, 20, 20], [165, 165, 41]]
-    colors = [[el/255.0 for el in color] for color in colors]
-    
-    with _lock:
-        fig, ax = plt.subplots(2, 2, figsize=(10, 10))
-        fig.patch.set_alpha(0.0)
-        ax = ax.reshape(1, 4)[0]
-
-        for el, val, norm, label, color in zip(ax, values_day, norms_day, labels, colors):
-            label = label[0].upper() + label[1:]
-            remain = max(0, norm - val)
-            wedges, texts = el.pie(
-                [val, remain],
-                startangle=90,
-                wedgeprops={"width": 0.2},
-                colors=[color+[1.], color+[0.3]],
-            )
-
-            el.axis("equal")
-            el.set_title(label, color='white', fontsize=18, pad=8) 
-
-            for text in texts:
-                text.set_visible(False)
-
-            if label != "Calories":
-                el.text(
-                    0,
-                    0,
-                    f'{int(val)} / {int(norm)}\ng.',
-                    horizontalalignment="center",
-                    verticalalignment="center",
-                    fontsize=14,
-                    color="white",
-                    fontweight='bold'
-                )
-            else:
-                el.text(
-                    0,
-                    0,
-                    f'{int(val)} / {int(norm)}',
-                    horizontalalignment="center",
-                    verticalalignment="center",
-                    fontsize=14,
-                    color="white",
-                    fontweight='bold'
-                )
-        st.pyplot(fig)
-
-
-def authorization(user_name: str, password: str) -> bool:
-    """
-    Sends a POST request to the FastAPI service to authorize the user.
-
-    Args:
-        user_name (str): A unique username for authorization.
-        password (str): User's password.
-
-    Returns:
-        bool: Returns verification of user authentication.
-    """
-
-    if not user_name.strip():
-        st.error(f"The user's name is missing.")
-        return False
-    elif not password.strip():
-        st.error(f"The password is missing.")
-        return False
-
-    # Prepare payload and headers for the request
-    payload = {"user_name": user_name, "password": password}
-    headers = {"Content-Type": "application/json"}
-
-    try:
-        # Send POST request
-        raw_response = requests.post(
-            SERVER_URL + "/authentication", json=payload, headers=headers
-        )
-
-        # Handle response
-        if raw_response.status_code == 200:
-            response = raw_response.json().get("response")
-            if response == "SUCCESSFUL":
-                return True
-            elif response == "INVALID_PASSWORD":
-                st.error(f"The password is entered incorrectly.")
-            elif response == "USER_NOT_FOUND":
-                st.error(f"The user does not exist. Please register.")
-            else:
-                st.error(f"Unexpected error.")
-            return False
-
+    # 3️⃣ HTTP Error Handling
+    if resp.status_code >= 400:
+        try:
+            data = resp.json()
+        except:
+            data = {}
+        
+        detail = data.get('detail', 'Unknown error')
+        errors = data.get('errors', [])
+        base_msg = HTTP_STATUS_MESSAGES.get(resp.status_code, f'❌ Error {resp.status_code}')
+        
+        # Handle Validation Errors (422) with field-specific messages
+        if resp.status_code == 422 and errors:
+            for err in errors:
+                field = err.get('field', 'unknown')
+                error_type = err.get('type_error', 'value_error')
+                text_err = get_error_message(error_type)
+                st.error(f"🔴 {field}: {text_err}")
         else:
-            st.error(f"Error: {raw_response.status_code}, {raw_response.text}")
-            return False
+            # Show general error for other status codes
+            st.error(f"{base_msg}: {detail}")
+        
+        # Auto-logout on 401 Unauthorized
+        if resp.status_code == 401:
+            change_page(old_page, 'login_page_sh')
+        
+        return None
+    
+    # 4️⃣ Success
+    return resp.json()
 
-    except Exception as e:
-        st.error(f"Error: {e}")
+# === Helpers ===
+bmr = {
+    "Sedentary lifestyle": 1.2,
+    "Light training 1-2 times a week": 1.375,
+    "3-5 training sessions per week": 1.55,
+    "Daily intensive training": 1.725,
+    "Heavy physical labor": 1.9,
+}
+
+def index_gender(gender: str) -> int:
+    """Converts gender string to index for UI components."""
+    return 0 if gender == "m" else (1 if gender == "w" else 2)
+
+def index_lifestyle(lifestyle: str) -> int | None:
+    """Converts lifestyle string to index for UI components."""
+    for i, key in enumerate(bmr.keys()):
+        if lifestyle == key:
+            return i
+    return None
+
+# === API Functions ===
+
+def get_nutritional_info(old_page: str, image_base64: str, user_description: str) -> dict | None:
+    """
+    Sends image for ingredient recognition and nutrition search.
+    No authentication required.
+    """
+    payload = {
+        "image_base64": image_base64,
+        "user_description": user_description
+    }
+    
+    response = api_request("POST", "ingredient_recognition", old_page=old_page, json=payload)
+    
+    if response:
+        # Handle nested result structure from LLM assistant
+        result = response.get("result")
+        if isinstance(result, str):
+            try:
+                result = json.loads(result)
+            except json.JSONDecodeError:
+                st.warning("⚠️ Failed to parse nutrition data.")
+                return None
+        
+        if result:
+            return result
+        else:
+            st.warning("⚠️ Nutritional information not available for this image.")
+            return None
+    return None
+
+
+def authorization(old_page: str, username: str, password: str) -> bool:
+    """
+    User login. Saves token to session_state on success.
+    """
+    # Frontend validation (critical only)
+    if not username.strip():
+        st.error("⚠️ Username is required.")
         return False
+    if not password.strip():
+        st.error("⚠️ Password is required.")
+        return False
+
+    payload = {"username": username, "password": password}
+    
+    # old_page='login_page_sh' ensures we stay or redirect correctly on 401
+    response = api_request("POST", "authentication", old_page=old_page, json=payload)
+    
+    if response:
+        st.session_state["token"] = response.get("access_token")
+        st.session_state["username"] = username
+        return True
+    return False
 
 
 def registration(
+    old_page: str,
+    username: str,
+    password: str,
+    re_password: str,
+    age: int,
+    lifestyle: str,
     gender: str,
     weight: float,
     height: float,
-    user_name: str,
-    password: str,
-    re_password: str,
-):
+) -> bool:
     """
-    Sends a POST request to the FastAPI service to register the user.
-
-    Args:
-        gender (str): User's gender
-        weight (float): User's weight
-        height (float): User growth
-        user_name (str): A unique username for authorization.
-        password (str): User's password.
-        re_password (str): Repeated password
-
-    Returns:
-        bool: returns successful registration
+    Registers a new user.
+    Frontend validates password match; Backend validates types/ranges.
     """
-
-    if not user_name.strip():
-        st.error(f"The user's name is missing.")
+    # Critical Frontend Validation
+    if not username.strip():
+        st.error("⚠️ Username is required.")
+        return False
+    if not password.strip():
+        st.error("⚠️ Password is required.")
+        return False
+    if password != re_password:
+        st.error("⚠️ Passwords do not match.")
         return False
 
-    elif not password.strip():
-        st.error(f"The password is missing.")
-        return False
-
-    elif not re_password.strip():
-        st.error(f"The re-password is missing.")
-        return False
-
-    elif not weight:
-        st.error(f"The weight is missing.")
-        return False
-
-    elif not height:
-        st.error(f"The height is missing.")
-        return False
-
-    elif re_password != password:
-        st.error(f"Passwords didn't match.")
-        return False
-
+    # Data Transformation
     if gender == ":blue[Man]":
         gender = "m"
     elif gender == ":red[Woman]":
@@ -316,35 +221,115 @@ def registration(
     else:
         gender = "None"
 
-    # Prepare payload and headers for the request
     payload = {
-        "user_name": user_name,
+        "username": username,
         "password": password,
+        "age": age,
+        "bmr": bmr.get(lifestyle, 1.2),
         "gender": gender,
         "weight": weight,
         "height": height,
     }
-    headers = {"Content-Type": "application/json"}
+    
+    response = api_request("POST", "registration", old_page=old_page, json=payload)
+    return response is not None
 
-    try:
-        # Send POST request
-        raw_response = requests.post(
-            SERVER_URL + "/registration", json=payload, headers=headers
-        )
 
-        # Handle response
-        if raw_response.status_code == 200:
-            result = bool(raw_response.json().get("response", False))
-            if result:               
-                return True
-            else:
-                st.error('A user with this name already exists.')
-                return False
+def get_user_information(old_page: str) -> dict | None:
+    """
+    Retrieves current user profile.
+    Requires authentication (token added by wrapper).
+    """
+    response = api_request("GET", "users/me", old_page=old_page)
+    
+    if response:
+        # Map numeric BMR back to lifestyle string for UI
+        bmr_val = response.get("bmr")
+        for key, val in bmr.items():
+            if val == bmr_val:
+                response["lifestyle"] = key
+                break
+        return response
+    return {}
 
-        else:
-            st.error(f"Error: {raw_response.status_code}, {raw_response.text}")
-            return False
 
-    except Exception as e:
-        st.error(f"Error: {e}")
-        return False
+def update_user_info(
+    old_page: str,
+    age: int,
+    lifestyle: str,
+    gender: str,
+    weight: float,
+    height: float,
+) -> bool:
+    """
+    Updates current user profile.
+    Requires authentication.
+    """
+    # Data Transformation
+    if gender == ":blue[Man]":
+        gender = "m"
+    elif gender == ":red[Woman]":
+        gender = "w"
+    else:
+        gender = "None"
+
+    payload = {
+        "age": age,
+        "bmr": bmr.get(lifestyle, 1.2),
+        "gender": gender,
+        "weight": weight,
+        "height": height,
+    }
+    
+    response = api_request("PUT", "users/me", old_page=old_page, json=payload)
+    return response is not None
+
+
+def get_info_nutrition(old_page: str,
+    time_span: List[dt.datetime] | dt.datetime = dt.datetime.now(),
+) -> dict | None:
+    """
+    Retrieves nutrition history for a time period.
+    Requires authentication.
+    """
+    # Date Formatting
+    if isinstance(time_span, list) and len(time_span) == 2:
+        st_time_span = min(time_span).strftime("%Y-%m-%d")
+        fin_time_span = max(time_span).strftime("%Y-%m-%d")
+        one_day = False
+    elif isinstance(time_span, dt.datetime):
+        st_time_span = time_span.strftime("%Y-%m-%d")
+        fin_time_span = time_span.strftime("%Y-%m-%d")
+        one_day = True
+    else:
+        st.error("⚠️ Incorrect time interval format.")
+        return {}
+
+    # Query Params for GET request
+    params = {
+        "st_time_span": st_time_span,
+        "fin_time_span": fin_time_span,
+    }
+    
+    response = api_request("GET", "info_nutrition", old_page=old_page, params=params)
+    
+    if response:
+        if one_day:
+            return response.get(st_time_span, {})
+        return response
+    return {}
+
+
+def get_daily_nutrition_norms(old_page: str, user_info: dict) -> dict | None:
+    """
+    Calculates daily nutrition norms based on user parameters.
+    Requires authentication.
+    """
+    # Basic Check
+    required_keys = ["age", "bmr", "gender", "weight", "height"]
+    if not all(k in user_info for k in required_keys):
+        st.error("⚠️ Missing required user information.")
+        return {}
+
+    response = api_request("POST", "daily_nutrition_norms", old_page=old_page, json=user_info)
+    return response

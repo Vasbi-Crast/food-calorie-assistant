@@ -1,24 +1,26 @@
 CREATE TABLE users (
-    users_name VARCHAR(255) NOT NULL PRIMARY KEY,
+    username VARCHAR(255) NOT NULL PRIMARY KEY,
     hash_password VARCHAR(255) NOT NULL,
-    height DECIMAL(5,1) NOT NULL,
-    weight DECIMAL(5,1) NOT NULL,
+    age INT NOT NULL,
+    bmr DECIMAL(6,4) NOT NULL,
+    height DECIMAL(5,1) NOT NULL CHECK (height BETWEEN 50 AND 250),
+    weight DECIMAL(5,1) NOT NULL CHECK (weight BETWEEN 20 AND 500),
     gender VARCHAR(5) CHECK (gender IN ('w', 'm', 'None'))
 );
 
 CREATE TABLE day (
     id SERIAL NOT NULL PRIMARY KEY,
     record_date DATE NOT NULL,
-    users_name VARCHAR(255) NOT NULL,
+    username VARCHAR(255) NOT NULL,
     total_calories DECIMAL(6,1) DEFAULT 0,
     total_proteins DECIMAL(6,1) DEFAULT 0,
     total_fats DECIMAL(6,1) DEFAULT 0,
     total_carbohydrates DECIMAL(6,1) DEFAULT 0,
-    UNIQUE (record_date, users_name),
-    FOREIGN KEY (users_name) REFERENCES users(users_name) ON DELETE CASCADE
+    UNIQUE (record_date, username),
+    FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE
 );
 
-CREATE INDEX idx_day_users_date ON day(users_name, record_date);
+CREATE INDEX idx_day_users_date ON day(username, record_date);
 
 CREATE TABLE ingredient (
     id SERIAL NOT NULL PRIMARY KEY,

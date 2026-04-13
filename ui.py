@@ -3,10 +3,17 @@ from PIL import Image
 from io import BytesIO
 import base64
 
-import ui_processing as pui
+import ui_plots as uipl
+import ui_processing as uipr
 
 if "username" not in st.session_state:
     st.session_state["username"] = ""
+if "user_info" not in st.session_state:
+    st.session_state["user_info"] = None
+if "days_info" not in st.session_state:
+    st.session_state["days_info"] = None
+if "daily_nutrition_norms" not in st.session_state:
+    st.session_state["daily_nutrition_norms"] = None
 
 if "login_page_sh" not in st.session_state:
     st.session_state["login_page_sh"] = True
@@ -27,10 +34,9 @@ if "settings_sh" not in st.session_state:
 
 def login_page():
     """Authorization page"""
-    # Streamlit app
     st.title("Login")
 
-    user_name = st.text_input(
+    username = st.text_input(
         "Username", placeholder="Type a user's name...", key="username_l"
     )
     password = st.text_input(
@@ -38,12 +44,12 @@ def login_page():
     )
     _, midle, _ = st.columns(3)
     if midle.button("Sign in", use_container_width=True):
-        if pui.authorization(user_name, password):
-            st.session_state["username"] = user_name
-            pui.change_page("login_page_sh", "home_page_sh")
+        if uipr.authorization("login_page_sh", username, password):
+            st.session_state["username"] = username
+            uipr.change_page("login_page_sh", "home_page_sh")
 
     if midle.button("Sign up", use_container_width=True, key="sign_up_l"):
-        pui.change_page("login_page_sh", "register_page_sh")
+        uipr.change_page("login_page_sh", "register_page_sh")
 
 
 def registration_page():
@@ -57,12 +63,36 @@ def registration_page():
     )
 
     col1, col2 = st.columns(2)
+
+    age = col1.number_input(
+        "How old are you?",
+        min_value=10,
+        max_value=120,
+        value=None,
+        step=1,
+        placeholder="Type a age...",
+        key="age_r",
+    )
+
+    lifestyle = col2.selectbox(
+        "What kind of lifestyle do you lead?",
+        options=(
+            "Sedentary lifestyle",
+            "Light training 1-2 times a week",
+            "3-5 training sessions per week",
+            "Daily intensive training",
+            "Heavy physical labor",
+        ),
+        index=0,
+        key="lifestyle_r",
+    )
+
     weight = col1.number_input(
         "How much weight do you have?",
-        min_value=20.,
-        max_value=500.,
+        min_value=20.0,
+        max_value=500.0,
         value=None,
-        step=1.,
+        step=1.0,
         placeholder="Type a weight...",
         format="%.1f",
         key="weight_r",
@@ -70,16 +100,16 @@ def registration_page():
 
     height = col2.number_input(
         "How tall are you in cm?",
-        min_value=50.,
-        max_value=250.,
+        min_value=50.0,
+        max_value=250.0,
         value=None,
-        step=1.,
+        step=1.0,
         placeholder="Type a height...",
         format="%.1f",
         key="height_r",
     )
 
-    user_name = st.text_input(
+    username = st.text_input(
         "Username", key="username_r", placeholder="Type a username..."
     )
     password = st.text_input(
@@ -91,40 +121,63 @@ def registration_page():
 
     _, midle, _ = st.columns(3)
     if midle.button("Sign up", use_container_width=True, key="sign_up_r"):
-        if pui.registration(gender, weight, height, user_name, password, re_password):
-            pui.change_page("register_page_sh", "login_page_sh")
-    
-    if midle.button("Back", use_container_width=True, key="back_r"):
-        pui.change_page("register_page_sh", "login_page_sh")
+        if uipr.registration(
+            "register_page_sh",
+            username,
+            password,
+            re_password,
+            age,
+            lifestyle,
+            gender,
+            weight,
+            height,
+        ):
+            uipr.change_page("register_page_sh", "login_page_sh")
 
-                
+    if midle.button("Back", use_container_width=True, key="back_r"):
+        uipr.change_page("register_page_sh", "login_page_sh")
+
+
 def home_page():
     """Home page containing information about today's consumption"""
-    st.title(f"Hi, {st.session_state["username"]}!")
+    st.title(f"Hi, {st.session_state['username']}!")
+    if not st.session_state["user_info"]:
+        st.session_state["user_info"] = uipr.get_user_information("home_page_sh")
+    if not st.session_state["days_info"]:
+        st.session_state["days_info"] = uipr.get_info_nutrition("home_page_sh")
+    if not st.session_state["daily_nutrition_norms"]:
+        st.session_state["daily_nutrition_norms"] = uipr.get_daily_nutrition_norms(
+            "home_page_sh",
+            st.session_state["user_info"]
+        )
+    uipl.display_days_nutrition_overview(
+        st.session_state["days_info"],
+        st.session_state["daily_nutrition_norms"],
+    )
 
-    pui.plot_norms_info({"calories":1248, "proteins":50, "fats":100, "carbohydrates":69},
-                {"calories":2535, "proteins":127, "fats":88, "carbohydrates":317})
-    
     left, midle, right = st.columns(3)
-    if left.button('View daily log', use_container_width=True, key="daily_log"):
-        pui.change_page("home_page_sh", "daily_log_sh")
-    if midle.button('Add dishes', use_container_width=True, key="add_dishes"):
-        pui.change_page("home_page_sh", "recognition_page_sh")
-    if right.button('General statistics', use_container_width=True, key="statistics"):
-        pui.change_page("home_page_sh", "general_stat_sh")
+    if left.button("View daily log", use_container_width=True, key="daily_log"):
+        uipr.change_page("home_page_sh", "daily_log_sh")
+    if midle.button("Add dishes", use_container_width=True, key="add_dishes"):
+        uipr.change_page("home_page_sh", "recognition_page_sh")
+    if right.button("General statistics", use_container_width=True, key="statistics"):
+        uipr.change_page("home_page_sh", "general_stat_sh")
 
     row1, row2 = st.columns(2)
-    if row1.button('Log out', use_container_width=True, key="log_out"):
+    if row1.button("Log out", use_container_width=True, key="log_out"):
         st.session_state["username"] = ""
-        pui.change_page("home_page_sh", "login_page_sh")
-    if row2.button('Settings', use_container_width=True, key="settings"):
-        pui.change_page("home_page_sh", "settings_sh")
-    
+        st.session_state["user_info"] = None
+        st.session_state["days_info"] = None
+        st.session_state["daily_nutrition_norms"] = None
+        uipr.change_page("home_page_sh", "login_page_sh")
+    if row2.button("Settings", use_container_width=True, key="settings"):
+        uipr.change_page("home_page_sh", "settings_sh")
+
 
 def recognition_page():
     """A page containing the functionality for calculating the macros from a photo"""
     st.title("Calorie Tracker")
-    
+
     st.config.set_option("server.maxUploadSize", 3)
     uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
 
@@ -148,34 +201,113 @@ def recognition_page():
 
     if midle.button("Upload", use_container_width=True):
         try:
-            # Send Base64-encoded image to FastAPI
-            nutritional_info = pui.get_nutritional_info(image_base64, user_description)
+            nutritional_info = uipr.get_nutritional_info("home_page_sh", image_base64, user_description)
             if nutritional_info:
-                pui.plot_nutritional_info(nutritional_info)
+                uipl.plot_nutritional_info(nutritional_info)
         except Exception as e:
             st.error(f"Error api request or plot_nutritional_info: {e}")
 
-    if midle.button('Back', use_container_width=True, key="back_rec"):
-        pui.change_page("recognition_page_sh", "home_page_sh")
-        
+    if midle.button("Back", use_container_width=True, key="back_rec"):
+        uipr.change_page("recognition_page_sh", "home_page_sh")
 
 
 def daily_log_page():
     _, midle, _ = st.columns(3)
-    if midle.button('Back', use_container_width=True, key="back_dl"):
-        pui.change_page("daily_log_page", "home_page_sh")
+    if midle.button("Back", use_container_width=True, key="back_dl"):
+        uipr.change_page("daily_log_page", "home_page_sh")
+
 
 def general_stat_page():
     _, midle, _ = st.columns(3)
-    if midle.button('Back', use_container_width=True, key="back_gs"):
-        pui.change_page("general_stat_page", "home_page_sh")
+    if midle.button("Back", use_container_width=True, key="back_gs"):
+        uipr.change_page("general_stat_page", "home_page_sh")
+
 
 def settings_page():
+
+    def_inf = st.session_state["user_info"]
+
+    st.title("Settings")
+
+    gender = st.radio(
+        "What gender are you?",
+        [":blue[Man]", ":red[Woman]", "Don't specify"],
+        index=uipr.index_gender(def_inf.get("gender")),
+    )
+
+    col1, col2 = st.columns(2)
+
+    age = col1.number_input(
+        "How old are you?",
+        min_value=10,
+        max_value=120,
+        value=def_inf.get("age"),
+        step=1,
+        placeholder="Type a age...",
+        key="age_set",
+    )
+
+    lifestyle = col2.selectbox(
+        "What kind of lifestyle do you lead?",
+        options=(
+            "Sedentary lifestyle",
+            "Light training 1-2 times a week",
+            "3-5 training sessions per week",
+            "Daily intensive training",
+            "Heavy physical labor",
+        ),
+        index=uipr.index_lifestyle(def_inf.get("lifestyle")),
+        key="lifestyle_set",
+    )
+
+    weight = col1.number_input(
+        "How much weight do you have?",
+        min_value=20.0,
+        max_value=500.0,
+        value=def_inf.get("weight"),
+        step=1.0,
+        placeholder="Type a weight...",
+        format="%.1f",
+        key="weight_set",
+    )
+
+    height = col2.number_input(
+        "How tall are you in cm?",
+        min_value=50.0,
+        max_value=250.0,
+        value=def_inf.get("height"),
+        step=1.0,
+        placeholder="Type a height...",
+        format="%.1f",
+        key="height_set",
+    )
+
     _, midle, _ = st.columns(3)
-    if midle.button('Back', use_container_width=True, key="back_set"):
-        pui.change_page("settings_page", "home_page_sh")
+    if midle.button("Apply", use_container_width=True, key="apply_set"):
+        if uipr.update_user_info(
+            "home_page_sh", age, lifestyle, gender, weight, height
+        ):
+            if gender == ":blue[Man]":
+                gender = "m"
+            elif gender == ":red[Woman]":
+                gender = "w"
+            else:
+                gender = "None"
 
+            st.session_state["user_info"] = {
+                "age": age,
+                "lifestyle": lifestyle,
+                "bmp": uipr.bmr.get(lifestyle),
+                "gender": gender,
+                "weight": weight,
+                "height": height,
+            }
 
+            uipr.change_page("settings_sh", "home_page_sh")
+
+    _, midle, _ = st.columns(3)
+    if midle.button("Back", use_container_width=True, key="back_set"):
+        uipr.change_page("settings_sh", "home_page_sh")
 
 
 def main():
