@@ -10,35 +10,55 @@ import os
 load_dotenv()
 SERVER_URL = os.getenv("SERVER_URL")
 
+INACTIVITY_MINUTES = 10
+
+PAGE_BEFORE_AUTHORIZATIONS = ["login_page_sh", "register_page_sh"]
+
+USERNAME_PATTERN_TEXT = """
+• Minimum length: 3 characters
+• Maximum length: 20 characters
+• No leading or trailing spaces
+• Case-insensitive (stored as lowercase)
+"""
+
+PASSWORD_PATTERN_TEXT = """
+• Minimum length: 6 characters\n
+• At least 3 digits\n
+• At least one uppercase and one lowercase letter\n
+• At least one special character (#, !, $, ^, *, @)\n
+"""
+
 # === Error Mappings (EN) ===
 HTTP_STATUS_MESSAGES = {
-    400: '⚠️ Bad Request',
-    401: '🔐 Authorization Failed',
-    403: '🚫 Access Denied',
-    404: '📍 Not Found',
-    422: '📝 Validation Error',
-    500: '💥 Internal Server Error',
-    504: '⏳ Gateway Timeout',
+    400: "⚠️ Bad Request",
+    401: "🔐 Authorization Failed",
+    403: "🚫 Access Denied",
+    404: "📍 Not Found",
+    422: "📝 Validation Error",
+    500: "💥 Internal Server Error",
+    504: "⏳ Gateway Timeout",
 }
 
 ERROR_TYPE_MESSAGES = {
-    'missing': 'This field is required',
-    'string_too_short': 'Value is too short (min 8 characters for password)',
-    'string_too_long': 'Value is too long',
-    'greater_than_equal': 'Value must be >= minimum allowed',
-    'less_than_equal': 'Value must be <= maximum allowed',
-    'greater_than': 'Value must be > minimum allowed',
-    'less_than': 'Value must be < maximum allowed',
-    'value_error': 'Invalid value format',
-    'int_parsing': 'Must be an integer number',
-    'float_parsing': 'Must be a decimal number',
-    'date_parsing': 'Invalid date format (YYYY-MM-DD)',
-    'enum': 'Invalid value (choose from options)',
+    "missing": "This field is required",
+    "string_too_short": "Value is too short (min __num_char__ characters for __field__)",
+    "string_too_long": "Value is too long (max __num_char__ characters for __field__)",
+    "greater_than_equal": "Value must be >= minimum allowed",
+    "less_than_equal": "Value must be <= maximum allowed",
+    "greater_than": "Value must be > minimum allowed",
+    "less_than": "Value must be < maximum allowed",
+    "value_error": "Incorrect form __field__.\nRulles:\n__form_pattern__",
+    "int_parsing": "Must be an integer number",
+    "float_parsing": "Must be a decimal number",
+    "date_parsing": "Invalid date format (YYYY-MM-DD)",
+    "enum": "Invalid value (choose from options)",
 }
+
 
 def get_error_message(error_type: str) -> str:
     """Returns user-friendly message for a given error type."""
-    return ERROR_TYPE_MESSAGES.get(error_type, 'Invalid value provided')
+    return ERROR_TYPE_MESSAGES.get(error_type, "Invalid value provided")
+
 
 # === Navigation ===
 def check_activity (old_page: str):
@@ -52,11 +72,7 @@ def check_activity (old_page: str):
             st.session_state["login_page_sh"] = True
             st.rerun()
     elif old_page == "login_page_sh":
-        st.session_state["last_active_time"] = dt.datetime.now(dt.timezone.utc)
-
-def clear_new_uploader():
-    st.session_state["table_ingredients"], st.session_state["total_macros"] = None, None
-    st.session_state["last_table_ingredients"] = []
+        st.session_state["last_active_time"] = dt.datetime.now(dt.timezone.utc)   
     
 def log_out():
     st.session_state["username"] = ""
@@ -67,9 +83,13 @@ def log_out():
 
 def change_page(old_page: str, new_page: str):
     """Switches active page in session state."""
+    check_activity(old_page)
     st.session_state[old_page] = False
     st.session_state[new_page] = True
+    if new_page == "login_page_sh":
+        log_out()
     st.rerun()
+
 
 # === API Wrapper ===
 def api_request(method: str, endpoint: str, old_page: str, **kwargs) -> dict | None:
@@ -79,20 +99,18 @@ def api_request(method: str, endpoint: str, old_page: str, **kwargs) -> dict | N
     Automatically adds Auth token if available.
     Returns JSON response on success, None on error.
     """
-    # 1️⃣ Add Auth Header if token exists
-    headers = kwargs.get('headers', {})
+    check_activity(old_page)
+    # Add Auth Header if token exists
+    headers = kwargs.get("headers", {})
     token = st.session_state.get("token")
     if token:
         headers["Authorization"] = f"Bearer {token}"
-    kwargs['headers'] = headers
+    kwargs["headers"] = headers
 
-    # 2️⃣ Network Request
+    # Network Request
     try:
         resp = requests.request(
-            method,
-            f"{SERVER_URL}/{endpoint}",
-            timeout=20,
-            **kwargs
+            method, f"{SERVER_URL}/{endpoint}", timeout=20, **kwargs
         )
     except requests.exceptions.Timeout:
         st.error("⏳ Server timeout. Please try again.")
@@ -103,37 +121,56 @@ def api_request(method: str, endpoint: str, old_page: str, **kwargs) -> dict | N
     except requests.exceptions.RequestException as e:
         st.error(f"❌ Request failed: {str(e)}")
         return None
-    
-    # 3️⃣ HTTP Error Handling
+
+    # HTTP Error Handling
     if resp.status_code >= 400:
         try:
             data = resp.json()
         except:
             data = {}
-        
-        detail = data.get('detail', 'Unknown error')
-        errors = data.get('errors', [])
-        base_msg = HTTP_STATUS_MESSAGES.get(resp.status_code, f'❌ Error {resp.status_code}')
-        
+
+        detail = data.get("detail", "Unknown error")
+        errors = data.get("errors", [])
+        base_msg = HTTP_STATUS_MESSAGES.get(
+            resp.status_code, f"❌ Error {resp.status_code}"
+        )
+
+        # Problems with authorization
+        if resp.status_code == 401:
+            if detail == "USER_NOT_FOUND":
+                st.error(f"🔐 The user does not exist. Please register.")
+            elif detail == "INVALID_PASSWORD":
+                st.error(f"🔐 Incorrect password. Try again.")
+            else:
+                st.session_state["auth_error"] = f"⏳ You've been inactive for too long"
+                change_page(old_page, "login_page_sh")
+
         # Handle Validation Errors (422) with field-specific messages
-        if resp.status_code == 422 and errors:
+        elif resp.status_code == 422 and errors:
             for err in errors:
-                field = err.get('field', 'unknown')
-                error_type = err.get('type_error', 'value_error')
-                text_err = get_error_message(error_type)
+                field = err.get("field", "unknown")
+                error_type = err.get("type_error", "value_error")
+                text_err = get_error_message(error_type).replace("__field__", field)
+                if error_type in ["string_too_short", "string_too_long"]:
+                    num_char = 3
+                    text_err = text_err.replace("__num_char__", str(num_char))
+                elif error_type == "value_error" and field == "password":
+                    text_err = text_err.replace(
+                        "__form_pattern__", PASSWORD_PATTERN_TEXT
+                    )
+                else:
+                    text_err = get_error_message(error_type)
                 st.error(f"🔴 {field}: {text_err}")
+
         else:
             # Show general error for other status codes
             st.error(f"{base_msg}: {detail}")
-        
-        # Auto-logout on 401 Unauthorized
-        if resp.status_code == 401:
-            change_page(old_page, 'login_page_sh')
-        
+
         return None
-    
-    # 4️⃣ Success
+
+    # Success
     return resp.json()
+
 
 # === Helpers ===
 bmr = {
@@ -144,9 +181,11 @@ bmr = {
     "Heavy physical labor": 1.9,
 }
 
+
 def index_gender(gender: str) -> int:
     """Converts gender string to index for UI components."""
     return 0 if gender == "m" else (1 if gender == "w" else 2)
+
 
 def index_lifestyle(lifestyle: str) -> int | None:
     """Converts lifestyle string to index for UI components."""
@@ -155,20 +194,22 @@ def index_lifestyle(lifestyle: str) -> int | None:
             return i
     return None
 
+
 # === API Functions ===
 
-def get_nutritional_info(old_page: str, image_base64: str, user_description: str) -> dict | None:
+def get_meal_macros(
+    old_page: str, image_base64: str, user_description: str
+) -> dict | None:
     """
     Sends image for ingredient recognition and nutrition search.
     No authentication required.
     """
-    payload = {
-        "image_base64": image_base64,
-        "user_description": user_description
-    }
-    
-    response = api_request("POST", "ingredient_recognition", old_page=old_page, json=payload)
-    
+    payload = {"image_base64": image_base64, "user_description": user_description}
+
+    response = api_request(
+        "POST", "ingredient_recognition", old_page=old_page, json=payload
+    )
+
     if response:
         # Handle nested result structure from LLM assistant
         result = response.get("result")
@@ -178,14 +219,13 @@ def get_nutritional_info(old_page: str, image_base64: str, user_description: str
             except json.JSONDecodeError:
                 st.warning("⚠️ Failed to parse nutrition data.")
                 return None
-        
+
         if result:
             return result
         else:
             st.warning("⚠️ Nutritional information not available for this image.")
             return None
     return None
-
 
 def authorization(old_page: str, username: str, password: str) -> bool:
     """
@@ -199,17 +239,16 @@ def authorization(old_page: str, username: str, password: str) -> bool:
         st.error("⚠️ Password is required.")
         return False
 
-    payload = {"username": username, "password": password}
-    
+    payload = {"username": username.lower(), "password": password}
+
     # old_page='login_page_sh' ensures we stay or redirect correctly on 401
     response = api_request("POST", "authentication", old_page=old_page, json=payload)
-    
+
     if response:
         st.session_state["token"] = response.get("access_token")
         st.session_state["username"] = username
         return True
     return False
-
 
 def registration(
     old_page: str,
@@ -254,10 +293,9 @@ def registration(
         "weight": weight,
         "height": height,
     }
-    
+
     response = api_request("POST", "registration", old_page=old_page, json=payload)
     return response is not None
-
 
 def get_user_information(old_page: str) -> dict | None:
     """
@@ -265,7 +303,7 @@ def get_user_information(old_page: str) -> dict | None:
     Requires authentication (token added by wrapper).
     """
     response = api_request("GET", "users/me", old_page=old_page)
-    
+
     if response:
         # Map numeric BMR back to lifestyle string for UI
         bmr_val = response.get("bmr")
@@ -275,7 +313,6 @@ def get_user_information(old_page: str) -> dict | None:
                 break
         return response
     return {}
-
 
 def update_user_info(
     old_page: str,
@@ -304,12 +341,12 @@ def update_user_info(
         "weight": weight,
         "height": height,
     }
-    
+
     response = api_request("PUT", "users/me", old_page=old_page, json=payload)
     return response is not None
 
-
-def get_info_nutrition(old_page: str,
+def get_info_nutrition(
+    old_page: str,
     time_span: List[dt.datetime] | dt.datetime = dt.datetime.now(),
 ) -> dict | None:
     """
@@ -334,15 +371,14 @@ def get_info_nutrition(old_page: str,
         "st_time_span": st_time_span,
         "fin_time_span": fin_time_span,
     }
-    
+
     response = api_request("GET", "info_nutrition", old_page=old_page, params=params)
-    
+
     if response:
         if one_day:
             return response.get(st_time_span, {})
         return response
     return {}
-
 
 def get_daily_nutrition_norms(old_page: str, user_info: dict) -> dict | None:
     """
@@ -355,28 +391,7 @@ def get_daily_nutrition_norms(old_page: str, user_info: dict) -> dict | None:
         st.error("⚠️ Missing required user information.")
         return {}
 
-    response = api_request("POST", "daily_nutrition_norms", old_page=old_page, json=user_info)
+    response = api_request(
+        "POST", "daily_nutrition_norms", old_page=old_page, json=user_info
+    )
     return response
-
-def save_dish(old_page: str) -> bool:
-    payload = {"name": [],
-               "weight": [], 
-               "сalories": [], 
-               "proteins": [], 
-               "fats": [], 
-               "carbohydrates": [],
-               }
-    for row in st.session_state["session_state"]:
-        payload["name"].append(row.get("match").split(',')[0].strip())
-        payload["weight"].append(row.get("weight_g", 0))
-        payload["сalories"].append(row.get("сalories", 0))
-        payload["proteins"].append(row.get("proteins", 0))
-        payload["fats"].append(row.get("fats", 0))
-        payload["carbohydrates"].append(row.get("carbohydrates", 0))
-        
-    res = api_request("POST", "add_new_dish", old_page=old_page, json=payload)
-    if res:
-        st.session_state["days_info"] = None
-        return True
-    else:
-        return False

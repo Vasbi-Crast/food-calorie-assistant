@@ -63,6 +63,9 @@ def login_page():
 
     if midle.button("Sign up", use_container_width=True, key="sign_up_l"):
         uipr.change_page("login_page_sh", "register_page_sh")
+    if st.session_state["auth_error"]:
+        st.warning(st.session_state["auth_error"])
+        st.session_state["auth_error"] = ""
 
 
 def registration_page():
@@ -72,7 +75,7 @@ def registration_page():
     gender = st.radio(
         "What gender are you?",
         [":blue[Man]", ":red[Woman]", "Don't specify"],
-        index=None,
+        index=2,
     )
 
     col1, col2 = st.columns(2)
@@ -126,10 +129,17 @@ def registration_page():
         "Username", key="username_r", placeholder="Type a username..."
     )
     password = st.text_input(
-        "Password", type="password", placeholder="Type a password...", key="password_r"
+        "Password",
+        type="password",
+        placeholder="Type a password...",
+        key="password_r",
+        help=uipr.PASSWORD_PATTERN_TEXT,
     )
     re_password = st.text_input(
-        "Repeat the password", placeholder="Type a re-password...", type="password"
+        "Repeat the password",
+        placeholder="Type a re-password...",
+        type="password",
+        help=uipr.USERNAME_PATTERN_TEXT,
     )
 
     _, midle, _ = st.columns(3)
@@ -153,15 +163,14 @@ def registration_page():
 
 def home_page():
     """Home page containing information about today's consumption"""
-    st.title(f"Hi, {st.session_state['username']}!")
+    st.title(f"Hi, {st.session_state["username"]}!")
     if not st.session_state["user_info"]:
         st.session_state["user_info"] = uipr.get_user_information("home_page_sh")
     if not st.session_state["days_info"]:
         st.session_state["days_info"] = uipr.get_info_nutrition("home_page_sh")
     if not st.session_state["daily_nutrition_norms"]:
         st.session_state["daily_nutrition_norms"] = uipr.get_daily_nutrition_norms(
-            "home_page_sh",
-            st.session_state["user_info"]
+            "home_page_sh", st.session_state["user_info"]
         )
     uipl.display_days_nutrition_overview(
         st.session_state["days_info"],
@@ -178,10 +187,6 @@ def home_page():
 
     row1, row2 = st.columns(2)
     if row1.button("Log out", use_container_width=True, key="log_out"):
-        st.session_state["username"] = ""
-        st.session_state["user_info"] = None
-        st.session_state["days_info"] = None
-        st.session_state["daily_nutrition_norms"] = None
         uipr.change_page("home_page_sh", "login_page_sh")
     if row2.button("Settings", use_container_width=True, key="settings"):
         uipr.change_page("home_page_sh", "settings_sh")

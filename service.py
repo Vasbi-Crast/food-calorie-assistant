@@ -13,7 +13,8 @@ from assistant import LLMAssistant
 from search import IngredientNutritionSearch
 from db_connector import DB_connector
 from auth import create_token, decode_token
-from schemas import LoginInput, RegisterInput, SettingsInput, NutritionInput, NutritionOutput, DishPayload
+from schemas import LoginInput, RegisterInput, SettingsInput, NutritionInput, NutritionOutput
+
 load_dotenv()
 
 connector = DB_connector()
@@ -31,7 +32,7 @@ app = FastAPI(lifespan=lifespan)
 # CORS for Streamlit
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:8501"],
+    allow_origins=[os.getenv("STREAMLIT_URL")],
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["*"],
@@ -40,13 +41,12 @@ app.add_middleware(
 
 # === Exception Handlers ===
 
+
 @app.exception_handler(ValueError)
 async def value_error_handler(request: Request, exc: ValueError):
     """Handles custom value errors raised in business logic."""
-    return JSONResponse(
-        status_code=400,
-        content={"detail": str(exc)}
-    )
+    return JSONResponse(status_code=400, content={"detail": str(exc)})
+
 
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
@@ -60,30 +60,28 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 
         loc = error.get("loc", [])
         field = loc[1] if len(loc) > 1 else "unknown"
-        
+
         errors.append({"field": field, "type_error": error_type})
-    
+
     return JSONResponse(
-        status_code=422,
-        content={"detail": "Validation failed", "errors": errors}
+        status_code=422, content={"detail": "Validation failed", "errors": errors}
     )
+
 
 @app.exception_handler(RuntimeError)
 async def runtime_error_handler(request: Request, exc: RuntimeError):
     """Handles critical runtime errors."""
     print(f"CRITICAL ERROR: {exc}")
-    return JSONResponse(
-        status_code=500,
-        content={"detail": "Internal server error"}
-    )
+    return JSONResponse(status_code=500, content={"detail": "Internal server error"})
+
 
 @app.exception_handler(TimeoutError)
 async def timeout_error_handler(request: Request, exc: TimeoutError):
     """Handles database or external service timeouts."""
     return JSONResponse(
-        status_code=504,
-        content={"detail": "Request timed out. Try again later."}
+        status_code=504, content={"detail": "Request timed out. Try again later."}
     )
+
 
 # OAuth2 scheme (reads the token from the Authorization header: Bearer <token>)
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/authentication")
@@ -127,16 +125,15 @@ async def authentication(data: LoginInput) -> Any:
     """
 
     result = await connector.verify(data.username, data.password)
-
     if result == "SUCCESSFUL":
         token = create_token(data.username)
         return {"access_token": token, "token_type": "bearer"}
 
     elif result == "USER_NOT_FOUND":
-        raise HTTPException(status_code=401, detail="User not found")
+        raise HTTPException(status_code=401, detail=result)
 
     else:
-        raise HTTPException(status_code=401, detail="Invalid password")
+        raise HTTPException(status_code=401, detail=result)
 
 
 @app.post("/registration")
@@ -207,7 +204,7 @@ async def get_user_information(
 
 @app.put("/users/me")
 async def update_user_info(
-    data: RegisterInput, current_user: Annotated[str, Depends(get_current_user)]
+    data: SettingsInput, current_user: Annotated[str, Depends(get_current_user)]
 ) -> Any:
     """
     Update current user information
@@ -337,7 +334,8 @@ async def calculate_daily_nutrition_norms(
 
 
 @app.post("/ingredient_recognition")
-async def ingredient_recognition(request: Request) -> Any:
+async def ingredient_recognition(request: Request,
+                                 current_user: Annotated[str, Depends(get_current_user)]) -> Any:
     """
     Generates a response based on the Base64-encoded image string provided in the request.
 
