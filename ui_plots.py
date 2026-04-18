@@ -7,6 +7,67 @@ from ui_processing import get_info_nutrition
 _lock = RLock()
 
 
+def _pie_plot(total:dict):
+    st.subheader("Total nutrition")
+
+    sizes = []
+    labels = []
+
+    for key, val in total.items():
+        if key == "calories":
+            continue
+        if val > 0:
+            sizes.append(val)
+            labels.append(key)
+
+    with _lock:
+        fig, ax = plt.subplots()
+        fig.patch.set_alpha(0.0)
+
+        if labels:
+            wedges, texts, autotexts = ax.pie(
+                sizes,
+                labels=labels,
+                autopct=lambda p: f"{p * sum(sizes) / 100:.0f}",
+                startangle=90,
+                wedgeprops={"width": 0.5},
+            )
+                
+
+            ax.axis("equal")
+
+            for text in texts:
+                text.set_color("white")
+
+            for autotext in autotexts:
+                autotext.set_color("white")
+                autotext.set_fontsize(16)
+                x, y = autotext.get_position()
+                autotext.set_position((x * 1.2, y * 1.2))
+
+            plt.text(
+                0,
+                0,
+                f'{round(total["calories"], 0)}\nkcal',
+                horizontalalignment="center",
+                verticalalignment="center",
+                fontsize=20,
+                color="white",
+            )
+        else:
+            ax.pie([1], colors=[[0.5,0.5,0.5]])
+            plt.text(
+                0,
+                0,
+                f'No data',
+                horizontalalignment="center",
+                verticalalignment="center",
+                fontsize=20,
+                color="white",
+            )
+
+        st.pyplot(fig, use_container_width=True, transparent=True)
+
 def plot_nutritional_info(nutritional_info):
     """Visualizes ingredient list and total nutrition (donut chart)."""
     if not nutritional_info:
@@ -15,16 +76,16 @@ def plot_nutritional_info(nutritional_info):
 
     rows = []
     total = {"calories": 0.0, "proteins": 0.0, "fats": 0.0, "carbohydrates": 0.0}
-
     for item in nutritional_info:
         if not isinstance(item, dict) or not item:
             continue
+
         original_name, payload = next(iter(item.items()))
         if not payload:
             rows.append(
                 {
                     "ingredient": original_name,
-                    "match": "",
+                    "match": "no match",
                     "weight_g": "",
                     "calories": "",
                     "proteins": "",
@@ -48,51 +109,17 @@ def plot_nutritional_info(nutritional_info):
 
         for k in total:
             try:
-                total[k] += float(payload.get(k, 0) or 0)
+                total[k] += float(payload.get(k) or 0)
             except (TypeError, ValueError):
                 pass
-
+    
     st.subheader("Ingredients")
-    st.table(rows)
+    
+    st.data_editor(rows, key="tabel")
 
-    st.subheader("Total nutrition")
-    labels = "Proteins", "Fats", "Carbohydrates"
-    sizes = [total["proteins"], total["fats"], total["carbohydrates"]]
+    _pie_plot(total)
 
-    with _lock:
-        fig, ax = plt.subplots()
-        fig.patch.set_alpha(0.0)
-
-        wedges, texts, autotexts = ax.pie(
-            sizes,
-            labels=labels,
-            autopct=lambda p: f"{p * sum(sizes) / 100:.0f}",
-            startangle=90,
-            wedgeprops={"width": 0.5},
-        )
-
-        ax.axis("equal")
-
-        for text in texts:
-            text.set_color("white")
-
-        for autotext in autotexts:
-            autotext.set_color("white")
-            autotext.set_fontsize(16)
-            x, y = autotext.get_position()
-            autotext.set_position((x * 1.2, y * 1.2))
-
-        plt.text(
-            0,
-            0,
-            f'{round(total["calories"], 0)}\nkcal',
-            horizontalalignment="center",
-            verticalalignment="center",
-            fontsize=20,
-            color="white",
-        )
-
-        st.pyplot(fig, use_container_width=True, transparent=True)
+    
 
 
 def display_days_nutrition_overview(days_info, norms_info):

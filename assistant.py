@@ -63,7 +63,7 @@ class LLMAssistant:
                 "messages": [
                     {
                         "role": "user",
-                        "content": self.system_prompt + user_desk,
+                        "content": self.system_prompt + "\nDescription from the user: "+ user_desk,
                         "images": [image_base64],
                     }
                 ],
@@ -80,7 +80,6 @@ class LLMAssistant:
         """
         try:
             output = output.replace("```", "").replace("json", "")
-            print(output)
             json_result = json.loads(output)
             return {"status": "success", "result": json_result, "error": ""}
         except json.JSONDecodeError:

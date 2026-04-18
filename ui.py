@@ -179,9 +179,9 @@ def recognition_page():
     st.title("Calorie Tracker")
 
     st.config.set_option("server.maxUploadSize", 3)
-    uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
+    uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"], key = "file_loader")
 
-    if uploaded_file is not None:
+    if uploaded_file:
         try:
             img = Image.open(uploaded_file)
             st.image(img, use_column_width=True)
@@ -191,7 +191,9 @@ def recognition_page():
             image_base64 = base64.b64encode(buffered.getvalue()).decode("utf-8")
 
         except Exception as e:
-            st.error(f"Error processing image: {e}")
+            st.error("🖼️ Failed to process image. Please ensure the file is valid.")
+            image_base64 = None
+            
 
     user_description = st.text_input(
         "Describe the dish (max 250 characters)", max_chars=250
@@ -200,12 +202,15 @@ def recognition_page():
     _, midle, _ = st.columns(3)
 
     if midle.button("Upload", use_container_width=True):
-        try:
-            nutritional_info = uipr.get_nutritional_info("home_page_sh", image_base64, user_description)
+        if image_base64:
+            nutritional_info = uipr.get_meal_macros(
+                    "home_page_sh", image_base64, user_description
+                )
             if nutritional_info:
                 uipl.plot_nutritional_info(nutritional_info)
-        except Exception as e:
-            st.error(f"Error api request or plot_nutritional_info: {e}")
+        else:
+            st.error("📷 Please upload an image first")
+        
 
     if midle.button("Back", use_container_width=True, key="back_rec"):
         uipr.change_page("recognition_page_sh", "home_page_sh")

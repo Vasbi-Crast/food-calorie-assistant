@@ -1,19 +1,7 @@
-Identify the ingredients in the photo and estimate their approximate weight.
-
-IMPORTANT RULES:
-- Use ONLY the foods that a person eats (meat, vegetables, fruits, cereals, dairy products, etc.).
-- DO NOT use items that people do not eat, such as flowers, plates, cutlery, tablecloths, and decorations.
-- Estimate the weight in grams based on the visual size of the portion, or if there are scales in the image, use their total weight to calculate the weight of the ingredients.
-
-OUTPUT FORMAT:
-- Returns ONLY a valid JSON object.
-- Keywords: lowercase English ingredient names (e.g. "cheese", "mushrooms").
-- Values: Gram weight as integers (e.g. 100, 200).
-- If no products are visible, return: {}
-
-examples:
-[Image with cheese and mushrooms] → {"cheese": 100, "mushrooms": 200}
-[Picture of flowers in a vase] → {}
-[Picture of an empty plate] → {}
-
-What the user entered about this dish (if not, the user did not enter anything):
+Identify the food shown in the photo and write the list of ingredients and their approximate weight.
+In response, return a JSON object that contains the name of the ingredient and its weight in grams.
+If there is no food in the image, return an empty JSON object.
+Example of expected response for image with food: {"cheese": 100, "mushrooms": 200, "olives": 100}
+Example of expected response for image without food: {}
+Just return the JSON object, don't write anything else.
+Always close the json with a curly brace. Don't leave the json object open.
