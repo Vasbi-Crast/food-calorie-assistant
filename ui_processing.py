@@ -41,6 +41,30 @@ def get_error_message(error_type: str) -> str:
     return ERROR_TYPE_MESSAGES.get(error_type, 'Invalid value provided')
 
 # === Navigation ===
+def check_activity (old_page: str):
+    if not any(st.session_state[page] for page in PAGE_BEFORE_AUTHORIZATIONS):
+        if dt.datetime.now(dt.timezone.utc) < st.session_state["last_active_time"] + dt.timedelta(minutes=INACTIVITY_MINUTES):
+            st.session_state["last_active_time"] = dt.datetime.now(dt.timezone.utc)
+        else:
+            log_out()
+            st.session_state["auth_error"] = f"⏳ You've been inactive for too long"
+            st.session_state[old_page] = False
+            st.session_state["login_page_sh"] = True
+            st.rerun()
+    elif old_page == "login_page_sh":
+        st.session_state["last_active_time"] = dt.datetime.now(dt.timezone.utc)
+
+def clear_new_uploader():
+    st.session_state["table_ingredients"], st.session_state["total_macros"] = None, None
+    st.session_state["last_table_ingredients"] = []
+    
+def log_out():
+    st.session_state["username"] = ""
+    st.session_state["last_active_time"] = None
+    st.session_state["user_info"] = None
+    st.session_state["days_info"] = None
+    st.session_state["daily_nutrition_norms"] = None
+
 def change_page(old_page: str, new_page: str):
     """Switches active page in session state."""
     st.session_state[old_page] = False
@@ -333,3 +357,26 @@ def get_daily_nutrition_norms(old_page: str, user_info: dict) -> dict | None:
 
     response = api_request("POST", "daily_nutrition_norms", old_page=old_page, json=user_info)
     return response
+
+def save_dish(old_page: str) -> bool:
+    payload = {"name": [],
+               "weight": [], 
+               "сalories": [], 
+               "proteins": [], 
+               "fats": [], 
+               "carbohydrates": [],
+               }
+    for row in st.session_state["session_state"]:
+        payload["name"].append(row.get("match").split(',')[0].strip())
+        payload["weight"].append(row.get("weight_g", 0))
+        payload["сalories"].append(row.get("сalories", 0))
+        payload["proteins"].append(row.get("proteins", 0))
+        payload["fats"].append(row.get("fats", 0))
+        payload["carbohydrates"].append(row.get("carbohydrates", 0))
+        
+    res = api_request("POST", "add_new_dish", old_page=old_page, json=payload)
+    if res:
+        st.session_state["days_info"] = None
+        return True
+    else:
+        return False

@@ -14,6 +14,19 @@ if "days_info" not in st.session_state:
     st.session_state["days_info"] = None
 if "daily_nutrition_norms" not in st.session_state:
     st.session_state["daily_nutrition_norms"] = None
+if "table_ingredients" not in st.session_state:
+    st.session_state["table_ingredients"] = None
+if "total_macros" not in st.session_state:
+    st.session_state["total_macros"] = None
+if "total_macros" not in st.session_state:
+    st.session_state["last_table_ingredients"] = []
+    
+
+    
+if "auth_error" not in st.session_state:
+    st.session_state["auth_error"] = ""
+if "last_active_time" not in st.session_state:
+    st.session_state["last_active_time"] = None
 
 if "login_page_sh" not in st.session_state:
     st.session_state["login_page_sh"] = True
@@ -179,7 +192,7 @@ def recognition_page():
     st.title("Calorie Tracker")
 
     st.config.set_option("server.maxUploadSize", 3)
-    uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"], key = "file_loader")
+    uploaded_file = st.file_uploader("Choose an image...", on_change = uipr.clear_new_uploader, type=["jpg", "jpeg", "png"], key = "file_loader")
 
     if uploaded_file:
         try:
@@ -193,26 +206,32 @@ def recognition_page():
         except Exception as e:
             st.error("🖼️ Failed to process image. Please ensure the file is valid.")
             image_base64 = None
-            
 
     user_description = st.text_input(
         "Describe the dish (max 250 characters)", max_chars=250
     )
-
     _, midle, _ = st.columns(3)
 
-    if midle.button("Upload", use_container_width=True):
-        if image_base64:
-            nutritional_info = uipr.get_meal_macros(
-                    "home_page_sh", image_base64, user_description
-                )
-            if nutritional_info:
-                uipl.plot_nutritional_info(nutritional_info)
-        else:
-            st.error("📷 Please upload an image first")
+    if st.session_state["table_ingredients"]:
+        uipl.plot_nutritional_info()
+        if midle.button("Save dish", use_container_width=True):
+            uipr.save_dish("recognition_page_sh")
+        
+    else:
+        if midle.button("Upload", use_container_width=True):
+            if image_base64:
+                nutritional_info = uipr.get_meal_macros(
+                        "recognition_page_sh", image_base64, user_description
+                    )
+                if nutritional_info:
+                    uipl.plot_nutritional_info(nutritional_info)
+            else:
+                st.error("📷 Please upload an image first")
         
 
     if midle.button("Back", use_container_width=True, key="back_rec"):
+        st.session_state["table_ingredients"] = None
+        st.session_state["total_macros"] = None
         uipr.change_page("recognition_page_sh", "home_page_sh")
 
 
@@ -307,7 +326,7 @@ def settings_page():
                 "weight": weight,
                 "height": height,
             }
-
+            st.session_state["daily_nutrition_norms"] = None
             uipr.change_page("settings_sh", "home_page_sh")
 
     _, midle, _ = st.columns(3)
