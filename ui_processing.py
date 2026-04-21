@@ -60,10 +60,12 @@ def get_error_message(error_type: str) -> str:
     return ERROR_TYPE_MESSAGES.get(error_type, "Invalid value provided")
 
 
-# === Navigation ===
-def check_activity (old_page: str):
+# === Session Helpers ===
+def check_activity(old_page: str):
     if not any(st.session_state[page] for page in PAGE_BEFORE_AUTHORIZATIONS):
-        if dt.datetime.now(dt.timezone.utc) < st.session_state["last_active_time"] + dt.timedelta(minutes=INACTIVITY_MINUTES):
+        if dt.datetime.now(dt.timezone.utc) < st.session_state[
+            "last_active_time"
+        ] + dt.timedelta(minutes=INACTIVITY_MINUTES):
             st.session_state["last_active_time"] = dt.datetime.now(dt.timezone.utc)
         else:
             log_out()
@@ -72,8 +74,15 @@ def check_activity (old_page: str):
             st.session_state["login_page_sh"] = True
             st.rerun()
     elif old_page == "login_page_sh":
-        st.session_state["last_active_time"] = dt.datetime.now(dt.timezone.utc)   
-    
+        st.session_state["last_active_time"] = dt.datetime.now(dt.timezone.utc)
+
+
+def clear_new_uploader():
+    st.session_state["table_ingredients"], st.session_state["total_macros"] = None, None
+    st.session_state["is_dish_saved"] = False
+    st.session_state["last_table_ingredients"] = []
+
+
 def log_out():
     st.session_state["username"] = ""
     st.session_state["last_active_time"] = None
@@ -89,7 +98,82 @@ def change_page(old_page: str, new_page: str):
     if new_page == "login_page_sh":
         log_out()
     st.rerun()
+    
+def calculate_total_macros():
+    if "widget_table" in st.session_state:
+        edited_rows = st.session_state["widget_table"].get("edited_rows")
+        added_rows = st.session_state["widget_table"].get("added_rows")
+        deleted_rows = st.session_state["widget_table"].get("deleted_rows")
+        for r_key, r_val in edited_rows.items():
+            for key, val in r_val.items():
+                st.session_state["table_ingredients"][r_key][key] = val
+        for val in added_rows:
+            st.session_state["table_ingredients"].append(val)
 
+        deleted_row = set(deleted_rows) - set(
+            st.session_state["last_table_ingredients"]
+        )
+        if deleted_row:
+            st.session_state["table_ingredients"] = [
+                row for idx, row in enumerate(st.session_state["table_ingredients"])
+                if idx not in deleted_row
+            ]
+
+        st.session_state["last_table_ingredients"] = deleted_rows
+
+    total = {"calories": 0.0, "proteins": 0.0, "fats": 0.0, "carbohydrates": 0.0}
+
+    for row in st.session_state.get("table_ingredients", []):
+        for key in total.keys():
+            try:
+                value = row.get(key)
+                if value is None or value == "":
+                    value = 0.0
+                total[key] += float(value)
+            except (TypeError, ValueError):
+                pass
+
+    st.session_state["total_macros"] = total
+
+def parse_dish(nutritional_info):
+    if not nutritional_info:
+        st.warning("No data to display")
+        return
+
+    rows = []
+    for item in nutritional_info:
+        if not isinstance(item, dict) or not item:
+            continue
+
+        original_name, payload = next(iter(item.items()))
+        if not payload:
+            rows.append(
+                {
+                    "ingredient": original_name,
+                    "match": "no match",
+                    "weight_g": 0,
+                    "calories": 0,
+                    "proteins": 0,
+                    "fats": 0,
+                    "carbohydrates": 0,
+                }
+            )
+        else:
+            rows.append(
+                {
+                    "ingredient": original_name,
+                    "match": payload.get("match", ""),
+                    "weight_g": payload.get("weight", 0),
+                    "calories": payload.get("calories", 0),
+                    "proteins": payload.get("proteins", 0),
+                    "fats": payload.get("fats", 0),
+                    "carbohydrates": payload.get("carbohydrates", 0),
+                }
+            )
+
+    st.session_state["table_ingredients"] = rows
+    st.session_state["data_parsed"] = True
+    calculate_total_macros()
 
 # === API Wrapper ===
 def api_request(method: str, endpoint: str, old_page: str, **kwargs) -> dict | None:
@@ -197,6 +281,7 @@ def index_lifestyle(lifestyle: str) -> int | None:
 
 # === API Functions ===
 
+
 def get_meal_macros(
     old_page: str, image_base64: str, user_description: str
 ) -> dict | None:
@@ -211,7 +296,6 @@ def get_meal_macros(
     )
 
     if response:
-        # Handle nested result structure from LLM assistant
         result = response.get("result")
         if isinstance(result, str):
             try:
@@ -227,6 +311,7 @@ def get_meal_macros(
             return None
     return None
 
+
 def authorization(old_page: str, username: str, password: str) -> bool:
     """
     User login. Saves token to session_state on success.
@@ -241,7 +326,6 @@ def authorization(old_page: str, username: str, password: str) -> bool:
 
     payload = {"username": username.lower(), "password": password}
 
-    # old_page='login_page_sh' ensures we stay or redirect correctly on 401
     response = api_request("POST", "authentication", old_page=old_page, json=payload)
 
     if response:
@@ -249,6 +333,7 @@ def authorization(old_page: str, username: str, password: str) -> bool:
         st.session_state["username"] = username
         return True
     return False
+
 
 def registration(
     old_page: str,
@@ -297,6 +382,7 @@ def registration(
     response = api_request("POST", "registration", old_page=old_page, json=payload)
     return response is not None
 
+
 def get_user_information(old_page: str) -> dict | None:
     """
     Retrieves current user profile.
@@ -305,7 +391,6 @@ def get_user_information(old_page: str) -> dict | None:
     response = api_request("GET", "users/me", old_page=old_page)
 
     if response:
-        # Map numeric BMR back to lifestyle string for UI
         bmr_val = response.get("bmr")
         for key, val in bmr.items():
             if val == bmr_val:
@@ -313,6 +398,7 @@ def get_user_information(old_page: str) -> dict | None:
                 break
         return response
     return {}
+
 
 def update_user_info(
     old_page: str,
@@ -345,6 +431,7 @@ def update_user_info(
     response = api_request("PUT", "users/me", old_page=old_page, json=payload)
     return response is not None
 
+
 def get_info_nutrition(
     old_page: str,
     time_span: List[dt.datetime] | dt.datetime = dt.datetime.now(),
@@ -353,7 +440,6 @@ def get_info_nutrition(
     Retrieves nutrition history for a time period.
     Requires authentication.
     """
-    # Date Formatting
     if isinstance(time_span, list) and len(time_span) == 2:
         st_time_span = min(time_span).strftime("%Y-%m-%d")
         fin_time_span = max(time_span).strftime("%Y-%m-%d")
@@ -373,12 +459,17 @@ def get_info_nutrition(
     }
 
     response = api_request("GET", "info_nutrition", old_page=old_page, params=params)
+    response = {
+        r_key: {key: float(val) for key, val in r_val.items()}
+        for r_key, r_val in response.items()
+    }
 
     if response:
         if one_day:
             return response.get(st_time_span, {})
         return response
     return {}
+
 
 def get_daily_nutrition_norms(old_page: str, user_info: dict) -> dict | None:
     """
@@ -395,3 +486,37 @@ def get_daily_nutrition_norms(old_page: str, user_info: dict) -> dict | None:
         "POST", "daily_nutrition_norms", old_page=old_page, json=user_info
     )
     return response
+
+
+def save_dish(old_page: str) -> bool:
+    """Saves the current dish from the table to the database."""
+
+    ingredients = st.session_state.get("table_ingredients")
+    if not ingredients:
+        st.error("No ingredients to save")
+        return False
+
+    payload = {
+        "name": [],
+        "weight": [],
+        "calories": [],
+        "proteins": [],
+        "fats": [],
+        "carbohydrates": [],
+        "created_at": dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+    }
+
+    for row in ingredients:
+        payload["name"].append(row.get("match", "").split(",")[0].strip())
+        payload["weight"].append(float(row.get("weight_g", 0)))
+        payload["calories"].append(float(row.get("calories", 0)))
+        payload["proteins"].append(float(row.get("proteins", 0)))
+        payload["fats"].append(float(row.get("fats", 0)))
+        payload["carbohydrates"].append(float(row.get("carbohydrates", 0)))
+
+    res = api_request("POST", "add_new_dish", old_page=old_page, json=payload)
+
+    if res:
+        st.session_state["days_info"] = None
+        return True
+    return False

@@ -19,10 +19,11 @@ if "table_ingredients" not in st.session_state:
 if "total_macros" not in st.session_state:
     st.session_state["total_macros"] = None
 if "total_macros" not in st.session_state:
-    st.session_state["last_table_ingredients"] = []
-    
+    st.session_state["last_deleted"] = []
+if "dish_saved" not in st.session_state:
+    st.session_state["is_dish_saved"] = False
 
-    
+
 if "auth_error" not in st.session_state:
     st.session_state["auth_error"] = ""
 if "last_active_time" not in st.session_state:
@@ -172,10 +173,7 @@ def home_page():
         st.session_state["daily_nutrition_norms"] = uipr.get_daily_nutrition_norms(
             "home_page_sh", st.session_state["user_info"]
         )
-    uipl.display_days_nutrition_overview(
-        st.session_state["days_info"],
-        st.session_state["daily_nutrition_norms"],
-    )
+    uipl.display_days_nutrition_overview()
 
     left, midle, right = st.columns(3)
     if left.button("View daily log", use_container_width=True, key="daily_log"):
@@ -197,8 +195,14 @@ def recognition_page():
     st.title("Calorie Tracker")
 
     st.config.set_option("server.maxUploadSize", 3)
-    uploaded_file = st.file_uploader("Choose an image...", on_change = uipr.clear_new_uploader, type=["jpg", "jpeg", "png"], key = "file_loader")
+    uploaded_file = st.file_uploader(
+        "Choose an image...",
+        on_change=uipr.clear_new_uploader,
+        type=["jpg", "jpeg", "png"],
+        key="file_loader",
+    )
 
+    if uploaded_file:
     if uploaded_file:
         try:
             img = Image.open(uploaded_file)
@@ -211,32 +215,45 @@ def recognition_page():
         except Exception as e:
             st.error("🖼️ Failed to process image. Please ensure the file is valid.")
             image_base64 = None
+            st.error("🖼️ Failed to process image. Please ensure the file is valid.")
+            image_base64 = None
 
     user_description = st.text_input(
         "Describe the dish (max 250 characters)", max_chars=250
     )
+
+    if st.session_state["table_ingredients"] is not None:
+        uipl.plot_nutritional_info()
+
     _, midle, _ = st.columns(3)
 
     if st.session_state["table_ingredients"]:
-        uipl.plot_nutritional_info()
-        if midle.button("Save dish", use_container_width=True):
-            uipr.save_dish("recognition_page_sh")
-        
+        text = "Save dish"
     else:
-        if midle.button("Upload", use_container_width=True):
+        text = "Upload"
+
+    if midle.button(text, use_container_width=True):
+        if text == "Save dish":
+            if uipr.save_dish("recognition_page_sh"):
+                st.session_state["table_ingredients"] = None
+                st.session_state["total_macros"] = None
+                uipr.change_page("recognition_page_sh", "home_page_sh")
+            st.error("Failed to save dish")
+            
+        else:
             if image_base64:
                 nutritional_info = uipr.get_meal_macros(
-                        "recognition_page_sh", image_base64, user_description
-                    )
-                if nutritional_info:
-                    uipl.plot_nutritional_info(nutritional_info)
+                    "recognition_page_sh", image_base64, user_description
+                )
+                uipr.parse_dish(nutritional_info)
+                st.rerun()
             else:
                 st.error("📷 Please upload an image first")
-        
 
     if midle.button("Back", use_container_width=True, key="back_rec"):
-        st.session_state["table_ingredients"] = None
-        st.session_state["total_macros"] = None
+        st.session_state["table_ingredients"], st.session_state["total_macros"] = None, None
+        st.session_state["is_dish_saved"] = False
+        st.session_state["last_deleted"] = []
         uipr.change_page("recognition_page_sh", "home_page_sh")
 
 
@@ -331,6 +348,7 @@ def settings_page():
                 "weight": weight,
                 "height": height,
             }
+            st.session_state["daily_nutrition_norms"] = None
             st.session_state["daily_nutrition_norms"] = None
             uipr.change_page("settings_sh", "home_page_sh")
 

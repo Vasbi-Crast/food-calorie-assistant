@@ -4,7 +4,9 @@ import json
 import asyncio
 import asyncpg
 from dotenv import load_dotenv
+from typing import List, Dict
 from passlib.context import CryptContext
+from schemas import IngredientItem
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 load_dotenv()
@@ -292,6 +294,168 @@ class DB_connector:
             raise ValueError(f"Invalid date format: {e}") from e
         except Exception as e:
             raise RuntimeError(f"Failed to fetch nutrition info: {e}") from e
+
+    async def add_day(
+        self,
+        username: str,
+        created_at: dt.datetime,
+        timeout: int = 20,
+    ) -> int:
+        """
+        Creates or retrieves a day record for the user.
+
+        If a record for the given date and username already exists,
+        returns the existing day ID. Otherwise, creates a new record.
+
+        Args:
+            username (str): Unique username for authorization.
+            created_at (dt.datetime): Date of the record (record_date).
+            timeout (int): Time limit for database access in seconds.
+
+        Returns:
+            int: The day ID (either newly created or existing).
+
+        Raises:
+            ValueError: If timeout is less than 1.
+            ConnectionError: If database connection is not established.
+            asyncio.TimeoutError: If the request exceeds the time limit.
+        """
+
+        if timeout < 1:
+            raise ValueError("Timeout value must be greater than or equal to 1.")
+
+        if not self.db:
+            raise ConnectionError("Database connection not established")
+
+        query = """
+            INSERT INTO day (record_date, username)
+            VALUES ($1, $2)
+            ON CONFLICT (record_date, username) 
+            DO UPDATE SET record_date = EXCLUDED.record_date
+            RETURNING id;
+        """
+
+        try:
+            async with self.db.acquire() as conn:
+                day_id = await conn.fetchval(
+                    query, created_at, username, timeout=timeout
+                )
+
+                return day_id
+
+        except asyncio.TimeoutError as e:
+            raise asyncio.TimeoutError(
+                f"The request exceeded the time limit ({timeout} seconds)"
+            ) from e
+        except Exception as e:
+            raise Exception(
+                f"An unexpected error occurred: {type(e).__name__}: {e}"
+            ) from e
+
+    async def add_ingredients_to_day(
+        self,
+        day_id: int,
+        ingredients: List[IngredientItem],
+        created_at: dt.datetime,
+        timeout: int = 20,
+    ) -> bool:
+        """
+        Adds ingredients to a specific day record.
+
+        Args:
+            day_id (int): The day ID from add_day().
+            ingredients (List[IngredientItem]): List of ingredients to add.
+            timeout (int): Time limit for database access in seconds.
+
+        Returns:
+            bool: True if successful.
+        """
+
+        if timeout < 1:
+            raise ValueError("Timeout value must be greater than or equal to 1.")
+
+        if not self.db:
+            raise ConnectionError("Database connection not established")
+
+        query = """
+            INSERT INTO list_ingredients (id_day, id_ingredient, weight, created_at)
+            VALUES ($1, $2, $3, $4)
+            ON CONFLICT DO NOTHING;
+        """
+
+        try:
+            async with self.db.acquire() as conn:
+                for ingredient in ingredients:
+                    ingredient_id = await self._get_or_create_ingredient(
+                        conn, ingredient, timeout
+                    )
+                    await conn.execute(
+                        query,
+                        day_id,
+                        ingredient_id,
+                        ingredient.weight,
+                        created_at,
+                        timeout=timeout,
+                    )
+
+                return True
+
+        except asyncio.TimeoutError as e:
+            raise TimeoutError(
+                f"The request exceeded the time limit ({timeout} seconds)"
+            ) from e
+        except Exception as e:
+            raise RuntimeError(
+                f"An unexpected error occurred: {type(e).__name__}: {e}"
+            ) from e
+
+    async def _get_or_create_ingredient(
+        self,
+        conn,
+        ingredient: IngredientItem,
+        timeout: int = 20,
+    ) -> int:
+        """
+        Gets existing ingredient ID or creates a new one.
+
+        Internal method - not for external use.
+
+        Args:
+            conn: Database connection from pool.
+            ingredient (IngredientItem): Ingredient data.
+            timeout (int): Time limit for database access.
+
+        Returns:
+            int: The ingredient ID.
+        """
+
+        get_query = """
+            SELECT id FROM ingredient WHERE name = $1
+        """
+
+        row = await conn.fetchrow(get_query, ingredient.name, timeout=timeout)
+
+        if row:
+            return row["id"]
+
+        create_query = """
+            INSERT INTO ingredient (name, calories, proteins, fats, carbohydrates)
+            VALUES ($1, $2, $3, $4, $5)
+            ON CONFLICT (name) DO UPDATE SET name = EXCLUDED.name
+            RETURNING id;
+        """
+
+        result = await conn.fetchval(
+            create_query,
+            ingredient.name,
+            ingredient.calories,
+            ingredient.proteins,
+            ingredient.fats,
+            ingredient.carbohydrates,
+            timeout=timeout,
+        )
+
+        return result
 
     async def _get_user(self, username: str, timeout: int = 20):
         """Finding a user from the database"""

@@ -1,157 +1,98 @@
 import streamlit as st
 import matplotlib.pyplot as plt
 from threading import RLock
+from ui_processing import calculate_total_macros
 
 _lock = RLock()
 
 
-def _calculate_total_macros():
-    if "widget_table" in st.session_state:
-        edited_rows = st.session_state["widget_table"].get('edited_rows')
-        added_rows = st.session_state["widget_table"].get('added_rows')
-        deleted_rows = st.session_state["widget_table"].get('deleted_rows')
-        for r_key, r_val in edited_rows.items():
-            for key, val in r_val.items():
-                st.session_state["table_ingredients"][r_key][key] = val
-        for val in added_rows:
-            st.session_state["table_ingredients"].append(val)
-        deleted_row = set(deleted_rows) - set(st.session_state["last_table_ingredients"])
-        for idx in deleted_row:
-            del(st.session_state["table_ingredients"][idx])
-        st.session_state["last_table_ingredients"] = deleted_rows
-                
-
-    total = {"calories": 0.0, "proteins": 0.0, "fats": 0.0, "carbohydrates": 0.0}
-
-    for row in st.session_state.get("table_ingredients", []):
-        for key in total.keys():
-            try:
-                value = row.get(key)
-                if value is None or value == "":
-                    value = 0.0
-                total[key] += float(value)
-            except (TypeError, ValueError):
-                pass
-    
-    st.session_state["total_macros"] = total
-
-
-def plot_nutritional_info(nutritional_info=None):
+def plot_nutritional_info():
     """Visualizes ingredient list and total nutrition (donut chart)."""
-
-    if not st.session_state.get("table_ingredients"):
-        if not nutritional_info:
-            st.warning("No data to display")
-            return
-            
-        rows = []
-        for item in nutritional_info:
-            if not isinstance(item, dict) or not item:
-                continue
-            
-            original_name, payload = next(iter(item.items()))
-            if not payload:
-                rows.append({
-                    "ingredient": original_name,
-                    "match": "no match",
-                    "weight_g": 0,
-                    "calories": 0,
-                    "proteins": 0,
-                    "fats": 0,
-                    "carbohydrates": 0,
-                })
-            else:
-                rows.append({
-                    "ingredient": original_name,
-                    "match": payload.get("match", ""),
-                    "weight_g": payload.get("weight", 0),
-                    "calories": payload.get("calories", 0),
-                    "proteins": payload.get("proteins", 0),
-                    "fats": payload.get("fats", 0),
-                    "carbohydrates": payload.get("carbohydrates", 0),
-                })
-        
-        st.session_state["table_ingredients"] = rows
-        _calculate_total_macros()
-
     st.subheader("Ingredients")
+    if not st.session_state["table_ingredients"]:
+        st.session_state["table_ingredients"] = [{'ingredient': '-', 'match': '-', 'weight_g': -1, 'calories': -1, 'proteins': -1, 'fats': -1, 'carbohydrates': -1}]
     st.data_editor(
         st.session_state["table_ingredients"],
         key="widget_table",
-        on_change=_calculate_total_macros,
+        on_change=calculate_total_macros,
         use_container_width=True,
         hide_index=True,
         num_rows="dynamic",
         column_config={
-    "ingredient": st.column_config.TextColumn(
-        "Ingredient",
-        max_chars=25,
-        validate=r"^[a-zA-Zа-яА-Я0-9\s\-_]+$",
-        required=True,
-        help="Ingredient name (e.g., apple, rice, chicken breast)"
-    ),
-    "match": st.column_config.TextColumn(
-        "Match",
-        max_chars=50,
-        validate=None,
-        required=False,
-        help="Matched name from database (auto-detected or manual)"
-    ),
-    "weight_g": st.column_config.NumberColumn(
-        "Weight (g)",
-        min_value=0.0,
-        max_value=10000.0,
-        format="%.2f",
-        step=1.0,
-        help="Weight of the ingredient in grams"
-    ),
-    "calories": st.column_config.NumberColumn(
-        "Calories",
-        min_value=0.0,
-        max_value=10000.0,
-        format="%.1f",
-        step=1.0,
-        help="Calorie content of the ingredient"
-    ),
-    "proteins": st.column_config.NumberColumn(
-        "Proteins (g)",
-        min_value=0.0,
-        max_value=1000.0,
-        format="%.2f",
-        step=0.1,
-        help="Protein content in grams"
-    ),
-    "fats": st.column_config.NumberColumn(
-        "Fats (g)",
-        min_value=0.0,
-        max_value=1000.0,
-        format="%.2f",
-        step=0.1,
-        help="Fat content in grams"
-    ),
-    "carbohydrates": st.column_config.NumberColumn(
-        "Carbohydrates (g)",
-        min_value=0.0,
-        max_value=1000.0,
-        format="%.2f",
-        step=0.1,
-        help="Carbohydrate content in grams"
-    ),
-}
+            "ingredient": st.column_config.TextColumn(
+                "Ingredient",
+                max_chars=25,
+                validate=r"^[a-zA-Zа-яА-Я0-9\s\-_]+$",
+                required=True,
+                help="Ingredient name (e.g., apple, rice, chicken breast)",
+            ),
+            "match": st.column_config.TextColumn(
+                "Match",
+                max_chars=50,
+                validate=None,
+                required=True,
+                help="Matched name from database (auto-detected or manual)",
+            ),
+            "weight_g": st.column_config.NumberColumn(
+                "Weight (g)",
+                min_value=0.0,
+                max_value=10000.0,
+                format="%.2f",
+                step=1.0,
+                required=True,
+                help="Weight of the ingredient in grams",
+            ),
+            "calories": st.column_config.NumberColumn(
+                "Calories",
+                min_value=0.0,
+                max_value=10000.0,
+                format="%.1f",
+                step=1.0,
+                required=True,
+                help="Calorie content of the ingredient",
+            ),
+            "proteins": st.column_config.NumberColumn(
+                "Proteins (g)",
+                min_value=0.0,
+                max_value=1000.0,
+                format="%.2f",
+                step=0.1,
+                required=True,
+                help="Protein content in grams",
+            ),
+            "fats": st.column_config.NumberColumn(
+                "Fats (g)",
+                min_value=0.0,
+                max_value=1000.0,
+                format="%.2f",
+                step=0.1,
+                required=True,
+                help="Fat content in grams",
+            ),
+            "carbohydrates": st.column_config.NumberColumn(
+                "Carbohydrates (g)",
+                min_value=0.0,
+                max_value=1000.0,
+                format="%.2f",
+                step=0.1,
+                required=True,
+                help="Carbohydrate content in grams",
+            ),
+        },
     )
 
     st.subheader("Total nutrition")
 
-    total = st.session_state.get("total_macros", {
-        "calories": 0, "proteins": 0, "fats": 0, "carbohydrates": 0
-    })
-    
+    total = st.session_state.get(
+        "total_macros", {"calories": 0, "proteins": 0, "fats": 0, "carbohydrates": 0}
+    )
+
     sizes = []
     labels = []
     colors = {
-    "proteins": [0.122, 0.467, 0.706],
-    "fats": [1.0, 0.498, 0.055],
-    "carbohydrates": [0.173, 0.627, 0.173]
+        "proteins": [0.122, 0.467, 0.706],
+        "fats": [1.0, 0.498, 0.055],
+        "carbohydrates": [0.173, 0.627, 0.173],
     }
     for key, val in total.items():
         if key == "calories":
@@ -159,32 +100,36 @@ def plot_nutritional_info(nutritional_info=None):
         if val > 0:
             sizes.append(val)
             labels.append(key)
-    
+
     with _lock:
         fig, ax = plt.subplots()
         fig.patch.set_alpha(0.0)
-        
+
         if labels:
             if len(labels) == 1:
                 wedges, texts = ax.pie(
                     sizes,
-                    labels=labels,
+                    labels=[""],
                     startangle=90,
                     wedgeprops={"width": 0.5},
-                    colors=[colors.get(labels[0], [1., 1., 1.])]
+                    colors=[colors.get(labels[0], [1.0, 1.0, 1.0])],
                 )
 
-                ax.set_title(labels[0][0].upper() + labels[0][1:], fontdict = {"color": "white", "fontsize": 18})
-                
+                ax.set_title(
+                    labels[0][0].upper() + labels[0][1:],
+                    fontdict={"color": "white", "fontsize": 18},
+                )
+
                 plt.text(
-                    0, 0,
+                    0,
+                    0,
                     f'{round(sizes[0], 1)} g.\n{round(total["calories"], 1)} kcal',
                     horizontalalignment="center",
                     verticalalignment="center",
                     fontsize=14,
                     color="white",
                 )
-                
+
             else:
                 wedges, texts, autotexts = ax.pie(
                     sizes,
@@ -196,7 +141,7 @@ def plot_nutritional_info(nutritional_info=None):
 
                 for text in texts:
                     text.set_color("white")
-                
+
                 for autotext in autotexts:
                     autotext.set_color("white")
                     autotext.set_fontsize(16)
@@ -204,7 +149,8 @@ def plot_nutritional_info(nutritional_info=None):
                     autotext.set_position((x * 1.2, y * 1.2))
 
                 plt.text(
-                    0, 0,
+                    0,
+                    0,
                     f'{round(total["calories"], 0)}\nkcal',
                     horizontalalignment="center",
                     verticalalignment="center",
@@ -214,19 +160,22 @@ def plot_nutritional_info(nutritional_info=None):
         else:
             ax.pie([1], colors=[[0.5, 0.5, 0.5]])
             plt.text(
-                0, 0,
-                f'No data',
+                0,
+                0,
+                f"No data",
                 horizontalalignment="center",
                 verticalalignment="center",
                 fontsize=20,
                 color="white",
             )
-        
+
         ax.axis("equal")
         st.pyplot(fig, use_container_width=True, transparent=True)
 
 
-def display_days_nutrition_overview(days_info, norms_info):
+def display_days_nutrition_overview():
+    days_info = st.session_state["days_info"]         
+    norms_info = st.session_state["daily_nutrition_norms"]
     st.subheader("Information of the day")
 
     labels = ["calories", "proteins", "fats", "carbohydrates"]
