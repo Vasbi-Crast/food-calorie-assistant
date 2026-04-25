@@ -6,6 +6,7 @@ import base64
 import ui_plots as uipl
 import ui_processing as uipr
 
+# === Session State Initialization ===
 if "username" not in st.session_state:
     st.session_state["username"] = ""
 if "user_info" not in st.session_state:
@@ -18,11 +19,18 @@ if "table_ingredients" not in st.session_state:
     st.session_state["table_ingredients"] = None
 if "total_macros" not in st.session_state:
     st.session_state["total_macros"] = None
-if "total_macros" not in st.session_state:
+if "last_deleted" not in st.session_state:
     st.session_state["last_deleted"] = []
-if "dish_saved" not in st.session_state:
-    st.session_state["is_dish_saved"] = False
-
+if "saved_data" not in st.session_state:
+    st.session_state["saved_data"] = False
+if "empty_day" not in st.session_state:
+    st.session_state["empty_day"] = False
+if "stat_data" not in st.session_state:
+    st.session_state["stat_data"] = {
+        "weight": None,
+        "info_nutrition": None,
+        "norms": None,
+    }
 
 if "auth_error" not in st.session_state:
     st.session_state["auth_error"] = ""
@@ -164,15 +172,17 @@ def registration_page():
 
 def home_page():
     """Home page containing information about today's consumption"""
-    st.title(f"Hi, {st.session_state["username"]}!")
+    st.title(f"Hi, {st.session_state['username']}!")
+
     if not st.session_state["user_info"]:
         st.session_state["user_info"] = uipr.get_user_information("home_page_sh")
     if not st.session_state["days_info"]:
         st.session_state["days_info"] = uipr.get_info_nutrition("home_page_sh")
     if not st.session_state["daily_nutrition_norms"]:
-        st.session_state["daily_nutrition_norms"] = uipr.get_daily_nutrition_norms(
-            "home_page_sh", st.session_state["user_info"]
+        st.session_state["daily_nutrition_norms"] = uipr.get_nutrition_norms(
+            "home_page_sh"
         )
+
     uipl.display_days_nutrition_overview()
 
     left, midle, right = st.columns(3)
@@ -183,11 +193,12 @@ def home_page():
     if right.button("General statistics", use_container_width=True, key="statistics"):
         uipr.change_page("home_page_sh", "general_stat_sh")
 
-    row1, row2 = st.columns(2)
-    if row1.button("Log out", use_container_width=True, key="log_out"):
-        uipr.change_page("home_page_sh", "login_page_sh")
-    if row2.button("Settings", use_container_width=True, key="settings"):
+    col1, col2 = st.columns(2)
+
+    if col1.button("Settings", use_container_width=True, key="settings"):
         uipr.change_page("home_page_sh", "settings_sh")
+    if col2.button("Log out", use_container_width=True, key="log_out"):
+        uipr.change_page("home_page_sh", "login_page_sh")
 
 
 def recognition_page():
@@ -203,7 +214,6 @@ def recognition_page():
     )
 
     if uploaded_file:
-    if uploaded_file:
         try:
             img = Image.open(uploaded_file)
             st.image(img, use_column_width=True)
@@ -213,8 +223,6 @@ def recognition_page():
             image_base64 = base64.b64encode(buffered.getvalue()).decode("utf-8")
 
         except Exception as e:
-            st.error("🖼️ Failed to process image. Please ensure the file is valid.")
-            image_base64 = None
             st.error("🖼️ Failed to process image. Please ensure the file is valid.")
             image_base64 = None
 
@@ -238,39 +246,87 @@ def recognition_page():
                 st.session_state["table_ingredients"] = None
                 st.session_state["total_macros"] = None
                 uipr.change_page("recognition_page_sh", "home_page_sh")
-            st.error("Failed to save dish")
-            
+            else:
+                st.error("Failed to save dish")
+
         else:
             if image_base64:
                 nutritional_info = uipr.get_meal_macros(
                     "recognition_page_sh", image_base64, user_description
                 )
-                uipr.parse_dish(nutritional_info)
-                st.rerun()
+                if nutritional_info:
+                    uipr.parse_dish(nutritional_info)
+                    st.rerun()
             else:
                 st.error("📷 Please upload an image first")
 
     if midle.button("Back", use_container_width=True, key="back_rec"):
-        st.session_state["table_ingredients"], st.session_state["total_macros"] = None, None
-        st.session_state["is_dish_saved"] = False
+        st.session_state["table_ingredients"], st.session_state["total_macros"] = (
+            None,
+            None,
+        )
         st.session_state["last_deleted"] = []
         uipr.change_page("recognition_page_sh", "home_page_sh")
 
 
 def daily_log_page():
+    st.title("Daily Log")
+    _, col2 = st.columns([0.8, 0.2])
+    date = col2.date_input(
+        "Select Date",
+        value="today",
+        max_value=uipr.dt.datetime.now(),
+        help="Select the date for your food log. Future dates are not available.",
+    )
+
+    result = uipr.get_daily_log(date, "daily_log_page")
+    if result is not None:
+        st.session_state["table_ingredients"] = result
+    else:
+        st.session_state["table_ingredients"] = []
+        st.info(f"📋 No data for {date.strftime('%Y-%m-%d')}")
+
+    with st.form(clear_on_submit=True, border=False, key="data_form"):
+        uipl.daily_nutritional_table()
+        _, midle, _ = st.columns(3)
+        if midle.form_submit_button("Save changes", use_container_width=True):
+            if uipr.change_daily_log(date, "daily_log_page"):
+                st.session_state["saved_data"] = True
+                st.rerun()
+
     _, midle, _ = st.columns(3)
     if midle.button("Back", use_container_width=True, key="back_dl"):
-        uipr.change_page("daily_log_page", "home_page_sh")
+        st.session_state["table_ingredients"] = None
+        st.session_state["days_info"] = None
+        st.session_state["saved_data"] = False
+        uipr.change_page("daily_log_sh", "home_page_sh")
 
 
 def general_stat_page():
+    st.title("Daily Log")
+    _, col2 = st.columns([0.7, 0.3])
+    date_range = col2.date_input(
+        "Select Period",
+        value=[
+            uipr.dt.datetime.now() - uipr.dt.timedelta(days=7),
+            uipr.dt.datetime.now(),
+        ],
+        max_value=uipr.dt.datetime.now(),
+        help="Select date range for statistics. Future dates are not available.",
+        on_change=uipr.get_statistic_info(),
+        key="stat_date_range",
+    )
+    if not st.session_state["saved_data"]:
+        uipr.get_statistic_info()
+    if st.session_state["stat_data"]:
+        uipl.plot_general_stat()
     _, midle, _ = st.columns(3)
     if midle.button("Back", use_container_width=True, key="back_gs"):
-        uipr.change_page("general_stat_page", "home_page_sh")
+        st.session_state["saved_data"] = False
+        uipr.change_page("general_stat_sh", "home_page_sh")
 
 
 def settings_page():
-
     def_inf = st.session_state["user_info"]
 
     st.title("Settings")
@@ -330,25 +386,22 @@ def settings_page():
 
     _, midle, _ = st.columns(3)
     if midle.button("Apply", use_container_width=True, key="apply_set"):
-        if uipr.update_user_info(
-            "home_page_sh", age, lifestyle, gender, weight, height
-        ):
+        if uipr.update_user_info("settings_sh", age, lifestyle, gender, weight, height):
             if gender == ":blue[Man]":
-                gender = "m"
+                gender_stored = "m"
             elif gender == ":red[Woman]":
-                gender = "w"
+                gender_stored = "w"
             else:
-                gender = "None"
+                gender_stored = "None"
 
             st.session_state["user_info"] = {
                 "age": age,
                 "lifestyle": lifestyle,
-                "bmp": uipr.bmr.get(lifestyle),
-                "gender": gender,
+                "bmr": uipr.bmr.get(lifestyle),
+                "gender": gender_stored,
                 "weight": weight,
                 "height": height,
             }
-            st.session_state["daily_nutrition_norms"] = None
             st.session_state["daily_nutrition_norms"] = None
             uipr.change_page("settings_sh", "home_page_sh")
 

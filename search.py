@@ -116,9 +116,7 @@ class IngredientNutritionSearch:
 
         return None
 
-    def _semantic_search(
-        self, ingredient_name: str, threshold: float = 0.6
-    ) -> str:
+    def _semantic_search(self, ingredient_name: str, threshold: float = 0.6) -> str:
         """
         Searches for the closest matching ingredient name using semantic similarity search.
         ...
@@ -140,9 +138,7 @@ class IngredientNutritionSearch:
         return None
 
     def search(
-        self, 
-        img_ingredients: Dict[str, float],
-        search_type: str = "fuzzy"
+        self, img_ingredients: Dict[str, float], search_type: str = "fuzzy"
     ) -> List[Dict[str, Any]]:
         """
         Searches for the nutritional information of a list of ingredients.

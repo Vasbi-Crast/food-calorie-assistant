@@ -2,7 +2,7 @@ import requests
 import streamlit as st
 import json
 import datetime as dt
-from typing import List
+from typing import List, Dict, Optional, Any
 from dotenv import load_dotenv
 import os
 
@@ -47,7 +47,7 @@ ERROR_TYPE_MESSAGES = {
     "less_than_equal": "Value must be <= maximum allowed",
     "greater_than": "Value must be > minimum allowed",
     "less_than": "Value must be < maximum allowed",
-    "value_error": "Incorrect form __field__.\nRulles:\n__form_pattern__",
+    "value_error": "Incorrect form __field__.\nRules:\n__form_pattern__",
     "int_parsing": "Must be an integer number",
     "float_parsing": "Must be a decimal number",
     "date_parsing": "Invalid date format (YYYY-MM-DD)",
@@ -79,7 +79,6 @@ def check_activity(old_page: str):
 
 def clear_new_uploader():
     st.session_state["table_ingredients"], st.session_state["total_macros"] = None, None
-    st.session_state["is_dish_saved"] = False
     st.session_state["last_table_ingredients"] = []
 
 
@@ -90,6 +89,7 @@ def log_out():
     st.session_state["days_info"] = None
     st.session_state["daily_nutrition_norms"] = None
 
+
 def change_page(old_page: str, new_page: str):
     """Switches active page in session state."""
     check_activity(old_page)
@@ -98,12 +98,14 @@ def change_page(old_page: str, new_page: str):
     if new_page == "login_page_sh":
         log_out()
     st.rerun()
-    
+
+
 def calculate_total_macros():
     if "widget_table" in st.session_state:
         edited_rows = st.session_state["widget_table"].get("edited_rows")
         added_rows = st.session_state["widget_table"].get("added_rows")
         deleted_rows = st.session_state["widget_table"].get("deleted_rows")
+
         for r_key, r_val in edited_rows.items():
             for key, val in r_val.items():
                 st.session_state["table_ingredients"][r_key][key] = val
@@ -115,7 +117,8 @@ def calculate_total_macros():
         )
         if deleted_row:
             st.session_state["table_ingredients"] = [
-                row for idx, row in enumerate(st.session_state["table_ingredients"])
+                row
+                for idx, row in enumerate(st.session_state["table_ingredients"])
                 if idx not in deleted_row
             ]
 
@@ -135,6 +138,7 @@ def calculate_total_macros():
 
     st.session_state["total_macros"] = total
 
+
 def parse_dish(nutritional_info):
     if not nutritional_info:
         st.warning("No data to display")
@@ -151,7 +155,7 @@ def parse_dish(nutritional_info):
                 {
                     "ingredient": original_name,
                     "match": "no match",
-                    "weight_g": 0,
+                    "weight": 0,
                     "calories": 0,
                     "proteins": 0,
                     "fats": 0,
@@ -163,7 +167,7 @@ def parse_dish(nutritional_info):
                 {
                     "ingredient": original_name,
                     "match": payload.get("match", ""),
-                    "weight_g": payload.get("weight", 0),
+                    "weight": payload.get("weight", 0),
                     "calories": payload.get("calories", 0),
                     "proteins": payload.get("proteins", 0),
                     "fats": payload.get("fats", 0),
@@ -172,11 +176,31 @@ def parse_dish(nutritional_info):
             )
 
     st.session_state["table_ingredients"] = rows
-    st.session_state["data_parsed"] = True
     calculate_total_macros()
 
+
+def get_statistic_info():
+    if (
+        "stat_date_range" in st.session_state
+        and len(st.session_state["stat_date_range"]) == 2
+    ):
+        history_weight = get_weight_history(
+            "general_stat_sh", st.session_state["stat_date_range"]
+        )
+        history_info_nutrition = get_info_nutrition(
+            "general_stat_sh", st.session_state["stat_date_range"]
+        )
+        history_norms = get_nutrition_norms(
+            "general_stat_sh", st.session_state["stat_date_range"]
+        )
+        st.session_state["stat_data"]["weight"] = history_weight
+        st.session_state["stat_data"]["info_nutrition"] = history_info_nutrition
+        st.session_state["stat_data"]["norms"] = history_norms
+        st.session_state["saved_data"] = True
+
+
 # === API Wrapper ===
-def api_request(method: str, endpoint: str, old_page: str, **kwargs) -> dict | None:
+def api_request(method: str, endpoint: str, old_page: str, **kwargs) -> Optional[Dict]:
     """
     Unified wrapper for API requests.
     Handles network errors, HTTP errors, and validation errors.
@@ -184,6 +208,7 @@ def api_request(method: str, endpoint: str, old_page: str, **kwargs) -> dict | N
     Returns JSON response on success, None on error.
     """
     check_activity(old_page)
+
     # Add Auth Header if token exists
     headers = kwargs.get("headers", {})
     token = st.session_state.get("token")
@@ -214,7 +239,6 @@ def api_request(method: str, endpoint: str, old_page: str, **kwargs) -> dict | N
             data = {}
 
         detail = data.get("detail", "Unknown error")
-        errors = data.get("errors", [])
         base_msg = HTTP_STATUS_MESSAGES.get(
             resp.status_code, f"❌ Error {resp.status_code}"
         )
@@ -229,22 +253,60 @@ def api_request(method: str, endpoint: str, old_page: str, **kwargs) -> dict | N
                 st.session_state["auth_error"] = f"⏳ You've been inactive for too long"
                 change_page(old_page, "login_page_sh")
 
-        # Handle Validation Errors (422) with field-specific messages
-        elif resp.status_code == 422 and errors:
-            for err in errors:
-                field = err.get("field", "unknown")
-                error_type = err.get("type_error", "value_error")
-                text_err = get_error_message(error_type).replace("__field__", field)
-                if error_type in ["string_too_short", "string_too_long"]:
-                    num_char = 3
-                    text_err = text_err.replace("__num_char__", str(num_char))
-                elif error_type == "value_error" and field == "password":
-                    text_err = text_err.replace(
-                        "__form_pattern__", PASSWORD_PATTERN_TEXT
-                    )
-                else:
-                    text_err = get_error_message(error_type)
-                st.error(f"🔴 {field}: {text_err}")
+        # ✅ Handle Validation Errors (422) - Pydantic v2 format
+        elif resp.status_code == 422:
+            detail_data = data.get("detail", [])
+
+            # Pydantic v2: detail is a list of errors
+            if isinstance(detail_data, list):
+                for err in detail_data:
+                    # Extract field name from loc (e.g., ["body", "username"])
+                    loc = err.get("loc", [])
+                    field = loc[-1] if len(loc) > 0 else "unknown"
+
+                    # Extract error type
+                    error_type = err.get("type", "value_error")
+
+                    # Get context for min/max values
+                    ctx = err.get("ctx", {})
+
+                    # Format message
+                    if error_type == "missing":
+                        text_err = "This field is required"
+                    elif error_type == "string_too_short":
+                        num_char = ctx.get("min_length", 3)
+                        text_err = f"Value is too short (min {num_char} characters for {field})"
+                    elif error_type == "string_too_long":
+                        num_char = ctx.get("max_length", 500)
+                        text_err = (
+                            f"Value is too long (max {num_char} characters for {field})"
+                        )
+                    elif error_type == "greater_than_equal":
+                        text_err = f"Value must be >= minimum allowed for {field}"
+                    elif error_type == "less_than_equal":
+                        text_err = f"Value must be <= maximum allowed for {field}"
+                    elif error_type == "greater_than":
+                        text_err = f"Value must be > minimum allowed for {field}"
+                    elif error_type == "less_than":
+                        text_err = f"Value must be < maximum allowed for {field}"
+                    elif error_type == "value_error" and field == "password":
+                        text_err = (
+                            f"Incorrect form {field}.\nRules:\n{PASSWORD_PATTERN_TEXT}"
+                        )
+                    elif error_type == "int_parsing":
+                        text_err = "Must be an integer number"
+                    elif error_type == "float_parsing":
+                        text_err = "Must be a decimal number"
+                    elif error_type == "date_parsing":
+                        text_err = "Invalid date format (YYYY-MM-DD)"
+                    else:
+                        text_err = err.get("msg", "Invalid value provided")
+
+                    st.error(f"🔴 {field}: {text_err}")
+
+            # Fallback: show detail as-is
+            else:
+                st.error(f"{base_msg}: {detail}")
 
         else:
             # Show general error for other status codes
@@ -271,7 +333,7 @@ def index_gender(gender: str) -> int:
     return 0 if gender == "m" else (1 if gender == "w" else 2)
 
 
-def index_lifestyle(lifestyle: str) -> int | None:
+def index_lifestyle(lifestyle: str) -> Optional[int]:
     """Converts lifestyle string to index for UI components."""
     for i, key in enumerate(bmr.keys()):
         if lifestyle == key:
@@ -284,7 +346,7 @@ def index_lifestyle(lifestyle: str) -> int | None:
 
 def get_meal_macros(
     old_page: str, image_base64: str, user_description: str
-) -> dict | None:
+) -> Optional[List[Dict]]:
     """
     Sends image for ingredient recognition and nutrition search.
     No authentication required.
@@ -308,7 +370,6 @@ def get_meal_macros(
             return result
         else:
             st.warning("⚠️ Nutritional information not available for this image.")
-            return None
     return None
 
 
@@ -349,6 +410,8 @@ def registration(
     """
     Registers a new user.
     Frontend validates password match; Backend validates types/ranges.
+
+    Note: Nutrition norms are calculated on backend automatically.
     """
     # Critical Frontend Validation
     if not username.strip():
@@ -383,7 +446,7 @@ def registration(
     return response is not None
 
 
-def get_user_information(old_page: str) -> dict | None:
+def get_user_information(old_page: str) -> Dict:
     """
     Retrieves current user profile.
     Requires authentication (token added by wrapper).
@@ -411,6 +474,8 @@ def update_user_info(
     """
     Updates current user profile.
     Requires authentication.
+
+    Note: Nutrition norms are recalculated on backend automatically.
     """
     # Data Transformation
     if gender == ":blue[Man]":
@@ -435,57 +500,124 @@ def update_user_info(
 def get_info_nutrition(
     old_page: str,
     time_span: List[dt.datetime] | dt.datetime = dt.datetime.now(),
-) -> dict | None:
+) -> Dict | None:
     """
     Retrieves nutrition history for a time period.
     Requires authentication.
+
+    Note: Query params changed from st_time_span/fin_time_span to start/end.
     """
-    if isinstance(time_span, list) and len(time_span) == 2:
-        st_time_span = min(time_span).strftime("%Y-%m-%d")
-        fin_time_span = max(time_span).strftime("%Y-%m-%d")
+    if isinstance(time_span, (list, tuple)) and len(time_span) == 2:
+        start = min(time_span).strftime("%Y-%m-%d")
+        end = max(time_span).strftime("%Y-%m-%d")
         one_day = False
     elif isinstance(time_span, dt.datetime):
-        st_time_span = time_span.strftime("%Y-%m-%d")
-        fin_time_span = time_span.strftime("%Y-%m-%d")
+        start = time_span.strftime("%Y-%m-%d")
+        end = time_span.strftime("%Y-%m-%d")
         one_day = True
     else:
         st.error("⚠️ Incorrect time interval format.")
         return {}
 
-    # Query Params for GET request
     params = {
-        "st_time_span": st_time_span,
-        "fin_time_span": fin_time_span,
+        "start": start,
+        "end": end,
     }
 
     response = api_request("GET", "info_nutrition", old_page=old_page, params=params)
-    response = {
-        r_key: {key: float(val) for key, val in r_val.items()}
-        for r_key, r_val in response.items()
-    }
-
     if response:
+        response = {
+            r_key: {key: float(val) for key, val in r_val.items()}
+            for r_key, r_val in response.items()
+        }
         if one_day:
-            return response.get(st_time_span, {})
+            return response.get(start, {})
         return response
     return {}
 
 
-def get_daily_nutrition_norms(old_page: str, user_info: dict) -> dict | None:
+def get_nutrition_norms(
+    old_page: str,
+    time_span: List[dt.datetime] | dt.datetime = dt.datetime.now(),
+) -> Dict[str, float] | List[Dict[str, float]] | None:
     """
-    Calculates daily nutrition norms based on user parameters.
+    Retrieves nutrition norms history for a time period.
     Requires authentication.
+
+    Note: Query params changed from st_time_span/fin_time_span to start/end.
     """
-    # Basic Check
-    required_keys = ["age", "bmr", "gender", "weight", "height"]
-    if not all(k in user_info for k in required_keys):
-        st.error("⚠️ Missing required user information.")
+    if isinstance(time_span, (list, tuple)) and len(time_span) == 2:
+        start = min(time_span).strftime("%Y-%m-%d")
+        end = max(time_span).strftime("%Y-%m-%d")
+        one_day = False
+    elif isinstance(time_span, dt.datetime):
+        start = time_span.strftime("%Y-%m-%d")
+        end = time_span.strftime("%Y-%m-%d")
+        one_day = True
+    else:
+        st.error("⚠️ Incorrect time interval format.")
         return {}
 
+    params = {
+        "start": start,
+        "end": end,
+    }
+
     response = api_request(
-        "POST", "daily_nutrition_norms", old_page=old_page, json=user_info
+        "GET", "daily_nutrition_norms", old_page=old_page, params=params
     )
-    return response
+    if response:
+        response = {
+            r_key: {key: float(val) for key, val in r_val.items()}
+            for r_key, r_val in response.items()
+        }
+        if one_day:
+            return response.get(start, {})
+        return response
+    return {}
+
+
+def get_weight_history(
+    old_page: str,
+    time_span: List[dt.datetime] | dt.datetime = dt.datetime.now(),
+) -> Dict[str, float] | None:
+    """
+    Retrieves weight history for a time period.
+    Requires authentication.
+
+    Args:
+        old_page (str): Current page name for activity tracking.
+        time_span: Either a single datetime or a list/tuple of [start, end].
+
+    Returns:
+        dict: Weight values keyed by date. Example: {"2024-04-01": 75.5, ...}
+        None: On error.
+    """
+
+    if isinstance(time_span, (list, tuple)) and len(time_span) == 2:
+        start = min(time_span).strftime("%Y-%m-%d")
+        end = max(time_span).strftime("%Y-%m-%d")
+        one_day = False
+    elif isinstance(time_span, dt.datetime):
+        start = end = time_span.strftime("%Y-%m-%d")
+        one_day = True
+    else:
+        st.error("⚠️ Incorrect time interval format.")
+        return None
+
+    params = {"start": start, "end": end}
+
+    response = api_request("GET", "weight_history", old_page=old_page, params=params)
+
+    if response:
+        response = {key: float(val) for key, val in response.items()}
+
+        if one_day:
+            return response.get(start)
+
+        return response
+
+    return None
 
 
 def save_dish(old_page: str) -> bool:
@@ -508,7 +640,7 @@ def save_dish(old_page: str) -> bool:
 
     for row in ingredients:
         payload["name"].append(row.get("match", "").split(",")[0].strip())
-        payload["weight"].append(float(row.get("weight_g", 0)))
+        payload["weight"].append(float(row.get("weight", 0)))
         payload["calories"].append(float(row.get("calories", 0)))
         payload["proteins"].append(float(row.get("proteins", 0)))
         payload["fats"].append(float(row.get("fats", 0)))
@@ -520,3 +652,91 @@ def save_dish(old_page: str) -> bool:
         st.session_state["days_info"] = None
         return True
     return False
+
+
+def get_daily_log(date: dt.datetime, old_page: str) -> List[Dict] | None:
+    """
+    Fetches daily log for a specific date.
+
+    Note: Date format changed to YYYY-MM-DD for SingleDate model.
+    """
+    params = {"date": date.strftime("%Y-%m-%d")}
+
+    res = api_request("GET", "get_daily_log", old_page=old_page, params=params)
+
+    if res:
+        float_keys = ["weight", "calories", "proteins", "fats", "carbohydrates"]
+        for row in res:
+            for key, val in row.items():
+                if key in float_keys and val is not None:
+                    row[key] = float(val)
+        st.session_state["table_ingredients"] = res
+        return res
+    return []
+
+
+def change_daily_log(date: dt.datetime, old_page: str) -> None:
+    """
+    Detects and saves ONLY the specific changes made in data_editor.
+    Clears widget state after processing to prevent accumulation.
+    """
+    widget_data = st.session_state.get("log_widget_table", {})
+
+    edited_rows = widget_data.get("edited_rows", {}).copy()
+    added_rows = widget_data.get("added_rows", []).copy()
+    deleted_rows = widget_data.get("deleted_rows", []).copy()
+
+    edited_converted = []
+    for r_key, r_val in edited_rows.items():
+        ed_row = st.session_state["table_ingredients"][int(r_key)].copy()
+        for key, val in r_val.items():
+            ed_row[key] = val
+        edited_converted.append(
+            {
+                "name": ed_row["ingredient"],
+                "weight": ed_row["weight"],
+                "calories": ed_row["calories"],
+                "proteins": ed_row["proteins"],
+                "fats": ed_row["fats"],
+                "carbohydrates": ed_row["carbohydrates"],
+            }
+        )
+
+    added_converted = []
+    for row in added_rows:
+        added_converted.append(
+            {
+                "name": row["ingredient"],
+                "weight": row["weight"],
+                "calories": row["calories"],
+                "proteins": row["proteins"],
+                "fats": row["fats"],
+                "carbohydrates": row["carbohydrates"],
+            }
+        )
+
+    deleted_converted = [
+        st.session_state["table_ingredients"][int(key)]["ingredient"]
+        for key in deleted_rows
+        if int(key) < len(st.session_state["table_ingredients"])
+    ]
+
+    if not st.session_state.get("empty_day"):
+        changes = {
+            "edited": edited_converted,
+            "added": added_converted,
+            "deleted": deleted_converted,
+            "date": date.strftime("%Y-%m-%d"),
+        }
+    else:
+        changes = {
+            "edited": [],
+            "added": edited_converted,
+            "deleted": [],
+            "date": date.strftime("%Y-%m-%d"),
+        }
+        if edited_converted:
+            st.session_state["empty_day"] = False
+
+    res = api_request("PUT", "daily_log/update", old_page=old_page, json=changes)
+    return res

@@ -1,12 +1,10 @@
-import datetime as dt
-from fastapi import FastAPI, Depends, HTTPException, Request, status
+from fastapi import FastAPI, Depends, HTTPException, Request, Query
 from fastapi.security import OAuth2PasswordBearer
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 from contextlib import asynccontextmanager
-from typing import Annotated, Any
-import base64
+from typing import Annotated, Any, List, Dict
 import os
 from dotenv import load_dotenv
 
@@ -17,11 +15,14 @@ from auth import create_token, decode_token
 from schemas import (
     LoginInput,
     RegisterInput,
-    SettingsInput,
-    NutritionInput,
-    NutritionOutput,
+    User,
+    SingleDate,
+    DateRange,
     DishPayload,
+    IngredientRecognitionInput,
+    ChangeDailyLog,
 )
+
 
 load_dotenv()
 
@@ -30,6 +31,10 @@ connector = DB_connector()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    """
+    Application lifespan manager.
+    Initializes and closes database connection.
+    """
     await connector.connection()
     yield
     await connector.close()
@@ -37,7 +42,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
-# CORS for Streamlit
+# CORS for Streamlit frontend
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[os.getenv("STREAMLIT_URL")],
@@ -51,24 +56,30 @@ app.add_middleware(
 
 
 @app.exception_handler(ValueError)
-async def value_error_handler(request: Request, exc: ValueError):
-    """Handles custom value errors raised in business logic."""
+async def value_error_handler(request: Request, exc: ValueError) -> JSONResponse:
+    """
+    Handles custom value errors raised in business logic.
+
+    Returns 400 Bad Request with error message.
+    """
     return JSONResponse(status_code=400, content={"detail": str(exc)})
 
 
 @app.exception_handler(RequestValidationError)
-async def validation_exception_handler(request: Request, exc: RequestValidationError):
+async def validation_exception_handler(
+    request: Request, exc: RequestValidationError
+) -> JSONResponse:
     """
     Handles Pydantic validation errors.
+
     Formats them into a simple list for the frontend.
+    Returns 422 Unprocessable Entity.
     """
     errors = []
     for error in exc.errors():
         error_type = error.get("type", "undefined_error")
-
         loc = error.get("loc", [])
         field = loc[1] if len(loc) > 1 else "unknown"
-
         errors.append({"field": field, "type_error": error_type})
 
     return JSONResponse(
@@ -77,33 +88,54 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 
 
 @app.exception_handler(RuntimeError)
-async def runtime_error_handler(request: Request, exc: RuntimeError):
-    """Handles critical runtime errors."""
+async def runtime_error_handler(request: Request, exc: RuntimeError) -> JSONResponse:
+    """
+    Handles critical runtime errors.
+
+    Returns 500 Internal Server Error.
+    """
     print(f"CRITICAL ERROR: {exc}")
     return JSONResponse(status_code=500, content={"detail": "Internal server error"})
 
 
 @app.exception_handler(TimeoutError)
-async def timeout_error_handler(request: Request, exc: TimeoutError):
-    """Handles database or external service timeouts."""
+async def timeout_error_handler(request: Request, exc: TimeoutError) -> JSONResponse:
+    """
+    Handles database or external service timeouts.
+
+    Returns 504 Gateway Timeout.
+    """
     return JSONResponse(
         status_code=504, content={"detail": "Request timed out. Try again later."}
     )
 
 
-# OAuth2 scheme (reads the token from the Authorization header: Bearer <token>)
+# === Authentication ===
+
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/authentication")
 
 
-# --- Dependency for protecting routes ---
 async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]) -> str:
+    """
+    Dependency to extract and validate JWT token.
+
+    Args:
+        token (str): JWT token from Authorization header.
+
+    Returns:
+        str: Authenticated username.
+
+    Raises:
+        HTTPException: 401 if token is invalid or expired.
+    """
     username = decode_token(token)
     if not username:
         raise HTTPException(status_code=401, detail="Invalid or expired token")
     return username
 
 
-# === LLM initialization ===
+# === LLM Initialization ===
+
 with open("./prompt.txt", "r") as f:
     system_prompt = "".join(f.readlines())
 
@@ -111,17 +143,19 @@ assistant = LLMAssistant(system_prompt, temperature=0.01, max_tokens=250, top_p=
 engine = IngredientNutritionSearch("nutrition.csv")
 
 
+# === API Endpoints ===
+
+
 @app.post("/authentication")
-async def authentication(data: LoginInput) -> Any:
+async def authentication(data: LoginInput) -> Dict[str, str]:
     """
-    User authorization based on a request with username and password
+    User authorization based on username and password.
 
     Args:
-        The request should contain a JSON body with a 'username' field that contains
-        a unique username for authorization and 'password' field that contains user's password.
+        data (LoginInput): Username and password for authentication.
 
     Returns:
-        dict: A JSON-serializable dictionary with authentication token.
+        dict: JWT access token.
             - 'access_token' (str): JWT token for authorized requests.
             - 'token_type' (str): Token type (always 'bearer').
 
@@ -131,37 +165,25 @@ async def authentication(data: LoginInput) -> Any:
             - 504: If a TimeoutError occurs.
             - 500: If an unexpected error occurs.
     """
-
     result = await connector.verify(data.username, data.password)
+
     if result == "SUCCESSFUL":
         token = create_token(data.username)
         return {"access_token": token, "token_type": "bearer"}
-
-    elif result == "USER_NOT_FOUND":
-        raise HTTPException(status_code=401, detail=result)
-
-    else:
-        raise HTTPException(status_code=401, detail=result)
+    raise HTTPException(status_code=401, detail=result)
 
 
 @app.post("/registration")
-async def registration(data: RegisterInput) -> Any:
+async def registration(data: RegisterInput) -> Dict[str, bool]:
     """
-    Register a new user
+    Register a new user.
 
     Args:
-        The request should contain a JSON body with:
-        - username: A unique username for authorization.
-        - password: User's password.
-        - age: User's age.
-        - bmr: The user's basal metabolic rate.
-        - gender: User's gender.
-        - weight: User's weight.
-        - height: User growth.
+        data (RegisterInput): User registration data including credentials and profile.
 
     Returns:
-        dict: A JSON-serializable dictionary with registration status.
-            - 'response' (bool): True - if registration is successful.
+        dict: Registration status.
+            - 'response' (bool): True if successful.
 
     Raises:
         HTTPException:
@@ -169,7 +191,6 @@ async def registration(data: RegisterInput) -> Any:
             - 504: If a TimeoutError occurs.
             - 500: If an unexpected error occurs.
     """
-
     res_adding = await connector.add_user(
         data.username,
         data.password,
@@ -178,27 +199,30 @@ async def registration(data: RegisterInput) -> Any:
         data.gender,
         data.weight,
         data.height,
+        data.norm_calories,
+        data.norm_proteins,
+        data.norm_fats,
+        data.norm_carbohydrates,
     )
+
     if not res_adding:
         raise HTTPException(status_code=400, detail="Username already exists")
-    else:
-        return {"response": True}
+
+    return {"response": True}
 
 
 @app.get("/users/me")
 async def get_user_information(
     current_user: Annotated[str, Depends(get_current_user)]
-) -> Any:
+) -> Dict[str, Any]:
     """
-    Getting current user information
+    Get current user profile information.
 
     Args:
-        The request should contain an Authorization header with a valid Bearer token.
-        Username is extracted from the token automatically.
+        current_user (str): Authenticated username from JWT token.
 
     Returns:
-        dict: A JSON-serializable dictionary with
-        user's information (age, bmr, gender, weight, height).
+        dict: User's profile information (age, bmr, gender, weight, height).
 
     Raises:
         HTTPException:
@@ -206,30 +230,23 @@ async def get_user_information(
             - 504: If a TimeoutError occurs.
             - 500: If an unexpected error occurs.
     """
-
     return await connector.user_information(current_user)
 
 
 @app.put("/users/me")
 async def update_user_info(
-    data: SettingsInput, current_user: Annotated[str, Depends(get_current_user)]
-) -> Any:
+    data: User, current_user: Annotated[str, Depends(get_current_user)]
+) -> Dict[str, bool]:
     """
-    Update current user information
+    Update current user profile information.
 
     Args:
-        The request should contain:
-        - Authorization header with a valid Bearer token (username extracted automatically).
-        - JSON body with updated user parameters:
-            - age: User's age.
-            - bmr: The user's basal metabolic rate.
-            - gender: User's gender.
-            - weight: User's weight.
-            - height: User growth.
+        data (User): Updated user parameters.
+        current_user (str): Authenticated username from JWT token.
 
     Returns:
-        dict: A JSON-serializable dictionary with information about the operation performed.
-            - 'response' (bool): True - if update is successful.
+        dict: Operation status.
+            - 'response' (bool): True if successful.
 
     Raises:
         HTTPException:
@@ -237,158 +254,210 @@ async def update_user_info(
             - 504: If a TimeoutError occurs.
             - 500: If an unexpected error occurs.
     """
-
     return {
         "response": await connector.update_user(
-            current_user, data.age, data.bmr, data.gender, data.weight, data.height
+            current_user,
+            data.age,
+            data.bmr,
+            data.gender,
+            data.weight,
+            data.height,
+            data.norm_calories,
+            data.norm_proteins,
+            data.norm_fats,
+            data.norm_carbohydrates,
         )
     }
 
 
 @app.get("/info_nutrition")
 async def info_nutrition(
-    st_time_span: str,
-    fin_time_span: str,
     current_user: Annotated[str, Depends(get_current_user)],
-) -> Any:
+    start: str = Query(default="", description="Start date (YYYY-MM-DD)"),
+    end: str = Query(default="", description="End date (YYYY-MM-DD)"),
+) -> Dict[str, Dict[str, Any]]:
     """
-    Getting information about daily nutrition history
+    Get daily nutrition history for a date range.
+
+    Query Parameters:
+        - start: Start date (YYYY-MM-DD). Defaults to today if empty.
+        - end: End date (YYYY-MM-DD). Defaults to today if empty.
 
     Args:
-        The request should contain:
-        - Authorization header with a valid Bearer token (username extracted automatically).
-        - Query parameters:
-            - st_time_span: The beginning of the time interval. Format: YYYY-MM-DD.
-            - fin_time_span: The end of the time interval. Format: YYYY-MM-DD.
+        current_user (str): Authenticated username from JWT token.
+        start (str): Start date in YYYY-MM-DD format.
+        end (str): End date in YYYY-MM-DD format.
 
     Returns:
-        dict: A JSON-serializable dictionary of daily nutrition
-        information, with dates as keys.
+        dict: Daily nutrition information keyed by date.
+            Example: {
+                "2024-04-01": {"calories": 2000, "proteins": 150, "fats": 70, "carbohydrates": 250},
+                "2024-04-02": {"calories": 0, "proteins": 0, "fats": 0, "carbohydrates": 0},
+                ...
+            }
+            Note: All days in range are returned (gaps filled with zeros).
 
     Raises:
         HTTPException:
             - 401: If token is invalid or expired.
+            - 422: If date validation fails (start > end or invalid format).
             - 504: If a TimeoutError occurs.
             - 500: If an unexpected error occurs.
     """
+    try:
+        date_range = DateRange(start=start, end=end)
+    except ValueError as e:
+        raise HTTPException(status_code=422, detail=str(e))
 
-    return await connector.info_nutrition(current_user, st_time_span, fin_time_span)
+    result = await connector.info_nutrition(
+        current_user,
+        date_range.st_time_span,
+        date_range.fin_time_span,
+    )
+
+    return result if result else {}
 
 
-@app.post("/daily_nutrition_norms", response_model=NutritionOutput)
-async def calculate_daily_nutrition_norms(
-    data: NutritionInput, current_user: Annotated[str, Depends(get_current_user)]
-) -> Any:
+@app.get("/daily_nutrition_norms")
+async def daily_nutrition_norms(
+    current_user: Annotated[str, Depends(get_current_user)],
+    start: str = Query(default="", description="Start date (YYYY-MM-DD)"),
+    end: str = Query(default="", description="End date (YYYY-MM-DD)"),
+) -> Dict[str, Dict[str, Any]]:
     """
-    Calculates daily caloric intake and macronutrient distribution based on user parameters.
+    Get nutrition norms history for a date range.
 
-    Uses the Mifflin-St Jeor equation adjusted by an activity/goal multiplier (`bmr`)
-    and splits total calories into proteins, fats, and carbohydrates using predefined ratios.
+    IMPORTANT:
+        - Days without records use the last known norm (carry-forward).
+        - If no history exists, uses initial norms from registration.
+        - All days in range are returned (same format as /info_nutrition).
+
+    Query Parameters:
+        - start: Start date (YYYY-MM-DD). Defaults to today if empty.
+        - end: End date (YYYY-MM-DD). Defaults to today if empty.
 
     Args:
-        The request should contain:
-        - Authorization header with a valid Bearer token (username extracted automatically).
-        - JSON body with calculation parameters:
-            - age (int): User's age in years.
-            - bmr (float): Activity level or goal multiplier (e.g., 1.2, 1.55).
-            - gender (str): 'm' for male, 'w' for female, or other for neutral.
-            - weight (float): Weight in kilograms.
-            - height (float): Height in centimeters.
+        current_user (str): Authenticated username from JWT token.
+        start (str): Start date in YYYY-MM-DD format.
+        end (str): End date in YYYY-MM-DD format.
 
     Returns:
-        dict: JSON-serializable dictionary containing calculated daily norms:
-            - calories (int)
-            - proteins (float)
-            - fats (float)
-            - carbohydrates (float)
+        dict: Nutrition norms keyed by date.
+            Example: {
+                "2024-04-01": {"calories": 2200, "proteins": 125, "fats": 73, "carbohydrates": 260},
+                "2024-04-02": {"calories": 2200, "proteins": 125, "fats": 73, "carbohydrates": 260},
+                "2024-04-03": {"calories": 2300, "proteins": 130, "fats": 75, "carbohydrates": 270},
+                ...
+            }
+            Note: Format matches /info_nutrition for easy comparison.
 
     Raises:
         HTTPException:
             - 401: If token is invalid or expired.
-            - 504: If a TimeoutError occurs during processing.
+            - 422: If date validation fails (start > end or invalid format).
+            - 504: If a TimeoutError occurs.
             - 500: If an unexpected error occurs.
     """
+    try:
+        date_range = DateRange(start=start, end=end)
+    except ValueError as e:
+        raise HTTPException(status_code=422, detail=str(e))
 
-    res = {"calories": 0, "proteins": 0, "fats": 0, "carbohydrates": 0}
+    norms = await connector.nutrition_norms(
+        username=current_user,
+        st_time_span=date_range.st_time_span,
+        fin_time_span=date_range.fin_time_span,
+    )
+    return norms if norms else {}
 
-    # Caloric values per gram of macronutrients
-    CAL_PER_G = {"proteins": 4, "fats": 9, "carbohydrates": 4}
 
-    # Base ratios (Maintenance / Balanced diet)
-    # Adjust these based on your goal (see table below)
-    P_RATIO, F_RATIO, C_RATIO = 0.3, 0.3, 0.4
+@app.get("/weight_history")
+async def weight_history(
+    current_user: Annotated[str, Depends(get_current_user)],
+    start: str = Query(default="", description="Start date (YYYY-MM-DD)"),
+    end: str = Query(default="", description="End date (YYYY-MM-DD)"),
+) -> Dict[str, Any]:
+    """
+    Get user weight history for a date range.
 
-    # 1️⃣ Calculate BMR (Mifflin-St Jeor equation) without code duplication
-    base = 10 * data.weight + 6.25 * data.height - 5 * data.age
-    if data.gender == "m":
-        base += 5
-    elif data.gender == "w":
-        base -= 161
-    else:
-        base -= 78  # Neutral/averaged fallback
+    IMPORTANT:
+        - Days without weight records are filled with the last known weight (carry-forward).
+        - If no history exists, uses initial weight from registration.
+        - All days in range are returned (same format as /info_nutrition).
 
-    # 2️⃣ Total daily calories (user_info["bmr"] here acts as an activity/goal multiplier)
-    total_calories = base * data.bmr
-    res["calories"] = round(total_calories)
+    Query Parameters:
+        - start: Start date (YYYY-MM-DD). Defaults to today if empty.
+        - end: End date (YYYY-MM-DD). Defaults to today if empty.
 
-    # 3️⃣ Calculate macronutrients in grams
-    res["proteins"] = round((total_calories * P_RATIO) / CAL_PER_G["proteins"], 1)
-    res["fats"] = round((total_calories * F_RATIO) / CAL_PER_G["fats"], 1)
-    res["carbohydrates"] = round(
-        (total_calories * C_RATIO) / CAL_PER_G["carbohydrates"], 1
+    Args:
+        current_user (str): Authenticated username from JWT token.
+        start (str): Start date in YYYY-MM-DD format.
+        end (str): End date in YYYY-MM-DD format.
+
+    Returns:
+        dict: Weight values keyed by date.
+            Example: {
+                "2024-04-01": {"weight": 75.5},
+                "2024-04-02": {"weight": 75.5},
+                "2024-04-03": {"weight": 74.0},
+                ...
+            }
+            Note: Format matches /info_nutrition for easy comparison.
+
+    Raises:
+        HTTPException:
+            - 401: If token is invalid or expired.
+            - 422: If date validation fails (start > end or invalid format).
+            - 504: If a TimeoutError occurs.
+            - 500: If an unexpected error occurs.
+    """
+    try:
+        date_range = DateRange(start=start, end=end)
+    except ValueError as e:
+        raise HTTPException(status_code=422, detail=str(e))
+
+    result = await connector.weight_history(
+        current_user,
+        date_range.st_time_span,
+        date_range.fin_time_span,
     )
 
-    return res
+    return result if result else {}
 
 
 @app.post("/ingredient_recognition")
 async def ingredient_recognition(
-    request: Request, current_user: Annotated[str, Depends(get_current_user)]
+    data: IngredientRecognitionInput,
+    current_user: Annotated[str, Depends(get_current_user)],
 ) -> Any:
     """
-    Generates a response based on the Base64-encoded image string provided in the request.
+    Recognize ingredients from a food image using AI analysis.
 
     Args:
-        The request should contain a JSON body with a 'image_base64' field that contains
-        the base64 encoded image data and 'user_description' field that contains custom
-        description of the dish in the image.
+        data (IngredientRecognitionInput): Image and optional description.
+            - image_base64: Base64-encoded image data.
+            - user_description: Optional dish description.
+        current_user (str): Authenticated username from JWT token.
 
     Returns:
-        Any: The response generated by the assistant.
+        Any: LLM response with identified ingredients and nutrition info.
 
     Raises:
         HTTPException:
-            - 400: If the Base64 decoding fails.
+            - 400: If image_base64 is missing or invalid.
             - 504: If a TimeoutError occurs.
             - 500: If an unexpected error occurs.
     """
-    data = await request.json()
-    image_base64 = data.get("image_base64")
-    user_description = data.get("user_description")
-    data = await request.json()
-    image_base64 = data.get("image_base64")
-    user_description = data.get("user_description")
-
-    if not image_base64:
-        raise HTTPException(status_code=400, detail="Base64 image data is required.")
-
-    try:
-        base64.b64decode(image_base64)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Invalid Base64 string: {str(e)}")
-
     llm_response = await assistant.generate_response_async(
-        image_base64, user_description, timeout=240
-    )
-    llm_response = await assistant.generate_response_async(
-        image_base64, user_description, timeout=240
+        data.image_base64,
+        data.user_description,
+        timeout=240,
     )
 
     if llm_response.get("result"):
         search_results = engine.search(llm_response["result"], search_type="semantic")
         llm_response["result"] = search_results
 
-    return llm_response
     return llm_response
 
 
@@ -397,28 +466,135 @@ async def add_new_dish(
     data: DishPayload, current_user: Annotated[str, Depends(get_current_user)]
 ) -> bool:
     """
-    Adds a new dish with ingredients to the user's day record.
+    Add a new dish with ingredients to the user's day record.
 
     Args:
-        data (DishPayload): Dictionary of lists with ingredient data.
-        current_user (str): Authenticated username from token.
+        data (DishPayload): Ingredient data in parallel lists.
+        current_user (str): Authenticated username from JWT token.
 
     Returns:
-        bool: True if successful, False otherwise.
-    """
+        bool: True if successful.
 
+    Raises:
+        RuntimeError: If failed to create or retrieve day record.
+        HTTPException:
+            - 401: If token is invalid or expired.
+            - 504: If a TimeoutError occurs.
+            - 500: If an unexpected error occurs.
+    """
     day_id = await connector.add_day(
-        username=current_user, created_at=data.parsed_created_at, timeout=20
+        username=current_user,
+        created_at=data.parsed_date,
+        timeout=20,
     )
 
     if not day_id:
-        raise RuntimeError("Failed to create or retrieve day record")
+        raise HTTPException(status_code=500, detail="Failed to create day record")
 
     await connector.add_ingredients_to_day(
         day_id=day_id,
         ingredients=data.ingredients,
-        created_at=data.parsed_created_at,
+        created_at=data.parsed_date,
         timeout=20,
     )
+
+    return True
+
+
+@app.get("/get_daily_log")
+async def get_daily_log(
+    current_user: Annotated[str, Depends(get_current_user)],
+    date: str = Query(default="", description="Date (YYYY-MM-DD)"),
+) -> List[Dict[str, Any]]:
+    """
+    Get daily log for a specific date.
+
+    Query Parameters:
+        - date: Date string (YYYY-MM-DD). Defaults to today if empty.
+
+    Args:
+        current_user (str): Authenticated username from JWT token.
+
+    Returns:
+        list: List of ingredients with nutrition info for the specified date.
+            Example: [{"ingredient": "apple", "weight": 100, "calories": 52, ...}]
+
+    Raises:
+        HTTPException:
+            - 401: If token is invalid or expired.
+            - 422: If date format is invalid.
+            - 504: If a TimeoutError occurs.
+            - 500: If an unexpected error occurs.
+    """
+    # Validate date using Pydantic model
+    try:
+        single_date = SingleDate(date=date)
+    except ValueError as e:
+        raise HTTPException(status_code=422, detail=str(e))
+
+    result = await connector.daily_log(
+        username=current_user,
+        date=single_date.parsed_date,
+        timeout=20,
+    )
+
+    return result if result else []
+
+
+@app.put("/daily_log/update")
+async def update_daily_log(
+    data: ChangeDailyLog, current_user: Annotated[str, Depends(get_current_user)]
+) -> bool:
+    """
+    Update daily log with partial changes (edited, added, deleted).
+
+    Args:
+        data (ChangeDailyLog): Changes to apply.
+            - edited: List of ingredients with new weight values.
+            - added: List of new ingredients to add.
+            - deleted: List of ingredient names to remove.
+        current_user (str): Authenticated username from JWT token.
+
+    Returns:
+        dict: Operation status.
+            - 'response' (bool): True if successful.
+
+    Raises:
+        HTTPException:
+            - 401: If token is invalid or expired.
+            - 504: If a TimeoutError occurs.
+            - 500: If an unexpected error occurs.
+    """
+
+    day_id = await connector.add_day(
+        username=current_user,
+        created_at=data.parsed_date,
+        timeout=20,
+    )
+
+    if not day_id:
+        raise HTTPException(status_code=500, detail="Failed to create day record")
+
+    if data.deleted:
+        await connector.del_ingredients_in_day(
+            day_id=day_id,
+            deleted=data.deleted,
+            timeout=20,
+        )
+
+    if data.edited:
+        await connector.change_ingredients_in_day(
+            day_id=day_id,
+            edited=data.edited,
+            timeout=20,
+        )
+
+    if data.added:
+        await connector.add_ingredients_to_day(
+            day_id=day_id,
+            ingredients=data.added,
+            created_at=data.parsed_date,
+            timeout=20,
+        )
 
     return True
