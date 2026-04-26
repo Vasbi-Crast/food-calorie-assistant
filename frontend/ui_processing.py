@@ -6,6 +6,8 @@ from typing import List, Dict, Optional, Any
 from dotenv import load_dotenv
 import os
 
+from ui import t
+
 # === Configuration ===
 load_dotenv()
 SERVER_URL = os.getenv("SERVER_URL")
@@ -14,50 +16,24 @@ INACTIVITY_MINUTES = 10
 
 PAGE_BEFORE_AUTHORIZATIONS = ["login_page_sh", "register_page_sh"]
 
-USERNAME_PATTERN_TEXT = """
-• Minimum length: 3 characters
-• Maximum length: 20 characters
-• No leading or trailing spaces
-• Case-insensitive (stored as lowercase)
-"""
-
-PASSWORD_PATTERN_TEXT = """
-• Minimum length: 6 characters\n
-• At least 3 digits\n
-• At least one uppercase and one lowercase letter\n
-• At least one special character (#, !, $, ^, *, @)\n
-"""
-
-# === Error Mappings (EN) ===
-HTTP_STATUS_MESSAGES = {
-    400: "⚠️ Bad Request",
-    401: "🔐 Authorization Failed",
-    403: "🚫 Access Denied",
-    404: "📍 Not Found",
-    422: "📝 Validation Error",
-    500: "💥 Internal Server Error",
-    504: "⏳ Gateway Timeout",
-}
-
-ERROR_TYPE_MESSAGES = {
-    "missing": "This field is required",
-    "string_too_short": "Value is too short (min __num_char__ characters for __field__)",
-    "string_too_long": "Value is too long (max __num_char__ characters for __field__)",
-    "greater_than_equal": "Value must be >= minimum allowed",
-    "less_than_equal": "Value must be <= maximum allowed",
-    "greater_than": "Value must be > minimum allowed",
-    "less_than": "Value must be < maximum allowed",
-    "value_error": "Incorrect form __field__.\nRules:\n__form_pattern__",
-    "int_parsing": "Must be an integer number",
-    "float_parsing": "Must be a decimal number",
-    "date_parsing": "Invalid date format (YYYY-MM-DD)",
-    "enum": "Invalid value (choose from options)",
-}
-
-
-def get_error_message(error_type: str) -> str:
-    """Returns user-friendly message for a given error type."""
-    return ERROR_TYPE_MESSAGES.get(error_type, "Invalid value provided")
+def get_error_message(error_type: str, field: str = "", num_char: int = 0, form_pattern: str = "") -> str:
+    """
+    Returns user-friendly message for a given error type.
+    
+    Args:
+        error_type (str): Type of validation error.
+        field (str): Field name for context in message.
+        num_char (int): Number for min/max length messages.
+        form_pattern (str): Pattern text for value_error type.
+    
+    Returns:
+        str: Translated error message.
+    """
+    return t("error.validation." + error_type).format(
+        field=field,
+        num_char=num_char,
+        form_pattern=form_pattern
+    )
 
 
 # === Session Helpers ===
@@ -69,7 +45,7 @@ def check_activity(old_page: str):
             st.session_state["last_active_time"] = dt.datetime.now(dt.timezone.utc)
         else:
             log_out()
-            st.session_state["auth_error"] = f"⏳ You've been inactive for too long"
+            st.session_state["auth_error"] = t("error.session.inactive")
             st.session_state[old_page] = False
             st.session_state["login_page_sh"] = True
             st.rerun()
@@ -222,13 +198,13 @@ def api_request(method: str, endpoint: str, old_page: str, **kwargs) -> Optional
             method, f"{SERVER_URL}/{endpoint}", timeout=20, **kwargs
         )
     except requests.exceptions.Timeout:
-        st.error("⏳ Server timeout. Please try again.")
+        st.error(t("error.network.timeout"))
         return None
     except requests.exceptions.ConnectionError:
-        st.error("🔌 Cannot connect to server. Is it running?")
+        st.error(t("error.network.connection"))
         return None
     except requests.exceptions.RequestException as e:
-        st.error(f"❌ Request failed: {str(e)}")
+        st.error(t("error.network.generic").format(error=str(e)))
         return None
 
     # HTTP Error Handling
@@ -239,82 +215,66 @@ def api_request(method: str, endpoint: str, old_page: str, **kwargs) -> Optional
             data = {}
 
         detail = data.get("detail", "Unknown error")
-        base_msg = HTTP_STATUS_MESSAGES.get(
-            resp.status_code, f"❌ Error {resp.status_code}"
-        )
+        base_msg = t(f"error.http.{resp.status_code}")
 
-        # Problems with authorization
         if resp.status_code == 401:
             if detail == "USER_NOT_FOUND":
-                st.error(f"🔐 The user does not exist. Please register.")
+                st.error(t("error.auth.user_not_found"))
             elif detail == "INVALID_PASSWORD":
-                st.error(f"🔐 Incorrect password. Try again.")
+                st.error(t("error.auth.invalid_password"))
             else:
-                st.session_state["auth_error"] = f"⏳ You've been inactive for too long"
+                st.session_state["auth_error"] = t("error.session.inactive")
                 change_page(old_page, "login_page_sh")
 
-        # ✅ Handle Validation Errors (422) - Pydantic v2 format
         elif resp.status_code == 422:
-            detail_data = data.get("detail", [])
-
-            # Pydantic v2: detail is a list of errors
+            detail_data = data.get("errors", [])
             if isinstance(detail_data, list):
                 for err in detail_data:
-                    # Extract field name from loc (e.g., ["body", "username"])
-                    loc = err.get("loc", [])
-                    field = loc[-1] if len(loc) > 0 else "unknown"
-
-                    # Extract error type
-                    error_type = err.get("type", "value_error")
-
-                    # Get context for min/max values
+                    field = err.get("field", "unknown")
+                    text_field = field[0].upper() + field[1:]
+                    error_type = err.get("type_error", "value_error")
                     ctx = err.get("ctx", {})
 
-                    # Format message
                     if error_type == "missing":
-                        text_err = "This field is required"
+                        text_err = t("error.validation.missing")
                     elif error_type == "string_too_short":
-                        num_char = ctx.get("min_length", 3)
-                        text_err = f"Value is too short (min {num_char} characters for {field})"
+                        num_char = ctx.get("min_length", "inf")
+                        text_err = t("error.validation.string_too_short").format(
+                            num_char=num_char, field=field
+                        )
                     elif error_type == "string_too_long":
-                        num_char = ctx.get("max_length", 500)
-                        text_err = (
-                            f"Value is too long (max {num_char} characters for {field})"
+                        num_char = ctx.get("max_length", "inf")
+                        text_err = t("error.validation.string_too_long").format(
+                            num_char=num_char, field=field
                         )
                     elif error_type == "greater_than_equal":
-                        text_err = f"Value must be >= minimum allowed for {field}"
+                        text_err = t("error.validation.greater_than_equal").format(field=field)
                     elif error_type == "less_than_equal":
-                        text_err = f"Value must be <= maximum allowed for {field}"
+                        text_err = t("error.validation.less_than_equal").format(field=field)
                     elif error_type == "greater_than":
-                        text_err = f"Value must be > minimum allowed for {field}"
+                        text_err = t("error.validation.greater_than").format(field=field)
                     elif error_type == "less_than":
-                        text_err = f"Value must be < maximum allowed for {field}"
+                        text_err = t("error.validation.less_than").format(field=field)
                     elif error_type == "value_error" and field == "password":
-                        text_err = (
-                            f"Incorrect form {field}.\nRules:\n{PASSWORD_PATTERN_TEXT}"
+                        text_err = t("error.validation.value_error.password").format(
+                            form_pattern=t("ui.password.pattern")
                         )
                     elif error_type == "int_parsing":
-                        text_err = "Must be an integer number"
+                        text_err = t("error.validation.int_parsing")
                     elif error_type == "float_parsing":
-                        text_err = "Must be a decimal number"
+                        text_err = t("error.validation.float_parsing")
                     elif error_type == "date_parsing":
-                        text_err = "Invalid date format (YYYY-MM-DD)"
+                        text_err = t("error.validation.date_parsing")
                     else:
-                        text_err = err.get("msg", "Invalid value provided")
+                        text_err = err.get("msg", t("error.validation.generic"))
 
-                    st.error(f"🔴 {field}: {text_err}")
-
-            # Fallback: show detail as-is
+                    st.error(f"🔴 {text_field}: {text_err}")
             else:
                 st.error(f"{base_msg}: {detail}")
-
         else:
-            # Show general error for other status codes
             st.error(f"{base_msg}: {detail}")
-
         return None
 
-    # Success
     return resp.json()
 
 
@@ -363,26 +323,24 @@ def get_meal_macros(
             try:
                 result = json.loads(result)
             except json.JSONDecodeError:
-                st.warning("⚠️ Failed to parse nutrition data.")
+                st.warning(t("warning.recognition.parse_failed"))
                 return None
 
         if result:
             return result
         else:
-            st.warning("⚠️ Nutritional information not available for this image.")
+            st.warning(t("warning.recognition.no_data"))
     return None
-
 
 def authorization(old_page: str, username: str, password: str) -> bool:
     """
     User login. Saves token to session_state on success.
     """
-    # Frontend validation (critical only)
     if not username.strip():
-        st.error("⚠️ Username is required.")
+        st.error(t("error.form.username_required"))
         return False
     if not password.strip():
-        st.error("⚠️ Password is required.")
+        st.error(t("error.form.password_required"))
         return False
 
     payload = {"username": username.lower(), "password": password}
@@ -415,14 +373,13 @@ def registration(
     """
     # Critical Frontend Validation
     if not username.strip():
-        st.error("⚠️ Username is required.")
+        st.error(t("error.form.username_required"))
         return False
     if not password.strip():
-        st.error("⚠️ Password is required.")
+        st.error(t("error.form.password_required"))
         return False
     if password != re_password:
-        st.error("⚠️ Passwords do not match.")
-        return False
+        st.error(t("error.form.passwords_mismatch"))
 
     # Data Transformation
     if gender == ":blue[Man]":
@@ -625,8 +582,7 @@ def save_dish(old_page: str) -> bool:
 
     ingredients = st.session_state.get("table_ingredients")
     if not ingredients:
-        st.error("No ingredients to save")
-        return False
+        st.error(t("error.dish.no_ingredients"))
 
     payload = {
         "name": [],

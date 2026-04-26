@@ -78,10 +78,12 @@ async def validation_exception_handler(
     errors = []
     for error in exc.errors():
         error_type = error.get("type", "undefined_error")
-        loc = error.get("loc", [])
+        loc = error.get("loc", [])       
         field = loc[1] if len(loc) > 1 else "unknown"
-        errors.append({"field": field, "type_error": error_type})
-
+        ctx = None
+        if error_type in ["string_too_short", "string_too_long"]:
+            ctx = error.get("ctx", None)
+        errors.append({"field": field, "type_error": error_type, "ctx": ctx})
     return JSONResponse(
         status_code=422, content={"detail": "Validation failed", "errors": errors}
     )
@@ -136,10 +138,18 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]) -> str
 
 # === LLM Initialization ===
 
-with open("./prompt.txt", "r") as f:
-    system_prompt = "".join(f.readlines())
+with open("./prompt_ingredient_recognition.txt", "r") as f:
+    prompt_ingredient_recognition = "".join(f.readlines())
 
-assistant = LLMAssistant(system_prompt, temperature=0.01, max_tokens=250, top_p=0.1)
+with open("./prompt_macros_extraction.txt", "r") as f:
+    prompt_macros_extraction = "".join(f.readlines())
+
+
+assistant = LLMAssistant(prompt_ingredient_recognition,
+                         prompt_macros_extraction,
+                         temperature=0.01,
+                         max_tokens=250,
+                         top_p=0.1)
 engine = IngredientNutritionSearch("nutrition.csv")
 
 
@@ -448,14 +458,14 @@ async def ingredient_recognition(
             - 504: If a TimeoutError occurs.
             - 500: If an unexpected error occurs.
     """
-    llm_response = await assistant.generate_response_async(
+    llm_response = await assistant.get_ingredient_recognition(
         data.image_base64,
         data.user_description,
         timeout=240,
     )
 
     if llm_response.get("result"):
-        search_results = engine.search(llm_response["result"], search_type="semantic")
+        search_results = await engine.search(llm_response["result"], assistant=assistant, search_type="semantic")
         llm_response["result"] = search_results
 
     return llm_response

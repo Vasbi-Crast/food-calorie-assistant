@@ -342,8 +342,8 @@ class LoginInput(BaseModel):
         password (str): User's password (plain text, will be hashed for verification).
     """
 
-    username: str = Field(..., description="User's unique username")
-    password: str = Field(..., description="User's password")
+    username: str = Field(description="User's unique username")
+    password: str = Field(description="User's password")
 
 
 class RegisterInput(User):
@@ -366,8 +366,8 @@ class RegisterInput(User):
         - At least 3 digits
     """
 
-    username: UsernameStr = Field(..., description="Unique username (3-20 characters)")
-    password: PasswordStr = Field(..., description="Password (min 6 characters)")
+    username: UsernameStr = Field(description="Unique username (3-20 characters)")
+    password: PasswordStr = Field(description="Password (min 6 characters)")
 
     @field_validator("password")
     @classmethod

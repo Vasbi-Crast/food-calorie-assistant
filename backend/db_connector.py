@@ -6,6 +6,7 @@ import asyncpg
 from dotenv import load_dotenv
 from typing import List, Dict, Any, Optional
 from passlib.context import CryptContext
+
 from schemas import IngredientItem
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")

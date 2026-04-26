@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 from threading import RLock
 from ui_processing import calculate_total_macros
 
+from ui import t
+
 _lock = RLock()
 
 
@@ -32,36 +34,36 @@ def daily_nutritional_table():
         num_rows="dynamic",
         column_config={
             "ingredient": st.column_config.TextColumn(
-                "Ingredient",
+                t("ui.table.ingredient"),
                 max_chars=25,
                 required=True,
             ),
             "weight": st.column_config.NumberColumn(
-                "Weight (g)",
+                t("ui.table.weight_g"),
                 min_value=0.0,
                 format="%.1f",
                 step=0.1,
             ),
             "calories": st.column_config.NumberColumn(
-                "Calories (kcal)",
+                t("ui.table.calories_kcal"),
                 min_value=0.0,
                 format="%.1f",
                 step=0.1,
             ),
             "proteins": st.column_config.NumberColumn(
-                "Proteins (g)",
+                t("ui.table.proteins_g"),
                 min_value=0.0,
                 format="%.2f",
                 step=0.1,
             ),
             "fats": st.column_config.NumberColumn(
-                "Fats (g)",
+                t("ui.table.fats_g"),
                 min_value=0.0,
                 format="%.2f",
                 step=0.1,
             ),
             "carbohydrates": st.column_config.NumberColumn(
-                "Carbohydrates (g)",
+                t("ui.table.carbs_g"),
                 min_value=0.0,
                 format="%.2f",
                 step=0.1,
@@ -84,23 +86,25 @@ def daily_nutritional_table():
                     total[key] += float(value)
             except (TypeError, ValueError):
                 pass
+    
     if st.session_state.get("saved_data", False):
-        st.success("✅ Changes saved successfully!")
+        st.success(t("ui.table.saved_success"))
         st.session_state["saved_data"] = False
+    
     st.divider()
-    st.subheader("📊 Total")
+    st.subheader(t("ui.table.total"))
 
     col1, col2, col3, col4, col5 = st.columns(5)
     with col1:
-        st.metric("Weight (g.)", f"{total['weight']:.2f}")
+        st.metric(t("ui.metric.weight_g"), f"{total['weight']:.2f}")
     with col2:
-        st.metric("Calories (kcal)", f"{total['calories']:.1f}")
+        st.metric(t("ui.metric.calories_kcal"), f"{total['calories']:.1f}")
     with col3:
-        st.metric("Proteins (g.)", f"{total['proteins']:.2f}")
+        st.metric(t("ui.metric.proteins_g"), f"{total['proteins']:.2f}")
     with col4:
-        st.metric("Fats (g.)", f"{total['fats']:.2f}")
+        st.metric(t("ui.metric.fats_g"), f"{total['fats']:.2f}")
     with col5:
-        st.metric("Carbs (g.)", f"{total['carbohydrates']:.2f}")
+        st.metric(t("ui.metric.carbs_g"), f"{total['carbohydrates']:.2f}")
 
 
 def plot_general_stat() -> None:
@@ -129,7 +133,7 @@ def plot_general_stat() -> None:
     stat_data = st.session_state.get("stat_data", {})
 
     if not stat_data:
-        st.warning("⚠️ No statistics data available. Please select a date range.")
+        st.warning(t("warning.stats.no_data"))
         return
 
     weight = stat_data.get("weight", {})
@@ -137,7 +141,7 @@ def plot_general_stat() -> None:
     norms = stat_data.get("norms", {})
 
     if not nutrition:
-        st.info("📋 No nutrition data available for selected period")
+        st.info(t("info.stats.no_nutrition"))
         return
 
     dates = sorted(nutrition.keys())
@@ -187,12 +191,11 @@ def plot_general_stat() -> None:
     fig, axes = plt.subplots(5, 1, figsize=(6, 22), constrained_layout=True)
     fig.patch.set_alpha(0.0)
 
+    # === 1. Weight ===
     ax = axes[0]
-    ax.bar(
-        x_pos, weight_values, color=colors["weight"], edgecolor="black", linewidth=0.5
-    )
-    ax.set_title("Weight Trend", fontweight="bold", pad=5, color="white")
-    ax.set_ylabel("Weight (kg)", color="white")
+    ax.bar(x_pos, weight_values, color=colors["weight"], edgecolor="black", linewidth=0.5)
+    ax.set_title(t("chart.weight.title"), fontweight="bold", pad=5, color="white")  # ✅ "Weight Trend"
+    ax.set_ylabel(t("chart.weight.ylabel"), color="white")
     ax.tick_params(axis="both", colors="white")
     ax.set_xticks(x_pos)
     ax.set_xticklabels([d[5:] for d in dates], rotation=45, ha="right", color="white")
@@ -203,38 +206,18 @@ def plot_general_stat() -> None:
     ax.spines["left"].set_color("white")
     ax.spines["bottom"].set_color("white")
 
+    # === 2. Calories ===
     ax = axes[1]
     bar_width = 0.35
-    ax.bar(
-        [p - bar_width / 2 for p in x_pos],
-        calories,
-        width=bar_width,
-        label="Actual",
-        color=colors["calories"],
-        edgecolor="black",
-        linewidth=0.5,
-    )
-    ax.plot(
-        x_pos,
-        cal_norm,
-        label="Norm",
-        color=colors["norm"],
-        linewidth=2,
-        marker="o",
-        markersize=4,
-    )
-    ax.set_title("Calories vs Norm", fontweight="bold", pad=5, color="white")
-    ax.set_ylabel("kcal", color="white")
+    ax.bar([p - bar_width / 2 for p in x_pos], calories, width=bar_width, 
+           label=t("chart.legend.actual"), color=colors["calories"], edgecolor="black", linewidth=0.5)  # ✅ "Actual"
+    ax.plot(x_pos, cal_norm, label=t("chart.legend.norm"), color=colors["norm"], linewidth=2, marker="o", markersize=4)  # ✅ "Norm"
+    ax.set_title(t("chart.calories.title"), fontweight="bold", pad=5, color="white")  # ✅ "Calories vs Norm"
+    ax.set_ylabel(t("chart.calories.ylabel"), color="white")
     ax.tick_params(axis="both", colors="white")
     ax.set_xticks(x_pos)
     ax.set_xticklabels([d[5:] for d in dates], rotation=45, ha="right", color="white")
-    ax.legend(
-        loc="upper right",
-        fontsize=8,
-        facecolor="gray",
-        edgecolor="white",
-        labelcolor="white",
-    )
+    ax.legend(loc="upper right", fontsize=8, facecolor="gray", edgecolor="white", labelcolor="white")
     ax.grid(axis="y", linestyle="--", alpha=0.3, color="gray")
     ax.set_axisbelow(True)
     ax.spines["top"].set_visible(False)
@@ -242,37 +225,17 @@ def plot_general_stat() -> None:
     ax.spines["left"].set_color("white")
     ax.spines["bottom"].set_color("white")
 
+    # === 3. Proteins ===
     ax = axes[2]
-    ax.bar(
-        [p - bar_width / 2 for p in x_pos],
-        proteins,
-        width=bar_width,
-        label="Actual",
-        color=colors["proteins"],
-        edgecolor="black",
-        linewidth=0.5,
-    )
-    ax.plot(
-        x_pos,
-        prot_norm,
-        label="Norm",
-        color=colors["norm"],
-        linewidth=2,
-        marker="o",
-        markersize=4,
-    )
-    ax.set_title("Proteins vs Norm", fontweight="bold", pad=5, color="white")
-    ax.set_ylabel("g", color="white")
+    ax.bar([p - bar_width / 2 for p in x_pos], proteins, width=bar_width, 
+           label=t("chart.legend.actual"), color=colors["proteins"], edgecolor="black", linewidth=0.5)
+    ax.plot(x_pos, prot_norm, label=t("chart.legend.norm"), color=colors["norm"], linewidth=2, marker="o", markersize=4)
+    ax.set_title(t("chart.proteins.title"), fontweight="bold", pad=5, color="white")
+    ax.set_ylabel(t("chart.proteins.ylabel"), color="white")
     ax.tick_params(axis="both", colors="white")
     ax.set_xticks(x_pos)
     ax.set_xticklabels([d[5:] for d in dates], rotation=45, ha="right", color="white")
-    ax.legend(
-        loc="upper right",
-        fontsize=8,
-        facecolor="gray",
-        edgecolor="white",
-        labelcolor="white",
-    )
+    ax.legend(loc="upper right", fontsize=8, facecolor="gray", edgecolor="white", labelcolor="white")
     ax.grid(axis="y", linestyle="--", alpha=0.3, color="gray")
     ax.set_axisbelow(True)
     ax.spines["top"].set_visible(False)
@@ -280,37 +243,17 @@ def plot_general_stat() -> None:
     ax.spines["left"].set_color("white")
     ax.spines["bottom"].set_color("white")
 
+    # === 4. Fats ===
     ax = axes[3]
-    ax.bar(
-        [p - bar_width / 2 for p in x_pos],
-        fats,
-        width=bar_width,
-        label="Actual",
-        color=colors["fats"],
-        edgecolor="black",
-        linewidth=0.5,
-    )
-    ax.plot(
-        x_pos,
-        fats_norm,
-        label="Norm",
-        color=colors["norm"],
-        linewidth=2,
-        marker="o",
-        markersize=4,
-    )
-    ax.set_title("Fats vs Norm", fontweight="bold", pad=5, color="white")
-    ax.set_ylabel("g", color="white")
+    ax.bar([p - bar_width / 2 for p in x_pos], fats, width=bar_width, 
+           label=t("chart.legend.actual"), color=colors["fats"], edgecolor="black", linewidth=0.5)
+    ax.plot(x_pos, fats_norm, label=t("chart.legend.norm"), color=colors["norm"], linewidth=2, marker="o", markersize=4)
+    ax.set_title(t("chart.fats.title"), fontweight="bold", pad=5, color="white")
+    ax.set_ylabel(t("chart.fats.ylabel"), color="white")
     ax.tick_params(axis="both", colors="white")
     ax.set_xticks(x_pos)
     ax.set_xticklabels([d[5:] for d in dates], rotation=45, ha="right", color="white")
-    ax.legend(
-        loc="upper right",
-        fontsize=8,
-        facecolor="gray",
-        edgecolor="white",
-        labelcolor="white",
-    )
+    ax.legend(loc="upper right", fontsize=8, facecolor="gray", edgecolor="white", labelcolor="white")
     ax.grid(axis="y", linestyle="--", alpha=0.3, color="gray")
     ax.set_axisbelow(True)
     ax.spines["top"].set_visible(False)
@@ -318,38 +261,18 @@ def plot_general_stat() -> None:
     ax.spines["left"].set_color("white")
     ax.spines["bottom"].set_color("white")
 
+    # === 5. Carbohydrates ===
     ax = axes[4]
-    ax.bar(
-        [p - bar_width / 2 for p in x_pos],
-        carbs,
-        width=bar_width,
-        label="Actual",
-        color=colors["carbs"],
-        edgecolor="black",
-        linewidth=0.5,
-    )
-    ax.plot(
-        x_pos,
-        carbs_norm,
-        label="Norm",
-        color=colors["norm"],
-        linewidth=2,
-        marker="o",
-        markersize=4,
-    )
-    ax.set_title("Carbohydrates vs Norm", fontweight="bold", pad=5, color="white")
-    ax.set_ylabel("g", color="white")
-    ax.set_xlabel("Date (MM-DD)", color="white")
+    ax.bar([p - bar_width / 2 for p in x_pos], carbs, width=bar_width, 
+           label=t("chart.legend.actual"), color=colors["carbs"], edgecolor="black", linewidth=0.5)
+    ax.plot(x_pos, carbs_norm, label=t("chart.legend.norm"), color=colors["norm"], linewidth=2, marker="o", markersize=4)
+    ax.set_title(t("chart.carbs.title"), fontweight="bold", pad=5, color="white")
+    ax.set_ylabel(t("chart.carbs.ylabel"), color="white")
+    ax.set_xlabel(t("chart.xlabel_date"), color="white")
     ax.tick_params(axis="both", colors="white")
     ax.set_xticks(x_pos)
     ax.set_xticklabels([d[5:] for d in dates], rotation=45, ha="right", color="white")
-    ax.legend(
-        loc="upper right",
-        fontsize=8,
-        facecolor="gray",
-        edgecolor="white",
-        labelcolor="white",
-    )
+    ax.legend(loc="upper right", fontsize=8, facecolor="gray", edgecolor="white", labelcolor="white")
     ax.grid(axis="y", linestyle="--", alpha=0.3, color="gray")
     ax.set_axisbelow(True)
     ax.spines["top"].set_visible(False)
@@ -368,7 +291,7 @@ def plot_nutritional_info():
     Visualizes ingredient list and total nutrition (donut chart).
     Used on recognition page after image analysis.
     """
-    st.subheader("Ingredients")
+    st.subheader(t("ui.recognition.ingredients"))
 
     if not st.session_state["table_ingredients"]:
         st.session_state["table_ingredients"] = [
@@ -387,66 +310,66 @@ def plot_nutritional_info():
 
     column_config = {
         "ingredient": st.column_config.TextColumn(
-            "Ingredient",
+            t("ui.table.ingredient"),
             max_chars=25,
             validate=r"^[a-zA-Zа-яА-Я0-9\s\-_]+$",
             required=True,
-            help="Ingredient name (e.g., apple, rice, chicken breast)",
+            help=t("help.table.ingredient"),
         ),
         "weight": st.column_config.NumberColumn(
-            "Weight (g)",
+            t("ui.table.weight_g"),
             min_value=0.0,
             max_value=10000.0,
             format="%.2f",
             step=0.1,
             required=True,
-            help="Weight of the ingredient in grams",
+            help=t("help.table.weight"),
         ),
         "calories": st.column_config.NumberColumn(
-            "Calories (kcal)",
+            t("ui.table.calories_kcal"),
             min_value=0.0,
             max_value=10000.0,
             format="%.1f",
             step=0.1,
             required=True,
-            help="Calorie content of the ingredient",
+            help=t("help.table.calories"),
         ),
         "proteins": st.column_config.NumberColumn(
-            "Proteins (g)",
+            t("ui.table.proteins_g"),
             min_value=0.0,
             max_value=1000.0,
             format="%.2f",
             step=0.1,
             required=True,
-            help="Protein content in grams",
+            help=t("help.table.proteins"),
         ),
         "fats": st.column_config.NumberColumn(
-            "Fats (g)",
+            t("ui.table.fats_g"),
             min_value=0.0,
             max_value=1000.0,
             format="%.2f",
             step=0.1,
             required=True,
-            help="Fat content in grams",
+            help=t("help.table.fats"),
         ),
         "carbohydrates": st.column_config.NumberColumn(
-            "Carbohydrates (g)",
+            t("ui.table.carbs_g"),
             min_value=0.0,
             max_value=1000.0,
             format="%.2f",
             step=0.1,
             required=True,
-            help="Carbohydrate content in grams",
+            help=t("help.table.carbs"),
         ),
     }
 
     if has_match:
         column_config["match"] = st.column_config.TextColumn(
-            "Match",
+            t("ui.table.match"),
             max_chars=50,
             validate=None,
             required=False,
-            help="Matched name from database (auto-detected or manual)",
+            help=t("help.table.match"),
         )
 
     st.data_editor(
@@ -459,7 +382,7 @@ def plot_nutritional_info():
         column_config=column_config,
     )
 
-    st.subheader("Total nutrition")
+    st.subheader(t("ui.recognition.total"))
 
     total = st.session_state.get(
         "total_macros", {"calories": 0, "proteins": 0, "fats": 0, "carbohydrates": 0}
@@ -493,15 +416,15 @@ def plot_nutritional_info():
                     colors=[colors.get(labels[0], [1.0, 1.0, 1.0])],
                 )
 
-                ax.set_title(
-                    labels[0][0].upper() + labels[0][1:],
-                    fontdict={"color": "white", "fontsize": 18},
-                )
+                label_title = t(f"macros.{labels[0]}")
+                ax.set_title(label_title, fontdict={"color": "white", "fontsize": 18})
 
+                unit_g = t("ui.unit.g")
+                unit_kcal = t("ui.unit.kcal")
+                
                 plt.text(
-                    0,
-                    0,
-                    f'{round(sizes[0], 1)} g.\n{round(total["calories"], 1)} kcal',
+                    0, 0,
+                    f'{round(sizes[0], 1)} {unit_g}\n{round(total["calories"], 1)} {unit_kcal}',
                     horizontalalignment="center",
                     verticalalignment="center",
                     fontsize=14,
@@ -527,9 +450,8 @@ def plot_nutritional_info():
                     autotext.set_position((x * 1.2, y * 1.2))
 
                 plt.text(
-                    0,
-                    0,
-                    f'{round(total["calories"], 0)}\nkcal',
+                    0, 0,
+                    f'{round(total["calories"], 0)}\n{t("ui.unit.kcal")}',
                     horizontalalignment="center",
                     verticalalignment="center",
                     fontsize=20,
@@ -538,9 +460,8 @@ def plot_nutritional_info():
         else:
             ax.pie([1], colors=[[0.5, 0.5, 0.5]])
             plt.text(
-                0,
-                0,
-                f"No data",
+                0, 0,
+                t("ui.chart.no_data"),
                 horizontalalignment="center",
                 verticalalignment="center",
                 fontsize=20,
@@ -563,7 +484,7 @@ def display_days_nutrition_overview():
     days_info = st.session_state.get("days_info", {})
     norms_info = st.session_state.get("daily_nutrition_norms", {})
 
-    st.subheader("Information of the day")
+    st.subheader(t("ui.home.today_info"))
 
     if isinstance(norms_info, list) and len(norms_info) > 0:
         norms_info = norms_info[0]
@@ -581,7 +502,8 @@ def display_days_nutrition_overview():
     ax = ax.reshape(1, 4)[0]
 
     for el, val, norm, label, color in zip(ax, values_day, norms_day, labels, colors):
-        label_title = label[0].upper() + label[1:]
+        label_title = t(f"macros.{label}").title()
+        
         remain = max(0, norm - val)
 
         if norm == 0:
@@ -605,11 +527,13 @@ def display_days_nutrition_overview():
         for text in texts:
             text.set_visible(False)
 
+        unit_g = t("ui.unit.g")
+        unit_kcal = t("ui.unit.kcal")
+
         if label != "calories":
             el.text(
-                0,
-                0,
-                f"{int(val)} / {int(norm)}\ng.",
+                0, 0,
+                f"{int(val)} / {int(norm)}\n{unit_g}",
                 horizontalalignment="center",
                 verticalalignment="center",
                 fontsize=14,
@@ -618,9 +542,8 @@ def display_days_nutrition_overview():
             )
         else:
             el.text(
-                0,
-                0,
-                f"{int(val)} / {int(norm)}\nKcal.",
+                0, 0,
+                f"{int(val)} / {int(norm)}\n{unit_kcal}",
                 horizontalalignment="center",
                 verticalalignment="center",
                 fontsize=14,

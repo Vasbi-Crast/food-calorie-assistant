@@ -2,6 +2,7 @@ from typing import Dict, List, Any
 import csv
 from difflib import get_close_matches
 from sentence_transformers import SentenceTransformer, util
+from assistant import LLMAssistant
 
 
 class IngredientNutritionSearch:
@@ -137,8 +138,8 @@ class IngredientNutritionSearch:
 
         return None
 
-    def search(
-        self, img_ingredients: Dict[str, float], search_type: str = "fuzzy"
+    async def search(
+        self, img_ingredients: Dict[str, float], assistant: LLMAssistant,  search_type: str = "fuzzy"
     ) -> List[Dict[str, Any]]:
         """
         Searches for the nutritional information of a list of ingredients.
@@ -150,7 +151,9 @@ class IngredientNutritionSearch:
         """
         if search_type not in ["fuzzy", "semantic"]:
             raise ValueError("`search_type` must be either 'fuzzy' or 'semantic'")
-
+        
+        not_match = False
+        unrecognized_ingredients = {}
         results = []
 
         for ingredient_name, ingredient_weight in img_ingredients.items():
@@ -164,17 +167,38 @@ class IngredientNutritionSearch:
 
                 if match:
                     ingredient_data = self.data.get(match)
-                    result_data = {"match": match, "weight": ingredient_weight}
 
-                    result_data.update(
-                        {
-                            key: round(value * (ingredient_weight / 100.0), 0)
+                    result_data = {
+                        "match": match,
+                        "weight": ingredient_weight,
+                        **{
+                            key: round(value * (ingredient_weight / 100.0), 1)
                             for key, value in ingredient_data.items()
                         }
-                    )
-
+                    }
+                    
                     results.append({ingredient_name: result_data})
                 else:
-                    results.append({ingredient_name: {}})
+                    not_match = True
+                    unrecognized_ingredients[ingredient_name] = ingredient_weight
 
+        if not_match:
+            res = await assistant.get_macros_extraction(unrecognized_ingredients, timeout=240)
+            
+            if res.get("status") == "success":
+                ingredients = res.get("result", {})
+
+                for r_key, r_val in ingredients.items():
+                    if isinstance(r_val, dict):
+                        macros = {
+                            "match": r_val.get("match", f"~{r_key}"),
+                            "weight": r_val.get("weight", 0),
+                            "calories": r_val.get("calories", 0),
+                            "fats": r_val.get("fats", 0),
+                            "proteins": r_val.get("proteins", 0),
+                            "carbohydrates": r_val.get("carbohydrates", 0),
+                        }
+                        results.append({r_key: macros})
+            else:
+                print(f"LLM macros extraction failed: {res.get('error', 'Unknown error')}")
         return results

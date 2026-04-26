@@ -1,0 +1,262 @@
+# === AUTH ===
+login:
+  title: "Login"
+  username: "Username"
+  password: "Password"
+  sign_in_btn: "Sign in"
+  sign_up_btn: "Sign up"
+
+register:
+  title: "Registration"
+  gender: 
+    label: "What gender are you?"
+    options:
+      - ":blue[Man]"
+      - ":red[Woman]"
+      - "Don't specify"
+  age: 
+    label: "How old are you?"
+    placeholder: "Type a age..."
+  lifestyle:
+    label: "What kind of lifestyle do you lead?"
+    options:
+      - "Sedentary lifestyle"
+      - "Light training 1-2 times a week"
+      - "3-5 training sessions per week"
+      - "Daily intensive training"
+      - "Heavy physical labor"
+  weight:
+    label: "How much weight do you have?"
+    placeholder: "Type a weight..."
+  height:
+    label: "How tall are you in cm?"
+    placeholder: "Type a height..."
+  username:
+    label: "Username"
+    placeholder: "Type a username..."
+    pattern: "
+      \n\n• Minimum length: 3 characters
+      \n\n• Maximum length: 20 characters
+      \n\n• No leading or trailing spaces
+      \n\n• Case-insensitive (stored as lowercase)"
+  password:
+    label: "Password"
+    placeholder: "Type a password..."
+    pattern: "
+      \n\n• Minimum length: 6 characters
+      \n\n• At least 3 digits
+      \n\n• At least one uppercase and one lowercase letter
+      \n\n• At least one special character (#, !, $, ^, *, @)"
+  re_password:
+    label: "Repeat the password"
+    placeholder: "Type a re-password..."
+  sign_up_btn: "Sign up"
+  back_btn: "Back"
+
+# === PAGES ===
+home:
+  title: "Hi, {username}!"
+  view_daily_log: "View daily log"
+  add_dishes: "Add dishes"
+  general_statistics: "General statistics"
+  settings: "Settings"
+  log_out: "Log out"
+
+daily_log:
+  title: "Daily Log"
+  select_date: "Select Date"
+  date_help: "Select the date for your food log. Future dates are not available."
+  no_data: "📋 No data for {date}"
+  save_changes: "Save changes"
+  back_btn: "Back"
+
+recognition:
+  title: "Calorie Tracker"
+  choose_image: "Choose an image..."
+  describe_dish: "Describe the dish (max 250 characters)"
+  failed_image: "🖼️ Failed to process image. Please ensure the file is valid."
+  please_upload: "📷 Please upload an image first"
+  save_dish: "Save dish"
+  upload: "Upload"
+  back_btn: "Back"
+  failed_save: "Failed to save dish"
+
+general_stat:
+  title: "General Statistics"
+  select_period: "Select Period"
+  period_help: "Select date range for statistics. Future dates are not available."
+  back_btn: "Back"
+
+settings:
+  title: "Settings"
+  gender: 
+    label: "What gender are you?"
+    options:
+      - ":blue[Man]"
+      - ":red[Woman]"
+      - "Don't specify"
+  age: 
+    label: "How old are you?"
+    placeholder: "Type a age..."
+  lifestyle:
+    label: "What kind of lifestyle do you lead?"
+    options:
+      - "Sedentary lifestyle"
+      - "Light training 1-2 times a week"
+      - "3-5 training sessions per week"
+      - "Daily intensive training"
+      - "Heavy physical labor"
+  weight:
+    label: "How much weight do you have?"
+    placeholder: "Type a weight..."
+  height:
+    label: "How tall are you in cm?"
+    placeholder: "Type a height..."
+  apply_btn: "Apply"
+  back_btn: "Back"
+
+# === ERRORS ===
+error:
+  network:
+    timeout: "⏳ Server timeout. Please try again."
+    connection: "🔌 Cannot connect to server. Is it running?"
+    generic: "❌ Request failed: {error}"
+  
+  http:
+    400: "⚠️ Bad Request"
+    401: "🔐 Authorization Failed"
+    403: "🚫 Access Denied"
+    404: "📍 Not Found"
+    422: "📝 Validation Error"
+    500: "💥 Internal Server Error"
+    504: "⏳ Gateway Timeout"
+  
+  auth:
+    user_not_found: "🔐 The user does not exist. Please register."
+    invalid_password: "🔐 Incorrect password. Try again."
+  
+  session:
+    inactive: "⏳ You've been inactive for too long"
+  
+  validation:
+    missing: "This field is required"
+    string_too_short: "Value is too short (min {num_char} characters for {field})"
+    string_too_long: "Value is too long (max {num_char} characters for {field})"
+    greater_than_equal: "Value must be >= minimum allowed for {field}"
+    less_than_equal: "Value must be <= maximum allowed for {field}"
+    greater_than: "Value must be > minimum allowed for {field}"
+    less_than: "Value must be < maximum allowed for {field}"
+    value_error:
+      password: "Incorrect form {field}.\nRules:\n{form_pattern}"
+    int_parsing: "Must be an integer number"
+    float_parsing: "Must be a decimal number"
+    date_parsing: "Invalid date format (YYYY-MM-DD)"
+    generic: "Invalid value provided"
+  
+  form:
+    username_required: "⚠️ Username is required."
+    password_required: "⚠️ Password is required."
+    passwords_mismatch: "⚠️ Passwords do not match."
+  
+  dish:
+    no_ingredients: "No ingredients to save"
+
+# === WARNINGS & INFO ===
+warning:
+  recognition:
+    parse_failed: "⚠️ Failed to parse nutrition data."
+    no_data: "⚠️ Nutritional information not available for this image."
+  stats:
+    no_data: "⚠️ No statistics data available. Please select a date range."
+
+info:
+  stats:
+    no_nutrition: "📋 No nutrition data available for selected period"
+
+# === UI PATTERNS ===
+ui:
+  username:
+    pattern: |
+      • Minimum length: 3 characters
+      • Maximum length: 20 characters
+      • No leading or trailing spaces
+      • Case-insensitive (stored as lowercase)
+  password:
+    pattern: |
+      • Minimum length: 6 characters
+      • At least 3 digits
+      • At least one uppercase and one lowercase letter
+      • At least one special character (#, !, $, ^, *, @)
+  
+  # === UI: TABLES ===
+  table:
+    ingredient: "Ingredient"
+    weight_g: "Weight (g)"
+    calories_kcal: "Calories (kcal)"
+    proteins_g: "Proteins (g)"
+    fats_g: "Fats (g)"
+    carbs_g: "Carbohydrates (g)"
+    match: "Match"
+    total: "📊 Total"
+    saved_success: "✅ Changes saved successfully!"
+  
+  metric:
+    weight_g: "Weight (g.)"
+    calories_kcal: "Calories (kcal)"
+    proteins_g: "Proteins (g.)"
+    fats_g: "Fats (g.)"
+    carbs_g: "Carbs (g.)"
+  
+  recognition:
+    ingredients: "Ingredients"
+    total: "Total nutrition"
+  
+  home:
+    today_info: "Information of the day"
+  
+  unit:
+    g: "g."
+    kcal: "kcal"
+  
+  chart:
+    no_data: "No data"
+
+# === HELP TEXTS ===
+help:
+  table:
+    ingredient: "Ingredient name (e.g., apple, rice, chicken breast)"
+    weight: "Weight of the ingredient in grams"
+    calories: "Calorie content of the ingredient"
+    proteins: "Protein content in grams"
+    fats: "Fat content in grams"
+    carbs: "Carbohydrate content in grams"
+    match: "Matched name from database (auto-detected or manual)"
+
+# === CHARTS ===
+chart:
+  weight:
+    title: "Weight Trend"
+    ylabel: "Weight (kg)"
+  calories:
+    title: "Calories vs Norm"
+    ylabel: "kcal"
+  proteins:
+    title: "Proteins vs Norm"
+    ylabel: "g"
+  fats:
+    title: "Fats vs Norm"
+    ylabel: "g"
+  carbs:
+    title: "Carbohydrates vs Norm"
+    ylabel: "g"
+  xlabel_date: "Date (MM-DD)"
+  legend:
+    actual: "Actual"
+    norm: "Norm"
+
+# === MACROS NAMES ===
+macros:
+  calories: "Calories"
+  proteins: "Proteins"
+  fats: "Fats"
+  carbohydrates: "Carbohydrates"
