@@ -1,4 +1,9 @@
 -- ============================================
+-- 0. ENUM TYPE FOR GOAL
+-- ============================================
+CREATE TYPE user_goal AS ENUM ('weight_loss', 'weight_maintenance', 'weight_gain');
+
+-- ============================================
 -- 1. USERS
 -- ============================================
 CREATE TABLE users (
@@ -6,9 +11,10 @@ CREATE TABLE users (
     hash_password VARCHAR(255) NOT NULL,
     age INT NOT NULL,
     bmr DECIMAL(6,4) NOT NULL,
+    gender VARCHAR(5) CHECK (gender IN ('w', 'm', 'None')),
+    goal user_goal DEFAULT 'weight_maintenance',
     height DECIMAL(5,1) NOT NULL CHECK (height BETWEEN 50 AND 250),
     weight DECIMAL(5,1) NOT NULL CHECK (weight BETWEEN 20 AND 500),
-    gender VARCHAR(5) CHECK (gender IN ('w', 'm', 'None')),
     norm_calories DECIMAL(6,1) NOT NULL CHECK (norm_calories BETWEEN 400 AND 10000),
     norm_proteins DECIMAL(6,1) NOT NULL CHECK (norm_proteins BETWEEN 0 AND 1000),
     norm_fats DECIMAL(6,1) NOT NULL CHECK (norm_fats BETWEEN 0 AND 1000),
@@ -23,9 +29,10 @@ CREATE TABLE user_metrics_history (
     username VARCHAR(255) NOT NULL,
     age INT NOT NULL,
     bmr DECIMAL(6,4) NOT NULL,
+    gender VARCHAR(5) CHECK (gender IN ('w', 'm', 'None')),
+    goal user_goal DEFAULT 'weight_maintenance',
     height DECIMAL(5,1) NOT NULL CHECK (height BETWEEN 50 AND 250),
     weight DECIMAL(5,1) NOT NULL CHECK (weight BETWEEN 20 AND 500),
-    gender VARCHAR(5) CHECK (gender IN ('w', 'm', 'None')),
     norm_calories DECIMAL(6,1) NOT NULL CHECK (norm_calories BETWEEN 400 AND 10000),
     norm_proteins DECIMAL(6,1) NOT NULL CHECK (norm_proteins BETWEEN 0 AND 1000),
     norm_fats DECIMAL(6,1) NOT NULL CHECK (norm_fats BETWEEN 0 AND 1000),
@@ -205,12 +212,14 @@ RETURNS TRIGGER AS $$
 BEGIN
     INSERT INTO user_metrics_history (
         username, 
-        weight, height, age, bmr, gender,
+        age, bmr, gender, goal,
+        height, weight,
         norm_calories, norm_proteins, norm_fats, norm_carbohydrates,
         recorded_at
     ) VALUES (
         NEW.username, 
-        NEW.weight, NEW.height, NEW.age, NEW.bmr, NEW.gender,
+        NEW.age, NEW.bmr, NEW.gender, NEW.goal,
+        NEW.height, NEW.weight,
         NEW.norm_calories, NEW.norm_proteins, NEW.norm_fats, NEW.norm_carbohydrates,
         CURRENT_TIMESTAMP
     );

@@ -1,6 +1,260 @@
-# === AUTH ===
+help_page:
+  button: "How it works?"
+  modal:
+    title: "🍽️ Food Assistant — How it works"
+    select_title: "📚 Choose a topic:"
+    steps:
+      - title: "🔍 About the app"
+        text: |
+          <div style="max-width: 600px; margin: 0 auto; line-height: 1.8; hyphens: auto; overflow-wrap: break-word;">
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 25px; border-radius: 10px; margin-bottom: 25px; text-align: center;">
+              <p style="font-size: 22px; font-weight: bold; margin: 0 0 10px 0; color: white;">🍽️ Welcome to Food Assistant!</p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 15px;"><strong>Our system helps you:</strong></p>
+              <p style="font-size: 15px; margin-bottom: 10px; padding-left: 10px; border-left: 3px solid #667eea;">Lose weight ⬇️, gain muscle mass 💪, or maintain your current weight ⚖️. You choose the goal, we provide the tools.</p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>📸 Just snap a photo</strong></p>
+              <p style="font-size: 15px; margin-bottom: 10px; padding-left: 10px; border-left: 3px solid #667eea;">Upload it to the system — the ML model automatically identifies ingredients and calculates calories 🔥, protein, fats, and carbs 📊.</p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>✨ Personalized recommendations</strong></p>
+              <p style="font-size: 15px; margin-bottom: 10px; padding-left: 10px; border-left: 3px solid #667eea;">Get progress tracking 📈 and complete nutrition statistics — all in one place, no manual data entry 💾.</p>
+            </div>
+            <div style="background: rgba(255, 107, 107, 0.1); padding: 20px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid #FF6B6B;">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>📝 Forget the complexity</strong></p>
+              <p style="font-size: 15px; margin: 0; padding-left: 10px; border-left: 3px solid #FF6B6B;">Forget complicated spreadsheets and manual macro calculations. Achieve results faster 🚀 with a smart assistant that's always at hand 📱.</p>
+            </div>
+            <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); padding: 25px; border-radius: 10px; margin-bottom: 20px; text-align: center;">
+              <p style="font-size: 18px; font-weight: bold; margin: 0 0 10px 0; color: white;">🌟 Start your journey to healthy eating today!</p>
+            </div>
+            <div style="background: rgba(76, 175, 80, 0.1); padding: 20px; border-radius: 10px; border-left: 4px solid #4CAF50; text-align: center;">
+              <p style="font-size: 16px; margin: 0;"><em>💡 Create an account to get started — it takes less than a minute.</em><br><br><strong>👉 Go to «👤 Create Profile» tab</strong></p>
+            </div>
+          </div>
+      - title: "👤 Create Profile"
+        text: |
+          <div style="max-width: 600px; margin: 0 auto; line-height: 1.8; hyphens: auto; overflow-wrap: break-word;">
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 10px; margin-bottom: 25px; text-align: center;">
+              <p style="font-size: 20px; font-weight: bold; margin: 0 0 10px 0; color: white;">🚀 Ready to join?</p>
+              <p style="font-size: 16px; margin: 0; color: #f0f0f0;"><em>It's easy! On the «Login» page, tap the «Sign Up» button.</em></p>
+            </div>
+            <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; margin-bottom: 25px;">
+              <p style="font-size: 16px; margin: 0;"><strong>On the registration screen, you'll fill everything at once:</strong> username, password, and profile details. 👋 <em>It takes less than a minute!</em></p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 17px; margin-bottom: 8px;"><strong>🎯 Goal</strong></p>
+              <p style="font-size: 15px; margin-bottom: 15px; padding-left: 10px; border-left: 3px solid #667eea;">What do you want to achieve? Lose weight ⬇️, gain muscle 💪, or maintain your shape ⚖️? We'll adapt to you!</p>
+              <p style="font-size: 17px; margin-bottom: 8px;"><strong>👤 Gender</strong></p>
+              <p style="font-size: 15px; margin-bottom: 15px; padding-left: 10px; border-left: 3px solid #667eea;">Specify your gender for more accurate calorie calculation. You can select «Not specified».</p>
+              <p style="font-size: 17px; margin-bottom: 8px;"><strong>🎂 Age</strong></p>
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>🏃 Activity Level</strong></p>
+              <p style="font-size: 15px; margin: 0; padding-left: 10px; border-left: 3px solid #667eea;">Mark your physical activity level: from sedentary lifestyle to intensive training. This affects your calorie norm calculation.</p>
+              <p style="font-size: 15px; margin-bottom: 15px; padding-left: 10px; border-left: 3px solid #667eea;">Select how active you are during the week: from sedentary lifestyle to heavy physical work. This affects your final calorie target.</p>
+              <p style="font-size: 17px; margin-bottom: 8px;"><strong>⚖️ Weight</strong></p>
+              <p style="font-size: 15px; margin-bottom: 15px; padding-left: 10px; border-left: 3px solid #667eea;">Your current weight in kilograms. This is the foundation for calculating your daily macros and tracking progress.</p>
+              <p style="font-size: 17px; margin-bottom: 8px;"><strong>📏 Height</strong></p>
+              <p style="font-size: 15px; margin-bottom: 15px; padding-left: 10px; border-left: 3px solid #667eea;">Together with weight and age, this helps us calculate exactly how many calories you need.</p>
+              <p style="font-size: 17px; margin-bottom: 8px;"><strong>🔐 Username and Password</strong></p>
+              <p style="font-size: 15px; margin-bottom: 15px; padding-left: 10px; border-left: 3px solid #667eea;">Needed to log into your account. Create a secure password and remember it (or write it down somewhere safe) so you can always log in.</p>
+            </div>
+            <div style="background: rgba(76, 175, 80, 0.1); padding: 15px; border-radius: 8px; border-left: 4px solid #4CAF50;">
+              <p style="font-size: 15px; margin: 0;"><em>💡 Don't worry: all your data is confidential. And if anything changes — you can always update it in settings.</em></p>
+            </div>
+          </div>
+      - title: "🏠 Home Page"
+        text: |
+          <div style="max-width: 600px; margin: 0 auto; line-height: 1.8; hyphens: auto; overflow-wrap: break-word;">
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 25px; border-radius: 10px; margin-bottom: 25px; text-align: center;">
+              <p style="font-size: 22px; font-weight: bold; margin: 0 0 10px 0; color: white;">👋 Hi! You're on the Home Page</p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>📊 Circular Indicators</strong></p>
+              <p style="font-size: 15px; margin: 0; padding-left: 10px; border-left: 3px solid #667eea;">Track calories, protein, fats, and carbs for today. The indicators show your progress relative to your daily goals and update in real-time.</p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>📝 Food Diary</strong></p>
+              <p style="font-size: 15px; margin: 0; padding-left: 10px; border-left: 3px solid #667eea;">Add, delete, or modify ingredients for any day. View your nutrition history and adjust entries.</p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>📸 Add a Meal</strong></p>
+              <p style="font-size: 15px; margin: 0; padding-left: 10px; border-left: 3px solid #667eea;">Upload a photo of your food — the ML model recognizes ingredients and automatically calculates macros. You can add, delete, or modify each ingredient before saving.</p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>📈 Statistics</strong></p>
+              <p style="font-size: 15px; margin: 0; padding-left: 10px; border-left: 3px solid #667eea;">Analyze your progress over a week or month: weight trends, calorie intake, protein, fats, and carbs.</p>
+            </div>
+            <div style="background: rgba(76, 175, 80, 0.1); padding: 20px; border-radius: 10px; border-left: 4px solid #4CAF50; text-align: center;">
+              <p style="font-size: 16px; margin: 0;"><em>💡 Tip: Manage each ingredient for maximum tracking accuracy!</em></p>
+            </div>
+          </div>
+      - title: "📸 Add a Meal"
+        text: |
+          <div style="max-width: 600px; margin: 0 auto; line-height: 1.8; hyphens: auto; overflow-wrap: break-word;">
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 25px; border-radius: 10px; margin-bottom: 25px; text-align: center;">
+              <p style="font-size: 20px; font-weight: bold; margin: 0 0 10px 0; color: white;">🚀 Want to add a meal?</p>
+              <p style="font-size: 16px; margin: 0; color: #f0f0f0;"><em>On the home page, click the «Add a Meal» button.</em></p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>🍽️ Photo Recognition</strong></p>
+              <p style="font-size: 15px; margin: 0; padding-left: 10px; border-left: 3px solid #667eea;">Upload a photo of your meal — the system automatically recognizes ingredients and calculates macros.</p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>📤 Upload Photo</strong></p>
+              <p style="font-size: 15px; margin: 0; padding-left: 10px; border-left: 3px solid #667eea;">Upload a photo by drag-and-drop or using the «Browse files» button. Supported formats: JPG, JPEG, PNG (max 3MB).</p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>✏️ Description (Optional)</strong></p>
+              <p style="font-size: 15px; margin: 0; padding-left: 10px; border-left: 3px solid #667eea;">Add a text description of your dish (up to 250 characters) — this helps the system recognize ingredients more accurately.</p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>📊 Ingredients Table</strong></p>
+              <p style="font-size: 15px; margin-bottom: 10px; padding-left: 10px; border-left: 3px solid #667eea;"><strong>Ingredient</strong> — product name.<br>
+              <strong>Weight (g)</strong> — ingredient weight in grams.<br>
+              <strong>Calories (kcal)</strong> — calorie content.<br>
+              <strong>Proteins (g)</strong> — protein content.<br>
+              <strong>Fats (g)</strong> — fat content.<br>
+              <strong>Carbs (g)</strong> — carbohydrate content.</p>
+              <p style="font-size: 14px; margin: 10px 0 0 10px; padding: 10px; background: rgba(255, 193, 7, 0.1); border-left: 3px solid #FFC107; border-radius: 4px;">
+                <strong>💡 Note:</strong> if an ingredient name starts with <strong>~</strong> (tilde), it means values are approximate. Be careful when reviewing such entries in your food diary.
+              </p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>📈 Donut Chart</strong></p>
+              <p style="font-size: 15px; margin: 0; padding-left: 10px; border-left: 3px solid #667eea;">Visualization shows the overall ratio of proteins, fats, and carbs in the dish. Total calories are displayed in the center.</p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>✋ Editing</strong></p>
+              <p style="font-size: 15px; margin: 0; padding-left: 10px; border-left: 3px solid #667eea;">Review the recognition results. You can add new ingredients, remove unnecessary ones, or adjust the weight of each product before saving.</p>
+            </div>
+            <div style="background: rgba(76, 175, 80, 0.1); padding: 20px; border-radius: 10px; border-left: 4px solid #4CAF50; text-align: center;">
+              <p style="font-size: 16px; margin: 0;"><em>💡 Tip: Take photos in good lighting for better recognition accuracy!</em></p>
+            </div>
+          </div>
+      - title: "📝 Food Diary"
+        text: |
+          <div style="max-width: 600px; margin: 0 auto; line-height: 1.8; hyphens: auto; overflow-wrap: break-word;">
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 25px; border-radius: 10px; margin-bottom: 25px; text-align: center;">
+              <p style="font-size: 20px; font-weight: bold; margin: 0 0 10px 0; color: white;">📋 Nutrition Management</p>
+              <p style="font-size: 16px; margin: 0; color: #f0f0f0;"><em>On the home page, click the «Food Diary» button.</em></p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>📅 Select Date</strong></p>
+              <p style="font-size: 15px; margin: 0; padding-left: 10px; border-left: 3px solid #667eea;">View and edit data for any day. Use the calendar to select the desired date.</p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>📊 Ingredients Table</strong></p>
+              <p style="font-size: 15px; margin-bottom: 10px; padding-left: 10px; border-left: 3px solid #667eea;"><strong>Ingredient</strong> — product name.<br>
+              <strong>Weight (g)</strong> — ingredient weight in grams.<br>
+              <strong>Calories (kcal)</strong> — calorie content.<br>
+              <strong>Proteins (g)</strong> — protein content.<br>
+              <strong>Fats (g)</strong> — fat content.<br>
+              <strong>Carbs (g)</strong> — carbohydrate content.</p>
+              <p style="font-size: 14px; margin: 10px 0 0 10px; padding: 10px; background: rgba(255, 193, 7, 0.1); border-left: 3px solid #FFC107; border-radius: 4px;">
+                <strong>💡 Note:</strong> if an ingredient name starts with <strong>~</strong> (tilde), it means values are approximate. Be careful when reviewing such entries.
+              </p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>📈 Total Statistics</strong></p>
+              <p style="font-size: 15px; margin: 0; padding-left: 10px; border-left: 3px solid #667eea;">At the bottom of the page, total values for the day are displayed: total weight, calories, protein, fats, and carbs.</p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>✏️ Editing</strong></p>
+              <p style="font-size: 15px; margin: 0; padding-left: 10px; border-left: 3px solid #667eea;">Modify ingredient weights, remove unnecessary ones, or add new products. All changes apply to the selected date.</p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>💾 Save Changes</strong></p>
+              <p style="font-size: 15px; margin: 0; padding-left: 10px; border-left: 3px solid #667eea;">After editing, click «Save Changes» to update the data in your food diary.</p>
+            </div>
+            <div style="background: rgba(76, 175, 80, 0.1); padding: 20px; border-radius: 10px; border-left: 4px solid #4CAF50; text-align: center;">
+              <p style="font-size: 16px; margin: 0;"><em>💡 Tip: Check your food diary regularly to stay on top of your nutrition!</em></p>
+            </div>
+          </div>
+      - title: "📈 Statistics"
+        text: |
+          <div style="max-width: 600px; margin: 0 auto; line-height: 1.8; hyphens: auto; overflow-wrap: break-word;">
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 25px; border-radius: 10px; margin-bottom: 25px; text-align: center;">
+              <p style="font-size: 20px; font-weight: bold; margin: 0 0 10px 0; color: white;">📊 Progress Analysis</p>
+              <p style="font-size: 16px; margin: 0; color: #f0f0f0;"><em>On the home page, click the «Statistics» button.</em></p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>📅 Select Period</strong></p>
+              <p style="font-size: 15px; margin: 0; padding-left: 10px; border-left: 3px solid #667eea;">Choose a date range for analysis. Statistics will be displayed for the entire selected period.</p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>📉 Weight Dynamics</strong></p>
+              <p style="font-size: 15px; margin: 0; padding-left: 10px; border-left: 3px solid #667eea;">Bar chart shows your weight changes over the selected period. Track your progress in kilograms.</p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>📊 Chart Legend</strong></p>
+              <p style="font-size: 15px; margin: 0; padding-left: 10px; border-left: 3px solid #667eea;">On all comparison charts (calories, protein, fats, carbs): <strong>red line</strong> — your daily norm, <strong>bars</strong> — actual consumption.</p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>🔥 Calories vs Norm</strong></p>
+              <p style="font-size: 15px; margin: 0; padding-left: 10px; border-left: 3px solid #667eea;">Compare actual calorie intake with your daily norm. Helps control calorie deficit or surplus.</p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>💪 Protein vs Norm</strong></p>
+              <p style="font-size: 15px; margin: 0; padding-left: 10px; border-left: 3px solid #667eea;">Track protein consumption relative to your norm. Important for maintaining muscle mass.</p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>🥑 Fats vs Norm</strong></p>
+              <p style="font-size: 15px; margin: 0; padding-left: 10px; border-left: 3px solid #667eea;">Control fat consumption relative to your daily norm. Important for hormonal health.</p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>🍞 Carbs vs Norm</strong></p>
+              <p style="font-size: 15px; margin: 0; padding-left: 10px; border-left: 3px solid #667eea;">Track carbohydrate consumption relative to your norm. Carbs are the body's primary energy source, especially important during physical activity.</p>
+            </div>
+            <div style="background: rgba(76, 175, 80, 0.1); padding: 20px; border-radius: 10px; border-left: 4px solid #4CAF50; text-align: center;">
+              <p style="font-size: 16px; margin: 0;"><em>💡 Tip: Check statistics weekly to evaluate progress and adjust your goals!</em></p>
+            </div>
+          </div>
+      - title: "⚙️ Settings"
+        text: |
+          <div style="max-width: 600px; margin: 0 auto; line-height: 1.8; hyphens: auto; overflow-wrap: break-word;">
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 25px; border-radius: 10px; margin-bottom: 25px; text-align: center;">
+              <p style="font-size: 22px; font-weight: bold; margin: 0 0 10px 0; color: white;">👋 Hi! You're on the Home Page</p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>🎯 Goal</strong></p>
+              <p style="font-size: 15px; margin: 0; padding-left: 10px; border-left: 3px solid #667eea;">Choose your goal: lose weight, maintain current weight, or gain weight. This affects your daily calorie calculation.</p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>👤 Gender</strong></p>
+              <p style="font-size: 15px; margin: 0; padding-left: 10px; border-left: 3px solid #667eea;">Specify your gender for more accurate basal metabolic rate calculation. You can select «Not specified».</p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>🎂 Age</strong></p>
+              <p style="font-size: 15px; margin: 0; padding-left: 10px; border-left: 3px solid #667eea;">Enter your age in years. Metabolism changes with age, so this is important for calculations.</p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>🏃 Activity Level</strong></p>
+              <p style="font-size: 15px; margin: 0; padding-left: 10px; border-left: 3px solid #667eea;">Mark your physical activity level: from sedentary lifestyle to intensive training. This affects your calorie norm calculation.</p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>⚖️ Weight</strong></p>
+              <p style="font-size: 15px; margin: 0; padding-left: 10px; border-left: 3px solid #667eea;">Your current weight in kilograms. Update this value regularly to track your progress.</p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>📏 Height</strong></p>
+              <p style="font-size: 15px; margin: 0; padding-left: 10px; border-left: 3px solid #667eea;">Your height in centimeters. Used to calculate BMI and daily calorie needs.</p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>💾 Apply Changes</strong></p>
+              <p style="font-size: 15px; margin: 0; padding-left: 10px; border-left: 3px solid #667eea;">After changing parameters, click the «Apply» button to save new settings and recalculate norms.</p>
+            </div>
+            <div style="background: rgba(76, 175, 80, 0.1); padding: 20px; border-radius: 10px; border-left: 4px solid #4CAF50; text-align: center;">
+              <p style="font-size: 16px; margin: 0;"><em>💡 Tip: Update your weight regularly for accurate progress tracking!</em></p>
+            </div>
+          </div>
+  description: "*You can always reopen this help from the sidebar.*"
+
+# === PAGES ===
+
 login:
   title: "Login"
+  btn_title: "Login"
   username: "Username"
   password: "Password"
   sign_in_btn: "Sign in"
@@ -8,23 +262,41 @@ login:
 
 register:
   title: "Registration"
-  gender: 
+  btn_title: "Registration"
+  goal:
+    label: "What is your goal?"
+    options:
+      - label: "Weight loss"
+        value: "weight_loss"
+      - label: "Weight maintenance"
+        value: "weight_maintenance"
+      - label: "Weight gain"
+        value: "weight_gain"
+  gender:
     label: "What gender are you?"
     options:
-      - ":blue[Man]"
-      - ":red[Woman]"
-      - "Don't specify"
+      - label: ":blue[Man]"
+        value: "m"
+      - label: ":red[Woman]"
+        value: "w"
+      - label: "Don't specify"
+        value: "None"
   age: 
     label: "How old are you?"
     placeholder: "Type a age..."
   lifestyle:
     label: "What kind of lifestyle do you lead?"
     options:
-      - "Sedentary lifestyle"
-      - "Light training 1-2 times a week"
-      - "3-5 training sessions per week"
-      - "Daily intensive training"
-      - "Heavy physical labor"
+      - label: "Sedentary lifestyle"
+        value: 1.2
+      - label: "Light training 1-2 times a week"
+        value: 1.375
+      - label: "3-5 training sessions per week"
+        value: 1.55
+      - label: "Daily intensive training"
+        value: 1.725
+      - label: "Heavy physical labor"
+        value: 1.9
   weight:
     label: "How much weight do you have?"
     placeholder: "Type a weight..."
@@ -53,17 +325,18 @@ register:
   sign_up_btn: "Sign up"
   back_btn: "Back"
 
-# === PAGES ===
 home:
   title: "Hi, {username}!"
+  btn_title: "Home"
   view_daily_log: "View daily log"
   add_dishes: "Add dishes"
   general_statistics: "General statistics"
   settings: "Settings"
-  log_out: "Log out"
+  log_out: ":red[Log out]"
 
 daily_log:
-  title: "Daily Log"
+  title: "Daily Logs"
+  btn_title: "View daily log"
   select_date: "Select Date"
   date_help: "Select the date for your food log. Future dates are not available."
   no_data: "📋 No data for {date}"
@@ -72,6 +345,7 @@ daily_log:
 
 recognition:
   title: "Calorie Tracker"
+  btn_title: "Add dishes"
   choose_image: "Choose an image..."
   describe_dish: "Describe the dish (max 250 characters)"
   failed_image: "🖼️ Failed to process image. Please ensure the file is valid."
@@ -83,29 +357,48 @@ recognition:
 
 general_stat:
   title: "General Statistics"
+  btn_title: "General statistics"
   select_period: "Select Period"
   period_help: "Select date range for statistics. Future dates are not available."
   back_btn: "Back"
 
 settings:
   title: "Settings"
-  gender: 
+  btn_title: "Settings"
+  goal:
+    label: "What is your goal?"
+    options:
+      - label: "Weight loss"
+        value: "weight_loss"
+      - label: "Weight maintenance"
+        value: "weight_maintenance"
+      - label: "Weight gain"
+        value: "weight_gain"
+  gender:
     label: "What gender are you?"
     options:
-      - ":blue[Man]"
-      - ":red[Woman]"
-      - "Don't specify"
+      - label: ":blue[Man]"
+        value: "m"
+      - label: ":red[Woman]"
+        value: "w"
+      - label: "Don't specify"
+        value: "None"
   age: 
     label: "How old are you?"
     placeholder: "Type a age..."
   lifestyle:
     label: "What kind of lifestyle do you lead?"
     options:
-      - "Sedentary lifestyle"
-      - "Light training 1-2 times a week"
-      - "3-5 training sessions per week"
-      - "Daily intensive training"
-      - "Heavy physical labor"
+      - label: "Sedentary lifestyle"
+        value: 1.2
+      - label: "Light training 1-2 times a week"
+        value: 1.375
+      - label: "3-5 training sessions per week"
+        value: 1.55
+      - label: "Daily intensive training"
+        value: 1.725
+      - label: "Heavy physical labor"
+        value: 1.9
   weight:
     label: "How much weight do you have?"
     placeholder: "Type a weight..."
@@ -136,7 +429,8 @@ error:
     invalid_password: "🔐 Incorrect password. Try again."
   
   session:
-    inactive: "⏳ You've been inactive for too long"
+    inactive: "⏳ Your session has expired. Please log in again to continue."
+    logged_in: "🔐 Please log in."
   
   validation:
     missing: "This field is required"

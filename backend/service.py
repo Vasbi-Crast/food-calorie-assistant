@@ -201,19 +201,7 @@ async def registration(data: RegisterInput) -> Dict[str, bool]:
             - 504: If a TimeoutError occurs.
             - 500: If an unexpected error occurs.
     """
-    res_adding = await connector.add_user(
-        data.username,
-        data.password,
-        data.age,
-        data.bmr,
-        data.gender,
-        data.weight,
-        data.height,
-        data.norm_calories,
-        data.norm_proteins,
-        data.norm_fats,
-        data.norm_carbohydrates,
-    )
+    res_adding = await connector.add_user(data)
 
     if not res_adding:
         raise HTTPException(status_code=400, detail="Username already exists")
@@ -267,15 +255,7 @@ async def update_user_info(
     return {
         "response": await connector.update_user(
             current_user,
-            data.age,
-            data.bmr,
-            data.gender,
-            data.weight,
-            data.height,
-            data.norm_calories,
-            data.norm_proteins,
-            data.norm_fats,
-            data.norm_carbohydrates,
+            data,
         )
     }
 
@@ -537,10 +517,7 @@ async def get_daily_log(
             - 500: If an unexpected error occurs.
     """
     # Validate date using Pydantic model
-    try:
-        single_date = SingleDate(date=date)
-    except ValueError as e:
-        raise HTTPException(status_code=422, detail=str(e))
+    single_date = SingleDate(date=date)
 
     result = await connector.daily_log(
         username=current_user,

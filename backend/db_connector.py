@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from typing import List, Dict, Any, Optional
 from passlib.context import CryptContext
 
-from schemas import IngredientItem
+from schemas import IngredientItem, User, RegisterInput
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 load_dotenv()
@@ -38,17 +38,7 @@ class DB_connector:
 
     async def add_user(
         self,
-        username: str,
-        password: str,
-        age: int,
-        bmr: float,
-        gender: str,
-        weight: float,
-        height: float,
-        norm_calories: float,
-        norm_proteins: float,
-        norm_fats: float,
-        norm_carbohydrates: float,
+        user_data: RegisterInput,
         timeout: int = 20,
     ) -> bool:
         """
@@ -78,26 +68,29 @@ class DB_connector:
             raise ConnectionError("Database connection not established")
 
         query = """
-            INSERT INTO users (username, hash_password, age, bmr, height, weight, gender,
-                              norm_calories, norm_proteins, norm_fats, norm_carbohydrates)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+            INSERT INTO users (
+                username, hash_password, age, bmr, gender, goal,
+                height, weight,
+                norm_calories, norm_proteins, norm_fats, norm_carbohydrates
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
         """
 
         try:
             async with self.db.acquire() as conn:
                 await conn.execute(
                     query,
-                    username,
-                    pwd_context.hash(password),
-                    age,
-                    bmr,
-                    height,
-                    weight,
-                    gender,
-                    norm_calories,
-                    norm_proteins,
-                    norm_fats,
-                    norm_carbohydrates,
+                    user_data.username,
+                    pwd_context.hash(user_data.password),
+                    user_data.age,
+                    user_data.bmr,
+                    user_data.gender,
+                    user_data.goal,
+                    user_data.height,
+                    user_data.weight,
+                    user_data.norm_calories,
+                    user_data.norm_proteins,
+                    user_data.norm_fats,
+                    user_data.norm_carbohydrates,
                     timeout=timeout,
                 )
             return True
@@ -177,11 +170,12 @@ class DB_connector:
                 return {}
 
             return {
-                "age": int(user["age"]),
-                "bmr": float(user["bmr"]),
+                "age": user["age"],
+                "bmr": user["bmr"],
+                "goal": user["goal"],
                 "gender": user["gender"],
-                "height": float(user["height"]),
-                "weight": float(user["weight"]),
+                "height": user["height"],
+                "weight": user["weight"],
             }
 
         except asyncio.TimeoutError as e:
@@ -196,15 +190,7 @@ class DB_connector:
     async def update_user(
         self,
         username: str,
-        age: int,
-        bmr: float,
-        gender: str,
-        weight: float,
-        height: float,
-        norm_calories: int,
-        norm_proteins: float,
-        norm_fats: float,
-        norm_carbohydrates: float,
+        user_data: User,
         timeout: int = 20,
     ) -> bool:
         """
@@ -234,9 +220,11 @@ class DB_connector:
             raise ConnectionError("Database connection not established")
 
         query = """
-            UPDATE users SET age = $2, bmr = $3, height = $4, weight = $5, gender = $6,
-                            norm_calories = $7, norm_proteins = $8, 
-                            norm_fats = $9, norm_carbohydrates = $10
+            UPDATE users SET 
+                age = $2, bmr = $3, gender = $4, goal = $5,
+                height = $6, weight = $7,
+                norm_calories = $8, norm_proteins = $9, 
+                norm_fats = $10, norm_carbohydrates = $11
             WHERE username = $1;
         """
 
@@ -245,15 +233,16 @@ class DB_connector:
                 result = await conn.execute(
                     query,
                     username,
-                    age,
-                    bmr,
-                    height,
-                    weight,
-                    gender,
-                    norm_calories,
-                    norm_proteins,
-                    norm_fats,
-                    norm_carbohydrates,
+                    user_data.age,
+                    user_data.bmr,
+                    user_data.gender,
+                    user_data.goal,
+                    user_data.height,
+                    user_data.weight,
+                    user_data.norm_calories,
+                    user_data.norm_proteins,
+                    user_data.norm_fats,
+                    user_data.norm_carbohydrates,
                     timeout=timeout,
                 )
             return result == "UPDATE 1"
@@ -709,20 +698,18 @@ class DB_connector:
         if not self.db:
             raise ConnectionError("Database connection not established")
 
-        query = """
+        insert_query = """
             INSERT INTO day (record_date, username)
             VALUES ($1, $2)
-            ON CONFLICT (record_date, username) 
-            DO UPDATE SET record_date = EXCLUDED.record_date
-            RETURNING id;
+            ON CONFLICT (record_date, username) DO NOTHING
         """
+
+        select_query = "SELECT id FROM day WHERE record_date = $1 AND username = $2"
 
         try:
             async with self.db.acquire() as conn:
-                day_id = await conn.fetchval(
-                    query, created_at, username, timeout=timeout
-                )
-
+                await conn.execute(insert_query, created_at, username, timeout=timeout)
+                day_id = await conn.fetchval(select_query, created_at, username, timeout=timeout)
                 return day_id
 
         except asyncio.TimeoutError as e:
@@ -782,18 +769,17 @@ class DB_connector:
 
         try:
             res: List[Dict[str, Any]] = []
-
             async with asyncio.timeout(timeout):
                 rows = await self.db.fetch(query, username, date)
                 if rows:
                     for row in rows:
                         ingredient = {
                             "ingredient": row["name"],
-                            "weight": float(row["weight"]),
-                            "calories": float(row["calories"]),
-                            "proteins": float(row["proteins"]),
-                            "fats": float(row["fats"]),
-                            "carbohydrates": float(row["carbohydrates"]),
+                            "weight": row["weight"],
+                            "calories": row["calories"],
+                            "proteins": row["proteins"],
+                            "fats": row["fats"],
+                            "carbohydrates": row["carbohydrates"],
                         }
                         res.append(ingredient)
                 return res

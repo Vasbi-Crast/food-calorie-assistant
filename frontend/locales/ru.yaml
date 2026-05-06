@@ -1,6 +1,248 @@
-# === AUTH ===
+help_page:
+  button: "Как это работает?"
+  modal:
+    title: "🍽️ Food Assistant — Как это работает"
+    select_title: "📚 Выберите тему:"
+    steps:
+      - title: "🔍 О приложении"
+        text: |
+          <div style="max-width: 600px; margin: 0 auto; line-height: 1.8; hyphens: auto; overflow-wrap: break-word;">
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 25px; border-radius: 10px; margin-bottom: 25px; text-align: center;">
+              <p style="font-size: 22px; font-weight: bold; margin: 0 0 10px 0; color: white;">🍽️ Добро пожаловать в Food Assistant!</p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 15px;"><strong>Наша система поможет вам:</strong></p>
+              <p style="font-size: 15px; margin-bottom: 10px; padding-left: 10px; border-left: 3px solid #667eea;">Похудеть ⬇️, набрать мышечную массу 💪 или поддерживать текущий вес ⚖️. Вы выбираете цель, мы предоставляем инструменты.</p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>📸 Просто сфотографируйте блюдо</strong></p>
+              <p style="font-size: 15px; margin-bottom: 10px; padding-left: 10px; border-left: 3px solid #667eea;">Загрузите фото в систему — модель ML автоматически определит ингредиенты, посчитает калории 🔥, белки, жиры и углеводы 📊.</p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>📊 Контроль веса, калорий и БЖУ</strong></p>
+              <p style="font-size: 15px; margin-bottom: 10px; padding-left: 10px; border-left: 3px solid #667eea;">Наглядные графики помогут отслеживать изменения веса, потребление калорий, белков, жиров и углеводов, таким образом вы приблизитесь к достижению цели 📈.</p>
+            </div>
+            <div style="background: rgba(255, 107, 107, 0.1); padding: 20px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid #FF6B6B;">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>📝 Наслаждайтесь простотой и удобством</strong></p>
+              <p style="font-size: 15px; margin: 0; padding-left: 10px; border-left: 3px solid #FF6B6B;">Забудьте о сложных таблицах и ручных расчётах КБЖУ. Достигайте результатов быстрее 🚀 с умным помощником, который всегда под рукой 📱.</p>
+            </div>
+            <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); padding: 25px; border-radius: 10px; margin-bottom: 20px; text-align: center;">
+              <p style="font-size: 18px; font-weight: bold; margin: 0 0 10px 0; color: white;">🌟 Начните путь к здоровому питанию уже сегодня!</p>
+            </div>
+            <div style="background: rgba(76, 175, 80, 0.1); padding: 20px; border-radius: 10px; border-left: 4px solid #4CAF50; text-align: center;">
+              <p style="font-size: 16px; margin: 0;"><em>💡 Для начала создайте аккаунт — это займёт меньше минуты.</em><br><br><strong>👉 Перейдите на вкладку «👤 Создайте профиль»</strong></p>
+            </div>
+          </div>
+      - title: "👤 Создайте профиль"
+        text: |
+          <div style="max-width: 600px; margin: 0 auto; line-height: 1.8; hyphens: auto; overflow-wrap: break-word;">
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 10px; margin-bottom: 25px; text-align: center;">
+              <p style="font-size: 20px; font-weight: bold; margin: 0 0 10px 0; color: white;">🚀 Хотите присоединиться?</p>
+              <p style="font-size: 16px; margin: 0; color: #f0f0f0;"><em>Это просто! На странице «Вход» нажмите кнопку «Регистрация».</em></p>
+            </div>
+            <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; margin-bottom: 25px;">
+              <p style="font-size: 16px; margin: 0;"><strong>На экране регистрации вы заполните все данные, необходимые для работы приложения.</strong> 👋 <em>Это займёт меньше минуты!</em></p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 17px; margin-bottom: 8px;"><strong>🎯 Цель</strong></p>
+              <p style="font-size: 15px; margin-bottom: 15px; padding-left: 10px; border-left: 3px solid #667eea;">Чего вы хотите? Похудеть ⬇️, набрать мышечную массу 💪 или поддерживать форму ⚖️? Ассистент подстроится под вас!</p>
+              <p style="font-size: 17px; margin-bottom: 8px;"><strong>👤 Пол</strong></p>
+              <p style="font-size: 15px; margin-bottom: 15px; padding-left: 10px; border-left: 3px solid #667eea;">Укажите ваш пол для более точного расчёта нормы калорий. Можно выбрать «Не указывать».</p>
+              <p style="font-size: 17px; margin-bottom: 8px;"><strong>🎂 Возраст</strong></p>
+              <p style="font-size: 15px; margin-bottom: 15px; padding-left: 10px; border-left: 3px solid #667eea;">Помогает понять, как работает ваш метаболизм. С годами он меняется, и ассистент это учитывает.</p>
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>🏃 Уровень активности</strong></p>
+              <p style="font-size: 15px; margin: 0; padding-left: 10px; border-left: 3px solid #667eea;">Отметьте уровень физической активности: от сидячего образа жизни до интенсивных тренировок. Это влияет на расчёт нормы калорий.</p>
+              <p style="font-size: 17px; margin-bottom: 8px;"><strong>⚖️ Вес</strong></p>
+              <p style="font-size: 15px; margin-bottom: 15px; padding-left: 10px; border-left: 3px solid #667eea;">Ваш текущий вес в килограммах. Это основа для расчёта нормы КБЖУ и отслеживания вашего прогресса.</p>
+              <p style="font-size: 17px; margin-bottom: 8px;"><strong>📏 Рост</strong></p>
+              <p style="font-size: 15px; margin-bottom: 15px; padding-left: 10px; border-left: 3px solid #667eea;">Вместе с весом и возрастом помогает точно рассчитать, сколько калорий нужно именно вам.</p>
+              <p style="font-size: 17px; margin-bottom: 8px;"><strong>🔐 Логин и пароль</strong></p>
+              <p style="font-size: 15px; margin-bottom: 15px; padding-left: 10px; border-left: 3px solid #667eea;">Нужны для входа в аккаунт. Придумайте надёжный пароль и запомните его (или запишите в надёжном месте), чтобы всегда могли войти.</p>
+            </div>
+            <div style="background: rgba(76, 175, 80, 0.1); padding: 20px; border-radius: 10px; border-left: 4px solid #4CAF50;">
+              <p style="font-size: 15px; margin: 0;"><em>💡 Все данные конфиденциальны!</em><br><br><em>🔧 Все параметры, кроме имени пользователя и пароля, можно изменить в любой момент в настройках.</em></p>
+            </div>
+          </div>
+      - title: "🏠 Главная страница"
+        text: |
+          <div style="max-width: 600px; margin: 0 auto; line-height: 1.8; hyphens: auto; overflow-wrap: break-word;">
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 25px; border-radius: 10px; margin-bottom: 25px; text-align: center;">
+              <p style="font-size: 22px; font-weight: bold; margin: 0 0 10px 0; color: white;">👋 Привет! Вы на главной странице</p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>📊 Круговые индикаторы</strong></p>
+              <p style="font-size: 15px; margin: 0; padding-left: 10px; border-left: 3px solid #667eea;">Индикаторы покажут, сколько вы уже получили калорий, белков, жиров и углеводов и сколько осталось до нормы.</p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>📝 Дневник питания</strong></p>
+              <p style="font-size: 15px; margin: 0; padding-left: 10px; border-left: 3px solid #667eea;">Этот дневник позволит вам редактировать, дополнять и изменять записи за любой день.</p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>📸 Добавить блюдо</strong></p>
+              <p style="font-size: 15px; margin: 0; padding-left: 10px; border-left: 3px solid #667eea;">Загрузите фото еды — ML-модель распознает ингредиенты и автоматически рассчитает КБЖУ. Вы можете добавить, удалить или изменить каждый ингредиент перед сохранением.</p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>📈 Общая статистика</strong></p>
+              <p style="font-size: 15px; margin: 0; padding-left: 10px; border-left: 3px solid #667eea;">Анализируйте прогресс за неделю или месяц: динамика веса, потребление калорий, белков, жиров и углеводов.</p>
+            </div>
+            <div style="background: rgba(76, 175, 80, 0.1); padding: 20px; border-radius: 10px; border-left: 4px solid #4CAF50; text-align: center;">
+              <p style="font-size: 16px; margin: 0;"><em>💡 Совет: управляйте каждым ингредиентом для максимальной точности учёта!</em></p>
+            </div>
+          </div>
+      - title: "📝 Дневник питания"
+        text: |
+          <div style="max-width: 600px; margin: 0 auto; line-height: 1.8; hyphens: auto; overflow-wrap: break-word;">
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 25px; border-radius: 10px; margin-bottom: 25px; text-align: center;">
+              <p style="font-size: 20px; font-weight: bold; margin: 0 0 10px 0; color: white;">📋 Управление питанием</p>
+              <p style="font-size: 16px; margin: 0; color: #f0f0f0;"><em>На главной странице нажмите кнопку «Дневник питания».</em></p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>📅 Выбор даты</strong></p>
+              <p style="font-size: 15px; margin: 0; padding-left: 10px; border-left: 3px solid #667eea;">Просматривайте и редактируйте данные за любой день. Используйте календарь для выбора нужной даты.</p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>📊 Таблица ингредиентов</strong></p>
+              <p style="font-size: 15px; margin-bottom: 10px; padding-left: 10px; border-left: 3px solid #667eea;"><strong>Ингредиент</strong> — название продукта.<br>
+              <strong>Вес (г)</strong> — вес ингредиента в граммах.<br>
+              <strong>Калории (ккал)</strong> — калорийность продукта.<br>
+              <strong>Белки (г)</strong> — содержание белков.<br>
+              <strong>Жиры (г)</strong> — содержание жиров.<br>
+              <strong>Углеводы (г)</strong> — содержание углеводов.</p>
+              <p style="font-size: 14px; margin: 10px 0 0 10px; padding: 10px; background: rgba(255, 193, 7, 0.1); border-left: 3px solid #FFC107; border-radius: 4px;">
+                <strong>💡 Обратите внимание:</strong> если перед названием ингредиента стоит <strong>~</strong> (тильда), это означает, что значения рассчитаны приблизительно. Будьте внимательны при просмотре таких записей.
+              </p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>📈 Итоговая статистика</strong></p>
+              <p style="font-size: 15px; margin: 0; padding-left: 10px; border-left: 3px solid #667eea;">Внизу страницы отображаются суммарные значения за день: общий вес, калории, белки, жиры и углеводы.</p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>✏️ Редактирование</strong></p>
+              <p style="font-size: 15px; margin: 0; padding-left: 10px; border-left: 3px solid #667eea;">Изменяйте вес ингредиентов, удаляйте лишние или добавляйте новые продукты. Все изменения применяются к выбранной дате.</p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>💾 Сохранение изменений</strong></p>
+              <p style="font-size: 15px; margin: 0; padding-left: 10px; border-left: 3px solid #667eea;">После редактирования нажмите «Сохранить изменения», чтобы обновить данные в дневнике питания.</p>
+            </div>
+            <div style="background: rgba(76, 175, 80, 0.1); padding: 20px; border-radius: 10px; border-left: 4px solid #4CAF50; text-align: center;">
+              <p style="font-size: 16px; margin: 0;"><em>💡 Совет: регулярно проверяйте дневник питания для контроля своего рациона!</em></p>
+            </div>
+          </div>
+      - title: "📝 Дневник питания"
+        text: |
+          <div style="max-width: 600px; margin: 0 auto; line-height: 1.8; hyphens: auto; overflow-wrap: break-word;">
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 25px; border-radius: 10px; margin-bottom: 25px; text-align: center;">
+              <p style="font-size: 20px; font-weight: bold; margin: 0 0 10px 0; color: white;">📋 Управление питанием</p>
+              <p style="font-size: 16px; margin: 0; color: #f0f0f0;"><em>На главной странице нажмите кнопку «Дневник питания».</em></p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>📅 Выбор даты</strong></p>
+              <p style="font-size: 15px; margin: 0; padding-left: 10px; border-left: 3px solid #667eea;">Просматривайте и редактируйте данные за любой день. Используйте календарь для выбора нужной даты.</p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>📊 Таблица ингредиентов</strong></p>
+              <p style="font-size: 15px; margin: 0; padding-left: 10px; border-left: 3px solid #667eea;">Все ингредиенты за выбранный день отображаются в таблице с детальной информацией: вес, калорийность, белки, жиры и углеводы.</p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>✏️ Редактирование</strong></p>
+              <p style="font-size: 15px; margin: 0; padding-left: 10px; border-left: 3px solid #667eea;">Изменяйте вес ингредиентов, удаляйте лишние или добавляйте новые продукты. Все изменения применяются к выбранной дате.</p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>📈 Итоговая статистика</strong></p>
+              <p style="font-size: 15px; margin: 0; padding-left: 10px; border-left: 3px solid #667eea;">Внизу страницы отображаются суммарные значения за день: общий вес, калории, белки, жиры и углеводы.</p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>💾 Сохранение изменений</strong></p>
+              <p style="font-size: 15px; margin: 0; padding-left: 10px; border-left: 3px solid #667eea;">После редактирования нажмите «Сохранить изменения», чтобы обновить данные в дневнике питания.</p>
+            </div>
+            <div style="background: rgba(76, 175, 80, 0.1); padding: 20px; border-radius: 10px; border-left: 4px solid #4CAF50; text-align: center;">
+              <p style="font-size: 16px; margin: 0;"><em>💡 Совет: регулярно проверяйте дневник питания для контроля своего рациона!</em></p>
+            </div>
+          </div>
+      - title: "📈 Общая статистика"
+        text: |
+          <div style="max-width: 600px; margin: 0 auto; line-height: 1.8; hyphens: auto; overflow-wrap: break-word;">
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 25px; border-radius: 10px; margin-bottom: 25px; text-align: center;">
+              <p style="font-size: 20px; font-weight: bold; margin: 0 0 10px 0; color: white;">📊 Анализ прогресса</p>
+              <p style="font-size: 16px; margin: 0; color: #f0f0f0;"><em>На главной странице нажмите кнопку «Общая статистика».</em></p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>📅 Выбор периода</strong></p>
+              <p style="font-size: 15px; margin: 0; padding-left: 10px; border-left: 3px solid #667eea;">Выберите диапазон дат для анализа. Статистика отобразится за весь выбранный период.</p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>📉 Динамика веса</strong></p>
+              <p style="font-size: 15px; margin: 0; padding-left: 10px; border-left: 3px solid #667eea;">Столбчатая диаграмма показывает изменения вашего веса за выбранный период. Отслеживайте изменения веса.</p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>📊 Легенда графиков</strong></p>
+              <p style="font-size: 15px; margin: 0; padding-left: 10px; border-left: 3px solid #667eea;">На всех графиках сравнения (калории, белки, жиры, углеводы): <strong>красная линия</strong> — ваша дневная норма, <strong>столбцы</strong> — фактическое потребление.</p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>🔥 Калории vs Норма</strong></p>
+              <p style="font-size: 15px; margin: 0; padding-left: 10px; border-left: 3px solid #667eea;">Сравнивайте фактическое потребление калорий с вашей дневной нормой. Помогает контролировать дефицит или профицит калорий.</p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>💪 Белки vs Норма</strong></p>
+              <p style="font-size: 15px; margin: 0; padding-left: 10px; border-left: 3px solid #667eea;">Отслеживайте потребление белков относительно нормы. Важно для поддержания мышечной массы.</p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>🥑 Жиры vs Норма</strong></p>
+              <p style="font-size: 15px; margin: 0; padding-left: 10px; border-left: 3px solid #667eea;">Контролируйте потребление жиров относительно вашей дневной нормы. Важно для гормонального здоровья.</p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>🍞 Углеводы vs Норма</strong></p>
+              <p style="font-size: 15px; margin: 0; padding-left: 10px; border-left: 3px solid #667eea;">Отслеживайте потребление углеводов относительно нормы. Углеводы — основной источник энергии для организма, особенно важный при физической активности.</p>
+            </div>
+            <div style="background: rgba(76, 175, 80, 0.1); padding: 20px; border-radius: 10px; border-left: 4px solid #4CAF50; text-align: center;">
+              <p style="font-size: 16px; margin: 0;"><em>💡 Совет: проверяйте статистику еженедельно для оценки прогресса и корректировки целей!</em></p>
+            </div>
+          </div>
+      - title: "⚙️ Настройки"
+        text: |
+          <div style="max-width: 600px; margin: 0 auto; line-height: 1.8; hyphens: auto; overflow-wrap: break-word;">
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 25px; border-radius: 10px; margin-bottom: 25px; text-align: center;">
+              <p style="font-size: 20px; font-weight: bold; margin: 0 0 10px 0; color: white;">🔧 Управление профилем</p>
+              <p style="font-size: 16px; margin: 0; color: #f0f0f0;"><em>На главной странице нажмите кнопку «Настройки».</em></p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>🎯 Цель</strong></p>
+              <p style="font-size: 15px; margin: 0; padding-left: 10px; border-left: 3px solid #667eea;">Выберите вашу цель: снижение веса, сохранение текущего веса или увеличение веса. От этого зависит расчёт дневной нормы калорий.</p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>👤 Пол</strong></p>
+              <p style="font-size: 15px; margin: 0; padding-left: 10px; border-left: 3px solid #667eea;">Укажите ваш пол для более точного расчёта базового обмена веществ. Можно выбрать «Не указывать».</p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>🎂 Возраст</strong></p>
+              <p style="font-size: 15px; margin: 0; padding-left: 10px; border-left: 3px solid #667eea;">Введите ваш возраст в годах. Метаболизм меняется с возрастом, поэтому это важно для расчётов.</p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>🏃 Уровень активности</strong></p>
+              <p style="font-size: 15px; margin: 0; padding-left: 10px; border-left: 3px solid #667eea;">Отметьте уровень физической активности: от сидячего образа жизни до интенсивных тренировок. Это влияет на расчёт нормы калорий.</p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>⚖️ Вес</strong></p>
+              <p style="font-size: 15px; margin: 0; padding-left: 10px; border-left: 3px solid #667eea;">Ваш текущий вес в килограммах. Регулярно обновляйте это значение для отслеживания прогресса.</p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>📏 Рост</strong></p>
+              <p style="font-size: 15px; margin: 0; padding-left: 10px; border-left: 3px solid #667eea;">Ваш рост в сантиметрах. Используется для расчёта индекса массы тела и дневной нормы калорий.</p>
+            </div>
+            <div style="background: rgba(102, 126, 234, 0.08); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+              <p style="font-size: 16px; margin-bottom: 10px;"><strong>💾 Применение изменений</strong></p>
+              <p style="font-size: 15px; margin: 0; padding-left: 10px; border-left: 3px solid #667eea;">После изменения параметров нажмите кнопку «Применить», чтобы сохранить новые настройки и пересчитать нормы.</p>
+            </div>
+            <div style="background: rgba(76, 175, 80, 0.1); padding: 20px; border-radius: 10px; border-left: 4px solid #4CAF50; text-align: center;">
+              <p style="font-size: 16px; margin: 0;"><em>💡 Совет: обновляйте вес регулярно для точного отслеживания прогресса!</em></p>
+            </div>
+          </div>
+  description: "*Вы всегда можете открыть эту справку из боковой панели.*"
+
+# === PAGES ===
 login:
   title: "Вход"
+  btn_title: "Вход"
   username: "Имя пользователя"
   password: "Пароль"
   sign_in_btn: "Войти"
@@ -8,23 +250,41 @@ login:
 
 register:
   title: "Регистрация"
-  gender: 
+  btn_title: "Регистрация"
+  goal:
+    label: "Какова ваша цель?"
+    options:
+      - label: "Снижение веса"
+        value: "weight_loss"
+      - label: "Сохранение веса"
+        value: "weight_maintenance"
+      - label: "Увеличение веса"
+        value: "weight_gain"
+  gender:
     label: "Какой у вас пол?"
     options:
-      - ":blue[Мужской]"
-      - ":red[Женский]"
-      - "Не указывать"
+      - label: ":blue[Мужской]"
+        value: "m"
+      - label: ":red[Женский]"
+        value: "w"
+      - label: "Не указывать"
+        value: "None"
   age: 
     label: "Сколько вам лет?"
     placeholder: "Введите возраст..."
   lifestyle:
     label: "Какой образ жизни вы ведёте?"
     options:
-      - "Сидячий образ жизни"
-      - "Лёгкие тренировки 1-2 раза в неделю"
-      - "Тренировки 3-5 раз в неделю"
-      - "Ежедневные интенсивные тренировки"
-      - "Тяжёлая физическая работа"
+      - label: "Сидячий образ жизни"
+        value: 1.2
+      - label: "Лёгкие тренировки 1-2 раза в неделю"
+        value: 1.375
+      - label: "Тренировки 3-5 раз в неделю"
+        value: 1.55
+      - label: "Ежедневные интенсивные тренировки"
+        value: 1.725
+      - label: "Тяжёлая физическая работа"
+        value: 1.9
   weight:
     label: "Сколько вы весите?"
     placeholder: "Введите вес..."
@@ -53,17 +313,18 @@ register:
   sign_up_btn: "Зарегистрироваться"
   back_btn: "Назад"
 
-# === PAGES ===
 home:
   title: "Привет, {username}!"
+  btn_title: "Главная"
   view_daily_log: "Дневник питания"
   add_dishes: "Добавить блюдо"
   general_statistics: "Общая статистика"
   settings: "Настройки"
-  log_out: "Выйти"
+  log_out: ":red[Выйти]"
 
 daily_log:
   title: "Дневник питания"
+  btn_title: "Дневник питания"
   select_date: "Выберите дату"
   date_help: "Выберите дату для записи питания. Будущие даты недоступны."
   no_data: "📋 Нет данных за {date}"
@@ -72,6 +333,7 @@ daily_log:
 
 recognition:
   title: "Трекер калорий"
+  btn_title: "Добавить блюдо"
   choose_image: "Выберите изображение..."
   describe_dish: "Опишите блюдо (макс. 250 символов)"
   failed_image: "🖼️ Не удалось обработать изображение. Убедитесь, что файл корректен."
@@ -83,29 +345,48 @@ recognition:
 
 general_stat:
   title: "Общая статистика"
+  btn_title: "Общая статистика"
   select_period: "Выберите период"
   period_help: "Выберите диапазон дат для статистики. Будущие даты недоступны."
   back_btn: "Назад"
 
 settings:
   title: "Настройки"
-  gender: 
+  btn_title: "Настройки"
+  goal:
+    label: "Какова ваша цель?"
+    options:
+      - label: "Снижение веса"
+        value: "weight_loss"
+      - label: "Сохранение веса"
+        value: "weight_maintenance"
+      - label: "Увеличение веса"
+        value: "weight_gain"
+  gender:
     label: "Какой у вас пол?"
     options:
-      - ":blue[Мужской]"
-      - ":red[Женский]"
-      - "Не указывать"
+      - label: ":blue[Мужской]"
+        value: "m"
+      - label: ":red[Женский]"
+        value: "w"
+      - label: "Не указывать"
+        value: "None"
   age: 
     label: "Сколько вам лет?"
     placeholder: "Введите возраст..."
   lifestyle:
     label: "Какой образ жизни вы ведёте?"
     options:
-      - "Сидячий образ жизни"
-      - "Лёгкие тренировки 1-2 раза в неделю"
-      - "Тренировки 3-5 раз в неделю"
-      - "Ежедневные интенсивные тренировки"
-      - "Тяжёлая физическая работа"
+      - label: "Сидячий образ жизни"
+        value: 1.2
+      - label: "Лёгкие тренировки 1-2 раза в неделю"
+        value: 1.375
+      - label: "Тренировки 3-5 раз в неделю"
+        value: 1.55
+      - label: "Ежедневные интенсивные тренировки"
+        value: 1.725
+      - label: "Тяжёлая физическая работа"
+        value: 1.9
   weight:
     label: "Сколько вы весите?"
     placeholder: "Введите вес..."
@@ -136,7 +417,8 @@ error:
     invalid_password: "🔐 Неверный пароль. Попробуйте снова."
   
   session:
-    inactive: "⏳ Слишком долгое бездействие"
+    inactive: "⏳ Сессия истекла. Войдите снова, чтобы продолжить."
+    logged_in: "🔐 Пожалуйста, авторизуйтесь."
   
   validation:
     missing: "Это поле обязательно"

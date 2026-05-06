@@ -1,9 +1,9 @@
 python-dotenv==1.0.1
 Requests==2.32.3
 replicate==1.0.1
-fastapi==0.115.0
-uvicorn==0.31.0
-streamlit==1.39.0
+fastapi==0.136.1
+uvicorn==0.46.0
+streamlit==1.57.0
 matplotlib==3.9.2
 sentence_transformers==2.4.0
 python-jose[cryptography]==3.5.0

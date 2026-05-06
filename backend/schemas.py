@@ -1,6 +1,6 @@
 import datetime as dt
 from pydantic import BaseModel, Field, field_validator, model_validator, PrivateAttr
-from typing import Annotated, List, ClassVar, Dict
+from typing import Annotated, List, ClassVar, Literal
 from pydantic import StringConstraints
 import re
 import base64
@@ -39,7 +39,7 @@ Note:
     Additional complexity validation is performed in RegisterInput validator.
 """
 
-GenderStr = Annotated[str, StringConstraints(pattern=r"^(None)|(m)|(w)$")]
+GenderStr = Literal["None", "m", "w"]
 """
 Constrained string type for gender selection.
 
@@ -53,6 +53,7 @@ Example:
     >>> gender: GenderStr = "other"  # Invalid
 """
 
+UserGoal = Literal["weight_loss", "weight_maintenance", "weight_gain"]
 
 # === Date Handling Classes ===
 
@@ -264,7 +265,12 @@ class User(BaseModel):
     age: int = Field(ge=10, le=120, description="User's age in years (10-120)")
     bmr: float = Field(gt=0, le=5, description="Activity level multiplier (0-5)")
     gender: GenderStr = Field(
+        default="None",
         description="User's gender: 'm' (male), 'w' (female), or 'None'"
+    )
+    goal: UserGoal = Field(
+        default="weight_maintenance",
+        description="User's goal: 'weight_loss', 'weight_maintenance' or 'weight_gain'"
     )
     weight: float = Field(ge=20, le=500, description="Weight in kilograms (20-500)")
     height: float = Field(ge=50, le=250, description="Height in centimeters (50-250)")
@@ -276,38 +282,51 @@ class User(BaseModel):
 
     @model_validator(mode="after")
     def calculate_nutrition_norms(self):
-        """
-        Calculates daily nutrition norms using the Mifflin-St Jeor equation.
-
-        Macronutrient ratios (balanced maintenance diet):
-            - Proteins: 30% (4 cal/g)
-            - Fats: 30% (9 cal/g)
-            - Carbohydrates: 40% (4 cal/g)
-
-        Returns:
-            User: The validated model instance with calculated norms.
-        """
-        CAL_PER_G = {"proteins": 4, "fats": 9, "carbohydrates": 4}
-        P_RATIO, F_RATIO, C_RATIO = 0.3, 0.3, 0.4
-
+        """Calculates daily nutrition norms using Mifflin-St Jeor with goal adjustments."""
         base = 10 * self.weight + 6.25 * self.height - 5 * self.age
         if self.gender == "m":
             base += 5
         elif self.gender == "w":
             base -= 161
         else:
-            base -= 78  # Neutral/averaged fallback for 'None'
+            base -= 78
 
-        total_calories = base * self.bmr
-        self._norm_calories = round(total_calories, 1)
-        self._norm_proteins = round(
-            (total_calories * P_RATIO) / CAL_PER_G["proteins"], 1
-        )
-        self._norm_fats = round((total_calories * F_RATIO) / CAL_PER_G["fats"], 1)
-        self._norm_carbohydrates = round(
-            (total_calories * C_RATIO) / CAL_PER_G["carbohydrates"], 1
-        )
+        tdee = base * self.bmr
 
+        if self.goal == "weight_loss":
+            target_calories = tdee - 300
+            protein_factor = 1.6
+            fat_ratio = 0.30
+        elif self.goal == "weight_gain":
+            target_calories = tdee + 300
+            protein_factor = 1.8
+            fat_ratio = 0.25
+        else:
+            target_calories = tdee
+            protein_factor = 1.2
+            fat_ratio = 0.30
+
+        min_calories = 1200 if self.gender == "w" else (1500 if self.gender == "m" else 1400)
+        target_calories = max(target_calories, min_calories)
+        
+        if self.goal == "weight_loss":
+            target_calories = max(target_calories, tdee * 0.75)
+        
+        self._norm_calories = round(target_calories, 1)
+
+        protein_g = self.weight * protein_factor
+        protein_cal = protein_g * 4
+        
+        fat_cal = target_calories * fat_ratio
+        fat_g = fat_cal / 9
+        
+        carbs_cal = target_calories - protein_cal - fat_cal
+        carbs_g = max(0, carbs_cal / 4)
+        
+        self._norm_proteins = round(protein_g, 1)
+        self._norm_fats = round(fat_g, 1)
+        self._norm_carbohydrates = round(carbs_g, 1)
+        
         return self
 
     @property
@@ -384,7 +403,7 @@ class RegisterInput(User):
         Raises:
             ValueError: If password does not meet complexity requirements.
         """
-        pattern = r"^(?=.*[#!$^*@])(?=.*[a-z])(?=.*[A-Z])(?=.*\d{3,}).+$"
+        pattern = r"^(?=.*[#!$^*@])(?=.*[a-z])(?=.*[A-Z])(?=(?:.*\d){3,}).+$"
         if not re.match(pattern, v):
             raise ValueError(
                 "Password must contain: special char (#!$^*@), uppercase, lowercase, and 3+ digits"
@@ -534,11 +553,6 @@ class DishPayload(SingleDate):
         - Weight must be > 0 for normalization (defaults to 0 if weight is 0).
     """
 
-    created_at: str = Field(
-        default_factory=lambda: dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        description="Date string for the record (defaults to current datetime)",
-    )
-
     name: List[str] = Field(min_length=1, description="List of ingredient names")
     weight: List[float] = Field(min_length=1, description="List of weights in grams")
     calories: List[float] = Field(min_length=1, description="List of calorie values")
@@ -606,11 +620,6 @@ class DishPayload(SingleDate):
     def ingredients(self) -> List[IngredientItem]:
         """Returns the converted list of IngredientItem objects."""
         return self._ingredients
-
-    @property
-    def parsed_created_at(self) -> dt.datetime:
-        """Returns the parsed datetime object."""
-        return self._parsed_created_at
 
 
 class ChangeDailyLog(SingleDate):
