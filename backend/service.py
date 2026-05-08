@@ -9,8 +9,7 @@ import os
 from dotenv import load_dotenv
 
 from assistant import LLMAssistant
-from search import IngredientNutritionSearch
-from db_connector import DB_connector
+from db_connector import DBConnector
 from auth import create_token, decode_token
 from schemas import (
     LoginInput,
@@ -21,12 +20,12 @@ from schemas import (
     DishPayload,
     IngredientRecognitionInput,
     ChangeDailyLog,
+    IngredientItem,
 )
-
 
 load_dotenv()
 
-connector = DB_connector()
+connector = DBConnector(embedding_model="intfloat/multilingual-e5-small")
 
 
 @asynccontextmanager
@@ -42,10 +41,10 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
-# CORS for Streamlit frontend
+streamlit_url = os.getenv("STREAMLIT_URL", "http://localhost:8501")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[os.getenv("STREAMLIT_URL")],
+    allow_origins=[streamlit_url] if streamlit_url else ["*"],
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["*"],
@@ -78,7 +77,7 @@ async def validation_exception_handler(
     errors = []
     for error in exc.errors():
         error_type = error.get("type", "undefined_error")
-        loc = error.get("loc", [])       
+        loc = error.get("loc", [])
         field = loc[1] if len(loc) > 1 else "unknown"
         ctx = None
         if error_type in ["string_too_short", "string_too_long"]:
@@ -128,7 +127,8 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]) -> str
         str: Authenticated username.
 
     Raises:
-        HTTPException: 401 if token is invalid or expired.
+        HTTPException:
+            - 401: If token is invalid or expired.
     """
     username = decode_token(token)
     if not username:
@@ -145,12 +145,13 @@ with open("./prompt_macros_extraction.txt", "r") as f:
     prompt_macros_extraction = "".join(f.readlines())
 
 
-assistant = LLMAssistant(prompt_ingredient_recognition,
-                         prompt_macros_extraction,
-                         temperature=0.01,
-                         max_tokens=250,
-                         top_p=0.1)
-engine = IngredientNutritionSearch("nutrition.csv")
+assistant = LLMAssistant(
+    prompt_ingredient_recognition,
+    prompt_macros_extraction,
+    temperature=0.01,
+    max_tokens=250,
+    top_p=0.1,
+)
 
 
 # === API Endpoints ===
@@ -425,18 +426,11 @@ async def ingredient_recognition(
 
     Args:
         data (IngredientRecognitionInput): Image and optional description.
-            - image_base64: Base64-encoded image data.
-            - user_description: Optional dish description.
         current_user (str): Authenticated username from JWT token.
 
     Returns:
         Any: LLM response with identified ingredients and nutrition info.
-
-    Raises:
-        HTTPException:
-            - 400: If image_base64 is missing or invalid.
-            - 504: If a TimeoutError occurs.
-            - 500: If an unexpected error occurs.
+            Note: Nutrition values are for ACTUAL weight (not per-100g).
     """
     llm_response = await assistant.get_ingredient_recognition(
         data.image_base64,
@@ -445,8 +439,32 @@ async def ingredient_recognition(
     )
 
     if llm_response.get("result"):
-        search_results = await engine.search(llm_response["result"], assistant=assistant, search_type="semantic")
-        llm_response["result"] = search_results
+        img_ingredients = llm_response["result"]
+        
+        search_results, not_found = await connector.search_ingredients_batch(
+            img_ingredients=img_ingredients,
+            owner_username="admin",
+            threshold=0.6,
+            timeout=20,
+        )
+
+        if not_found:
+            fallback_response = await assistant.get_macros_extraction(
+                not_found, timeout=240
+            )
+            
+            if fallback_response.get("status") == "success":
+                for name, macros in fallback_response.get("result", {}).items():
+                    search_results.append({f"~{name}": macros})
+
+        converted_results = []
+        for item in search_results:
+            if isinstance(item, IngredientItem):
+                converted_results.append(item.to_dict_with_actual_macros())
+            else:
+                converted_results.append(item)
+        
+        llm_response["result"] = converted_results
 
     return llm_response
 
@@ -516,7 +534,6 @@ async def get_daily_log(
             - 504: If a TimeoutError occurs.
             - 500: If an unexpected error occurs.
     """
-    # Validate date using Pydantic model
     single_date = SingleDate(date=date)
 
     result = await connector.daily_log(
@@ -525,7 +542,7 @@ async def get_daily_log(
         timeout=20,
     )
 
-    return result if result else []
+    return [item.to_dict_with_actual_macros() for item in result] if result else []
 
 
 @app.put("/daily_log/update")

@@ -25,7 +25,7 @@ uploaded_file = st.file_uploader(
 if uploaded_file:
     try:
         img = Image.open(uploaded_file)
-        st.image(img, use_column_width=True)
+        st.image(img, width="stretch")
 
         buffered = BytesIO()
         img.save(buffered, format="JPEG")
@@ -71,4 +71,5 @@ if midle.button(t("recognition.back_btn"), width='stretch', key="back_rec"):
     st.session_state["table_ingredients"], st.session_state["total_macros"] = None, None
     st.session_state["last_deleted"] = []
     st.session_state["name_table_widget"] = ""
+    check_activity()
     st.switch_page("pages/home.py")

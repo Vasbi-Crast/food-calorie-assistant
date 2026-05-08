@@ -35,7 +35,7 @@ def get_meal_macros(
     payload = {"image_base64": image_base64, "user_description": user_description}
 
     response = api_request(
-        "POST", "ingredient_recognition", json=payload
+        "POST", "ingredient_recognition", json=payload, timeout=240
     )
 
     if response:
@@ -103,32 +103,16 @@ def parse_dish(nutritional_info):
 
     rows = []
     for item in nutritional_info:
-        if not isinstance(item, dict) or not item:
-            continue
-
-        original_name, payload = next(iter(item.items()))
-        if not payload:
-            rows.append(
-                {
-                    "ingredient": original_name,
-                    "weight": 0,
-                    "calories": 0,
-                    "proteins": 0,
-                    "fats": 0,
-                    "carbohydrates": 0,
-                }
-            )
-        else:
-            rows.append(
-                {
-                    "ingredient": original_name,
-                    "weight": payload.get("weight", 0),
-                    "calories": payload.get("calories", 0),
-                    "proteins": payload.get("proteins", 0),
-                    "fats": payload.get("fats", 0),
-                    "carbohydrates": payload.get("carbohydrates", 0),
-                }
-            )
+        rows.append(
+            {
+                "ingredient": item.get("name", None),
+                "weight": item.get("weight", 0),
+                "calories": item.get("calories", 0),
+                "proteins": item.get("proteins", 0),
+                "fats": item.get("fats", 0),
+                "carbohydrates": item.get("carbohydrates", 0),
+            }
+        )
 
     st.session_state["table_ingredients"] = rows
     update_table_and_total_macros()
@@ -141,7 +125,6 @@ def update_table_and_total_macros():
         deleted_rows = st.session_state["recognition_widget_table"].get("deleted_rows")
         for r_key, r_val in edited_rows.items():
             for key, val in r_val.items():
-                print(r_key, r_val, key, val)
                 st.session_state["table_ingredients"][r_key][key] = val
                 
         for val in added_rows:

@@ -430,7 +430,7 @@ error:
   
   session:
     inactive: "⏳ Your session has expired. Please log in again to continue."
-    logged_in: "🔐 Please log in."
+    logged_in: "🔐 Пожалуйста, авторизуйтесь. / Please log in."
   
   validation:
     missing: "This field is required"

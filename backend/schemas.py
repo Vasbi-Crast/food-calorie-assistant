@@ -1,6 +1,6 @@
 import datetime as dt
 from pydantic import BaseModel, Field, field_validator, model_validator, PrivateAttr
-from typing import Annotated, List, ClassVar, Literal
+from typing import Annotated, List, ClassVar, Literal, Dict, Any
 from pydantic import StringConstraints
 import re
 import base64
@@ -496,16 +496,14 @@ class NutritionOutput(BaseModel):
         ge=0, le=1000, description="Daily carbohydrate target (0-1000g)"
     )
 
-
 class IngredientItem(BaseModel):
     """
     Model representing a single ingredient with nutritional information.
 
-    Used within DishPayload to represent individual ingredients in a meal.
     All nutritional values are per 100g of the ingredient.
 
     Attributes:
-        name (str): Ingredient name. Length: 1-25 characters.
+        name (str): Ingredient name. Length: 1-255 characters.
         weight (float): Weight in grams. Range: 0-10000g.
         calories (float): Calorie content per 100g. Range: 0-10000 kcal.
         proteins (float): Protein content per 100g. Range: 0-1000g.
@@ -514,17 +512,135 @@ class IngredientItem(BaseModel):
     """
 
     name: str = Field(
-        min_length=1, max_length=25, description="Ingredient name (1-25 characters)"
+        min_length=1,
+        max_length=255,
+        description="Ingredient name (1-255 characters)"
     )
-    weight: float = Field(ge=0, le=10000.0, description="Weight in grams (0-10000g)")
+    weight: float = Field(
+        ge=0,
+        le=10000.0,
+        description="Weight in grams (0-10000g)"
+    )
     calories: float = Field(
-        ge=0, le=10000.0, description="Calories per 100g (0-10000 kcal)"
+        ge=0,
+        le=10000.0,
+        description="Calories per 100g (0-10000 kcal)"
     )
-    proteins: float = Field(ge=0, le=1000.0, description="Proteins per 100g (0-1000g)")
-    fats: float = Field(ge=0, le=1000.0, description="Fats per 100g (0-1000g)")
+    proteins: float = Field(
+        ge=0,
+        le=1000.0,
+        description="Proteins per 100g (0-1000g)"
+    )
+    fats: float = Field(
+        ge=0,
+        le=1000.0,
+        description="Fats per 100g (0-1000g)"
+    )
     carbohydrates: float = Field(
-        ge=0, le=1000.0, description="Carbohydrates per 100g (0-1000g)"
+        ge=0,
+        le=1000.0,
+        description="Carbohydrates per 100g (0-1000g)"
     )
+
+    def calculate_actual_macros(self) -> Dict[str, float]:
+        """
+        Calculates actual nutritional values based on weight.
+
+        Formula: actual_value = (per_100g_value * weight) / 100
+
+        Returns:
+            dict: Actual macros for this weight.
+                Example: {'calories': 78.0, 'proteins': 0.45, ...}
+        """
+        factor = self.weight / 100.0
+        return {
+            "calories": round(self.calories * factor, 1),
+            "proteins": round(self.proteins * factor, 1),
+            "fats": round(self.fats * factor, 1),
+            "carbohydrates": round(self.carbohydrates * factor, 1),
+        }
+
+    @classmethod
+    def from_db_result(
+        cls,
+        name: str,
+        weight: float,
+        calories_per_100g: float,
+        proteins_per_100g: float,
+        fats_per_100g: float,
+        carbohydrates_per_100g: float,
+    ) -> "IngredientItem":
+        """
+        Creates IngredientItem from database query result.
+
+        Args:
+            name: Ingredient name.
+            weight: Actual weight in grams.
+            calories_per_100g: Calories per 100g.
+            proteins_per_100g: Proteins per 100g.
+            fats_per_100g: Fats per 100g.
+            carbohydrates_per_100g: Carbohydrates per 100g.
+
+        Returns:
+            IngredientItem: Instance with per-100g values.
+        """
+        return cls(
+            name=name,
+            weight=weight,
+            calories=calories_per_100g,
+            proteins=proteins_per_100g,
+            fats=fats_per_100g,
+            carbohydrates=carbohydrates_per_100g,
+        )
+
+    @classmethod
+    def from_search_result(
+        cls,
+        name: str,
+        weight: float,
+        search_data: Dict[str, Any],
+    ) -> "IngredientItem":
+        """
+        Creates IngredientItem from search result.
+
+        Args:
+            name: Ingredient name (as searched).
+            weight: Actual weight in grams.
+            search_data: Dict with 'calories', 'proteins', 'fats', 'carbohydrates' (per 100g).
+
+        Returns:
+            IngredientItem: Instance with per-100g values.
+        """
+        return cls(
+            name=name,
+            weight=weight,
+            calories=search_data.get("calories", 0),
+            proteins=search_data.get("proteins", 0),
+            fats=search_data.get("fats", 0),
+            carbohydrates=search_data.get("carbohydrates", 0),
+        )
+
+    def to_dict(self) -> Dict[str, Any]:
+        """Converts to dictionary."""
+        return self.model_dump()
+
+    def to_dict_with_actual_macros(self) -> Dict[str, Any]:
+        """
+        Converts to dictionary with actual macros (not per 100g).
+
+        Returns:
+            dict: {'name', 'weight', 'calories', 'proteins', 'fats', 'carbohydrates'}
+                  where macros are for actual weight.
+        """
+        actual = self.calculate_actual_macros()
+        return {
+            "name": self.name,
+            "weight": self.weight,
+            "calories": actual["calories"],
+            "proteins": actual["proteins"],
+            "fats": actual["fats"],
+            "carbohydrates": actual["carbohydrates"],
+        }
 
 
 class DishPayload(SingleDate):

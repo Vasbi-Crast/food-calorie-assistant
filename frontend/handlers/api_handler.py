@@ -12,7 +12,7 @@ load_dotenv()
 SERVER_URL = os.getenv("SERVER_URL")
 INACTIVITY_MINUTES = 15
 
-def api_request(method: str, endpoint: str, **kwargs) -> Optional[Dict]:
+def api_request(method: str, endpoint: str, timeout = 20, **kwargs) -> Optional[Dict]:
     """
     Unified wrapper for API requests.
     Handles network errors, HTTP errors, and validation errors.
@@ -35,7 +35,7 @@ def api_request(method: str, endpoint: str, **kwargs) -> Optional[Dict]:
 
     try:
         resp = requests.request(
-            method, f"{SERVER_URL}/{endpoint}", timeout=20, **kwargs
+            method, f"{SERVER_URL}/{endpoint}", timeout=timeout, **kwargs
         )
     except requests.exceptions.Timeout:
         st.error(t("error.network.timeout"))

@@ -10,6 +10,7 @@ t = Translator()
 check_auth()
 menu()
 
+
 st.title(t("daily_log.title"))
 _, col2 = st.columns([0.8, 0.2])
 date = col2.date_input(

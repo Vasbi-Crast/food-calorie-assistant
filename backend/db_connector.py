@@ -3,9 +3,11 @@ import os
 import json
 import asyncio
 import asyncpg
+from pgvector.asyncpg import register_vector
 from dotenv import load_dotenv
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Tuple
 from passlib.context import CryptContext
+from sentence_transformers import SentenceTransformer
 
 from schemas import IngredientItem, User, RegisterInput
 
@@ -13,17 +15,22 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 load_dotenv()
 
 
-class DB_connector:
+class DBConnector:
     """A class for connecting to and working with a database"""
 
-    def __init__(self):
+    def __init__(self, embedding_model: str = "intfloat/multilingual-e5-small"):
         self.db: asyncpg.Pool | None = None
+        self.encoder: SentenceTransformer | None = None
+        self._embedding_model = embedding_model
 
     async def connection(self):
         """Connecting to the database"""
         try:
             db_kwargs = json.loads(os.getenv("DB_CONFIG", "{}"))
             self.db = await asyncpg.create_pool(**db_kwargs)
+            
+            async with self.db.acquire() as conn:
+                await register_vector(conn)
         except Exception as e:
             raise ConnectionError(f"Failed to connect to database: {e}") from e
 
@@ -36,31 +43,108 @@ class DB_connector:
         except Exception as e:
             raise ConnectionError(f"Failed to close database connection: {e}") from e
 
+    def _init_encoder(self):
+        """Initialize sentence transformer model for semantic search"""
+        if self.encoder is None:
+            try:
+                self.encoder = SentenceTransformer(self._embedding_model)
+            except Exception as e:
+                raise RuntimeError(f"Failed to load `{self._embedding_model}`. Error: {e}")
+
+    # ============================================
+    # INGREDIENT SEARCH
+    # ============================================
+
+    async def search_ingredients_batch(
+        self,
+        img_ingredients: Dict[str, float],
+        owner_username: str = "admin",
+        threshold: float = 0.3,
+        timeout: int = 20,
+    ) -> Tuple[List[IngredientItem], Dict[str, float]]:
+        """
+        Batch search optimized for typical meal (5-15 ingredients).
+        
+        Uses single transaction with simple loop — no temp table overhead.
+        
+        Priority:
+            1. User's own ingredients
+            2. Global ingredients (owner_username = 'admin')
+        
+        Returns:
+            tuple: (results, not_found)
+        """
+        if not self.db:
+            raise ConnectionError("Database connection not established")
+        
+        if not img_ingredients:
+            return [], {}
+
+        self._init_encoder()
+        names = list(img_ingredients.keys())
+        weights = {name: img_ingredients[name] for name in names}
+
+        embeddings = self.encoder.encode(
+            names,
+            convert_to_numpy=True,
+            show_progress_bar=False,
+            batch_size=32
+        ).tolist()
+        
+        results: List[IngredientItem] = []
+        not_found: Dict[str, float] = {}
+        distance_threshold = 1 - threshold
+
+        async with self.db.acquire() as conn:
+            for i, (name, weight) in enumerate(img_ingredients.items()):
+                embedding = embeddings[i]
+
+                row = await conn.fetchrow("""
+                    SELECT name, calories, proteins, fats, carbohydrates,
+                        embedding <=> $1::vector AS distance
+                    FROM ingredient
+                    WHERE owner_username = $2
+                    ORDER BY embedding <=> $1::vector
+                    LIMIT 1
+                """, embedding, owner_username, timeout=timeout)
+
+                if not row or row["distance"] >= distance_threshold:
+                    row = await conn.fetchrow("""
+                        SELECT name, calories, proteins, fats, carbohydrates,
+                            embedding <=> $1::vector AS distance
+                        FROM ingredient
+                        WHERE owner_username = 'admin'
+                        ORDER BY embedding <=> $1::vector
+                        LIMIT 1
+                    """, embedding, timeout=timeout)
+
+                if row and row["distance"] < distance_threshold:
+                    ingredient = IngredientItem.from_search_result(
+                        name=row["name"],
+                        weight=weight,
+                        search_data={
+                            "calories": row["calories"],
+                            "proteins": row["proteins"],
+                            "fats": row["fats"],
+                            "carbohydrates": row["carbohydrates"],
+                        },
+                    )
+                    results.append(ingredient)
+                else:
+                    not_found[name] = weight
+        
+        return results, not_found
+
+    # ============================================
+    # USER MANAGEMENT
+    # ============================================
+
     async def add_user(
         self,
         user_data: RegisterInput,
         timeout: int = 20,
     ) -> bool:
-        """
-        Adds a new user to the database.
-
-        Args:
-            username (str): A unique username for authorization.
-            password (str): User's password (will be hashed).
-            age (int): User's age.
-            bmr (float): The user's activity level multiplier.
-            gender (str): User's gender ('m', 'w', or 'None').
-            weight (float): User's weight in kilograms.
-            height (float): User's height in centimeters.
-            norm_calories (float): Daily caloric needs.
-            norm_proteins (float): Daily protein needs in grams.
-            norm_fats (float): Daily fat needs in grams.
-            norm_carbohydrates (float): Daily carbohydrate needs in grams.
-            timeout (int): Time limit for accessing the db.
-
-        Returns:
-            bool: True if successful, False if username already exists.
-        """
+        """Adds a new user to the database."""
         if timeout < 1:
             raise ValueError("Timeout value must be greater than or equal to 1.")
 
@@ -258,6 +342,10 @@ class DB_connector:
                 f"An unexpected error occurred: {type(e).__name__}: {e}"
             ) from e
 
+    # ============================================
+    # NUTRITION HISTORY
+    # ============================================
+
     async def info_nutrition(
         self,
         username: str,
@@ -396,7 +484,6 @@ class DB_connector:
             async with self.db.acquire() as conn:
                 today = dt.datetime.now().date()
 
-                # OPTIMIZATION: If querying only today — fetch from users
                 is_today_only = (
                     st_time_span.date() == today and fin_time_span.date() == today
                 )
@@ -429,7 +516,6 @@ class DB_connector:
                         }
                     }
 
-                # Historical queries — use user_metrics_history
                 history_query = """
                     SELECT recorded_at, norm_calories, norm_proteins, norm_fats, norm_carbohydrates
                     FROM user_metrics_history
@@ -446,7 +532,6 @@ class DB_connector:
                     timeout=timeout,
                 )
 
-                # Get default norms (first in interval or last before interval)
                 if history_rows:
                     default_norms = {
                         "calories": history_rows[0]["norm_calories"],
@@ -455,7 +540,6 @@ class DB_connector:
                         "carbohydrates": history_rows[0]["norm_carbohydrates"],
                     }
                 else:
-                    # Fallback: last record BEFORE interval starts
                     last_before_query = """
                         SELECT norm_calories, norm_proteins, norm_fats, norm_carbohydrates
                         FROM user_metrics_history
@@ -479,7 +563,6 @@ class DB_connector:
                             "carbohydrates": last_before["norm_carbohydrates"],
                         }
                     else:
-                        # Fallback: users table (registration values)
                         current_row = await conn.fetchrow(
                             "SELECT norm_calories, norm_proteins, norm_fats, norm_carbohydrates FROM users WHERE username = $1",
                             username,
@@ -498,7 +581,6 @@ class DB_connector:
                             ),
                         }
 
-                # Convert history to dict for fast lookup
                 norms_by_date = {
                     row["recorded_at"].date(): {
                         "calories": row["norm_calories"],
@@ -509,7 +591,6 @@ class DB_connector:
                     for row in history_rows
                 }
 
-                # Fill EVERY day in range (carry-forward)
                 cur_data = st_time_span.date()
                 end_data = fin_time_span.date()
                 last_norms = default_norms.copy()
@@ -590,7 +671,6 @@ class DB_connector:
             async with asyncio.timeout(timeout):
                 today = dt.datetime.now().date()
 
-                # OPTIMIZATION: If querying only today — fetch from users
                 is_today_only = (
                     st_time_span.date() == today and fin_time_span.date() == today
                 )
@@ -605,7 +685,6 @@ class DB_connector:
                         }
                     }
 
-                # Historical queries — use user_metrics_history
                 query = """
                     SELECT weight, recorded_at
                     FROM user_metrics_history
@@ -621,11 +700,9 @@ class DB_connector:
                     fin_time_span,
                 )
 
-                # Get default weight (first in interval or last before interval)
                 if rows:
                     default_weight = rows[0]["weight"]
                 else:
-                    # Fallback: last record BEFORE interval starts
                     last_before = await self.db.fetchval(
                         """
                         SELECT weight
@@ -642,18 +719,15 @@ class DB_connector:
                     if last_before:
                         default_weight = last_before
                     else:
-                        # Fallback: users table (registration values)
                         current_weight = await self.db.fetchval(
                             "SELECT weight FROM users WHERE username = $1", username
                         )
                         default_weight = current_weight if current_weight else 0
 
-                # Convert history to dict for fast lookup
                 weight_by_date = {
                     row["recorded_at"].date(): row["weight"] for row in rows
                 }
 
-                # Fill EVERY day in range (carry-forward)
                 cur_data = st_time_span.date()
                 end_data = fin_time_span.date()
                 last_weight = default_weight
@@ -673,6 +747,10 @@ class DB_connector:
             raise TimeoutError(f"Database query exceeded {timeout} seconds timeout")
         except Exception as e:
             raise RuntimeError(f"Failed to fetch weight history: {e}") from e
+
+    # ============================================
+    # DAILY LOG MANAGEMENT
+    # ============================================
 
     async def add_day(
         self,
@@ -726,7 +804,7 @@ class DB_connector:
         username: str,
         date: dt.datetime,
         timeout: int = 20,
-    ) -> List[Dict[str, Any]]:
+    ) -> List[IngredientItem]:
         """
         Fetches ingredients and nutrition info for a specific day record.
 
@@ -740,7 +818,6 @@ class DB_connector:
                 Each dict contains: ingredient, weight, calories,
                 proteins, fats, carbohydrates.
         """
-
         if timeout < 1:
             raise ValueError("Timeout value must be greater than or equal to 1.")
 
@@ -749,13 +826,12 @@ class DB_connector:
 
         query = """
             SELECT
-                ing.id as id_ingredient,
                 ing.name as name,
                 lis.weight as weight,
-                ROUND(ing.calories * lis.weight / 100.0, 2) AS calories,
-                ROUND(ing.proteins * lis.weight / 100.0, 2) AS proteins,
-                ROUND(ing.fats * lis.weight / 100.0, 2) AS fats,
-                ROUND(ing.carbohydrates * lis.weight / 100.0, 2) AS carbohydrates
+                ing.calories as calories_per_100g,
+                ing.proteins as proteins_per_100g,
+                ing.fats as fats_per_100g,
+                ing.carbohydrates as carbohydrates_per_100g
             FROM
                 list_ingredients AS lis  
                 INNER JOIN ingredient AS ing ON lis.id_ingredient = ing.id
@@ -768,21 +844,20 @@ class DB_connector:
         """
 
         try:
-            res: List[Dict[str, Any]] = []
             async with asyncio.timeout(timeout):
                 rows = await self.db.fetch(query, username, date)
-                if rows:
-                    for row in rows:
-                        ingredient = {
-                            "ingredient": row["name"],
-                            "weight": row["weight"],
-                            "calories": row["calories"],
-                            "proteins": row["proteins"],
-                            "fats": row["fats"],
-                            "carbohydrates": row["carbohydrates"],
-                        }
-                        res.append(ingredient)
-                return res
+                
+                return [
+                    IngredientItem.from_db_result(
+                        name=row["name"],
+                        weight=row["weight"],
+                        calories_per_100g=row["calories_per_100g"],
+                        proteins_per_100g=row["proteins_per_100g"],
+                        fats_per_100g=row["fats_per_100g"],
+                        carbohydrates_per_100g=row["carbohydrates_per_100g"],
+                    )
+                    for row in rows
+                ]
 
         except asyncio.TimeoutError:
             raise TimeoutError(f"Database query exceeded {timeout} seconds timeout")
@@ -976,7 +1051,6 @@ class DB_connector:
         try:
             async with self.db.acquire() as conn:
                 await conn.execute(query, day_id, deleted, timeout=timeout)
-
                 return True
 
         except asyncio.TimeoutError as e:
@@ -997,7 +1071,7 @@ class DB_connector:
         """
         Gets existing ingredient ID or creates a new one.
 
-        IMPORTANT: Converts КБЖУ from actual weight to per 100g for storage.
+        IMPORTANT: Converts macros from actual weight to per 100g for storage.
 
         Formula: per_100g = (actual_value / weight) * 100
 
@@ -1023,13 +1097,7 @@ class DB_connector:
 
         create_query = """
             INSERT INTO ingredient (name, calories, proteins, fats, carbohydrates)
-            VALUES (
-                $1,
-                ROUND(($2::decimal / NULLIF($3::decimal, 0)) * 100, 1),
-                ROUND(($4::decimal / NULLIF($3::decimal, 0)) * 100, 1),
-                ROUND(($5::decimal / NULLIF($3::decimal, 0)) * 100, 1),
-                ROUND(($6::decimal / NULLIF($3::decimal, 0)) * 100, 1)
-            )
+            VALUES ($1, $2, $3, $4, $5)
             ON CONFLICT (name) DO UPDATE SET 
                 calories = EXCLUDED.calories,
                 proteins = EXCLUDED.proteins,
@@ -1042,7 +1110,6 @@ class DB_connector:
             create_query,
             ingredient.name,
             ingredient.calories,
-            ingredient.weight,
             ingredient.proteins,
             ingredient.fats,
             ingredient.carbohydrates,

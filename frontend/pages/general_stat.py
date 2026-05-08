@@ -29,6 +29,6 @@ if st.session_state["stat_data"]:
     general_stat_handler.plot_general_stat()
 _, midle, _ = st.columns(3)
 if midle.button(t("general_stat.back_btn"), width='stretch', key="back_gs"):
-    check_activity()
     st.session_state["saved_data"] = False
+    check_activity()
     st.switch_page("pages/home.py")
