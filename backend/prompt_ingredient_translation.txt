@@ -1,0 +1,19 @@
+Process the following ingredient mapping. For each input key:
+1. Determine the canonical English name (standard culinary/database format: lowercase, modifiers after comma, e.g., "butter, salted", "egg, raw").
+2. Translate it into all requested target languages.
+3. Return a JSON object where top-level keys EXACTLY match the input keys. Each value must be a dictionary mapping language codes to their translations.
+
+RULES:
+- Output STRICTLY valid JSON. No markdown, no code blocks, no explanations, no trailing commas.
+- Top-level keys MUST exactly match input keys. Values must be dicts mapping language codes to translations.
+- "en" field: Standardized culinary name (lowercase, modifiers after comma: "butter, salted").
+- PREFIX "~": If input key starts with "~", preserve "~" at the start of EVERY translation (en, ru, de, etc.). NEVER remove or translate it.
+- Preserve state/form modifiers (raw, cooked, dried, salted, peeled) and brand names.
+- Use common culinary terms, not scientific or literal translations.
+- If uncertain, provide the most widely accepted standard term.
+
+INPUT FORMAT:
+{"original_key": ["lang_code_1", "lang_code_2"], ...}
+
+OUTPUT FORMAT:
+{"original_key": {"en": "canonical_english", "lang_code_1": "translation", ...}, ...}

@@ -1,0 +1,170 @@
+{
+  "scrapple, pork": {
+    "en": "scrapple, pork",
+    "ru": "скрэппл с мясом свинины"
+  },
+  "mushrooms, raw, white": {
+    "en": "mushrooms, raw, white",
+    "ru": "грибы, сырые, белые"
+  },
+  "bread, cheese": {
+    "en": "bread, cheese",
+    "ru": "хлеб, сыр"
+  },
+  "butter, salted": {
+    "en": "butter, salted",
+    "ru": "масло, соленое"
+  },
+  "garlic, raw": {
+    "en": "garlic, raw",
+    "ru": "чеснок, сырой"
+  },
+  "onions, raw": {
+    "en": "onions, raw",
+    "ru": "лук, сырой"
+  },
+  "bread, wheat": {
+    "en": "bread, wheat",
+    "ru": "хлеб, пшеничный"
+  },
+  "bread, egg": {
+    "en": "bread, egg",
+    "ru": "хлеб, яичный"
+  },
+  "oil, salad or cooking, olive": {
+    "en": "oil, salad or cooking, olive",
+    "ru": "масло, салатное или кулинарное, оливковое"
+  },
+  "salt, table": {
+    "en": "salt, table",
+    "ru": "соль, пищевая"
+  },
+  "spices, paprika": {
+    "en": "spices, paprika",
+    "ru": "специи, паприка"
+  },
+  "rosemary, fresh": {
+    "en": "rosemary, fresh",
+    "ru": "розмарин, свежий"
+  },
+  "parsley, fresh": {
+    "en": "parsley, fresh",
+    "ru": "петрушка, свежая"
+  },
+  "~herbs": {
+    "en": "~herbs",
+    "ru": "~травы"
+  },
+  "chicken": {
+    "en": "chicken",
+    "ru": "~курица"
+  },
+  "spaghetti, cooked, spinach": {
+    "en": "spaghetti, cooked, spinach",
+    "ru": "спагетти, приготовленные, со шпинатом"
+  },
+  "meatballs, meatless": {
+    "en": "meatballs, meatless",
+    "ru": "котлеты, безмясные"
+  },
+  "tomato powder": {
+    "en": "tomato powder",
+    "ru": "томатная мука"
+  },
+  "lettuce, raw, cos or romaine": {
+    "en": "lettuce, raw, cos or romaine",
+    "ru": "салат, сырой, кос или ромэн"
+  },
+  "pace, green taco sauce": {
+    "en": "pace, green taco sauce",
+    "ru": "соус Pace, зеленый тачо"
+  },
+  "nuts, almonds": {
+    "en": "nuts, almonds",
+    "ru": "орехи, миндаль"
+  },
+  "~steak": {
+    "en": "~steak",
+    "ru": "~стейк"
+  },
+  "phyllo dough": {
+    "en": "phyllo dough",
+    "ru": "филло"
+  },
+  "meat extender": {
+    "en": "meat extender",
+    "ru": "мясной разбавитель"
+  },
+  "potato flour": {
+    "en": "potato flour",
+    "ru": "картофельная мука"
+  },
+  "bread, chicken": {
+    "en": "bread, chicken",
+    "ru": "хлеб, куриный"
+  },
+  "egg, poached": {
+    "en": "egg, poached",
+    "ru": "яйцо, пашот"
+  },
+  "apple": {
+    "en": "apple",
+    "ru": "яблоко"
+  },
+  "strawberry": {
+    "en": "strawberry",
+    "ru": "клубника"
+  },
+  "blackberry": {
+    "en": "blackberry",
+    "ru": "черника"
+  },
+  "raspberry": {
+    "en": "raspberry",
+    "ru": "малина"
+  },
+  "blueberry": {
+    "en": "blueberry",
+    "ru": "черника"
+  },
+  "cranberry": {
+    "ru": "~клюква",
+    "en": "cranberry"
+  },
+  "~egg, poached": {
+    "ru": "~яйцо пашот",
+    "en": "~egg, poached"
+  },
+  "~bread, chicken": {
+    "ru": "~хлеб, куриный",
+    "en": "~bread, chicken"
+  },
+  "~apple": {
+    "ru": "~яблоко",
+    "en": "~apple"
+  },
+  "~strawberry": {
+    "ru": "~клубника",
+    "en": "~strawberry"
+  },
+  "~blueberry": {
+    "ru": "~голубика",
+    "en": "~blueberry"
+  },
+  "~cherry": {
+    "ru": "~вишня",
+    "en": "~cherry"
+  },
+  "cherry, sweet": {
+    "ru": "вишня, сладкая",
+    "en": "cherry, sweet"
+  },
+  "grapes": {
+    "en": "grapes",
+    "ru": "виноград"
+  },
+  "mulberry": {
+    "ru": "шелковица",
+    "en": "mulberry"
+  }
+}

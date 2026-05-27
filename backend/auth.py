@@ -1,17 +1,20 @@
 import datetime as dt
-from jose import jwt, JWTError
-from dotenv import load_dotenv
+import logging
 import os
 from typing import Optional
 
+from dotenv import load_dotenv
+from jose import jwt, JWTError
+
 load_dotenv()
+logger = logging.getLogger("auth")
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 if not SECRET_KEY:
     raise ValueError("SECRET_KEY environment variable is not set")
 
-ALGORITHM = "HS256"
-TOKEN_EXPIRE_MINUTES = 1440
+ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
+TOKEN_EXPIRE_MINUTES = int(os.getenv("TOKEN_EXPIRE_MINUTES", "1440"))
 
 
 def create_token(username: str) -> str:
@@ -23,11 +26,20 @@ def create_token(username: str) -> str:
 
     Returns:
         str: Encoded JWT token string.
+
+    Note:
+        Module fails fast if SECRET_KEY environment variable is missing.
     """
     expire = dt.datetime.now(dt.timezone.utc) + dt.timedelta(
         minutes=TOKEN_EXPIRE_MINUTES
     )
-    return jwt.encode({"sub": username, "exp": expire}, SECRET_KEY, algorithm=ALGORITHM)
+    token = jwt.encode(
+        {"sub": username, "exp": expire}, SECRET_KEY, algorithm=ALGORITHM
+    )
+    logger.debug(
+        f"Token created for user: {username} (expires in {TOKEN_EXPIRE_MINUTES} min)"
+    )
+    return token
 
 
 def decode_token(token: str) -> Optional[str]:
@@ -38,13 +50,16 @@ def decode_token(token: str) -> Optional[str]:
         token (str): JWT token string to decode.
 
     Returns:
-        str | None: Username from token if valid, None if invalid or expired.
-
+        Optional[str]: Username from token if valid, None if invalid or expired.
     """
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        return payload.get("sub")
-    except JWTError:
+        username = payload.get("sub")
+        logger.debug(f"Token decoded successfully for user: {username}")
+        return username
+    except JWTError as e:
+        logger.debug(f"JWT validation failed: {type(e).__name__}")
         return None
-    except Exception:
+    except Exception as e:
+        logger.error(f"Unexpected error decoding token: {e}", exc_info=True)
         return None

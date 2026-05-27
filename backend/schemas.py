@@ -1,10 +1,34 @@
 import datetime as dt
-from pydantic import BaseModel, Field, field_validator, model_validator, PrivateAttr
-from typing import Annotated, List, ClassVar, Literal, Dict, Any
-from pydantic import StringConstraints
+import logging
 import re
 import base64
+from typing import Annotated, List, Literal, Dict, Any, Optional
 
+from pydantic import (
+    BaseModel,
+    Field,
+    field_validator,
+    model_validator,
+    PrivateAttr,
+    StringConstraints,
+    ValidationError
+)
+
+logger = logging.getLogger("schemas")
+
+
+
+DATE_PARSING_FORMATS: tuple[str] = (
+    "%Y-%m-%d %H:%M:%S",
+    "%Y-%m-%dT%H:%M:%S",
+    "%Y-%m-%d",
+)
+"""Supported date formats for parsing (in precedence order)."""
+
+PASSWORD_COMPLEXITY_RE = re.compile(
+    r"^(?=.*[#!$^*@])(?=.*[a-z])(?=.*[A-Z])(?=(?:.*\d){3,}).+$"
+)
+"""Compiled regex for password complexity validation."""
 
 # === String Constraints for Reusability ===
 
@@ -14,46 +38,17 @@ UsernameStr = Annotated[
         to_lower=True, strip_whitespace=True, min_length=3, max_length=20
     ),
 ]
-"""
-Constrained string type for usernames.
-
-Constraints:
-    - Converted to lowercase
-    - Whitespace stripped from both ends
-    - Minimum length: 3 characters
-    - Maximum length: 20 characters
-
-Example:
-    >>> username: UsernameStr = "JohnDoe"  # Valid
-    >>> username: UsernameStr = "ab"       # Invalid (too short)
-"""
+"""Constrained string type for usernames (lowercase, stripped, 3-20 chars)."""
 
 PasswordStr = Annotated[str, StringConstraints(min_length=6)]
-"""
-Constrained string type for passwords.
-
-Constraints:
-    - Minimum length: 6 characters
-
-Note:
-    Additional complexity validation is performed in RegisterInput validator.
-"""
+"""Constrained string type for passwords (min 6 characters)."""
 
 GenderStr = Literal["None", "m", "w"]
-"""
-Constrained string type for gender selection.
-
-Allowed values:
-    - 'm': Male
-    - 'w': Female
-    - 'None': Unspecified/Other
-
-Example:
-    >>> gender: GenderStr = "m"      # Valid
-    >>> gender: GenderStr = "other"  # Invalid
-"""
+"""Constrained literal for gender selection: 'm', 'w', or 'None'."""
 
 UserGoal = Literal["weight_loss", "weight_maintenance", "weight_gain"]
+"""Constrained literal for user fitness goals."""
+
 
 # === Date Handling Classes ===
 
@@ -62,30 +57,15 @@ class DateMixin(BaseModel):
     """
     Mixin base class providing reusable datetime parsing functionality.
 
-    This class defines common date parsing logic supporting multiple formats
-    across the application. It should not be instantiated directly — use
-    SingleDate or DateRange instead.
-
     Supported Date Formats (in order of precedence):
         1. "%Y-%m-%d %H:%M:%S" (e.g., "2024-04-23 10:30:00")
         2. "%Y-%m-%dT%H:%M:%S" (e.g., "2024-04-23T10:30:00")
         3. "%Y-%m-%d" (e.g., "2024-04-23")
 
-    Class Attributes:
-        DATE_FORMATS (ClassVar[List[str]]): List of supported datetime format strings.
-
-    Methods:
-        _parse_datetime(value): Static method to parse date strings.
 
     Note:
         If parsing fails for all formats, returns current datetime.
     """
-
-    DATE_FORMATS: ClassVar[List[str]] = [
-        "%Y-%m-%d %H:%M:%S",
-        "%Y-%m-%dT%H:%M:%S",
-        "%Y-%m-%d",
-    ]
 
     @staticmethod
     def _parse_datetime(value: str) -> dt.datetime:
@@ -96,13 +76,17 @@ class DateMixin(BaseModel):
             value (str): Date string in one of the supported formats.
 
         Returns:
-            datetime: Parsed datetime object, or current datetime if parsing fails.
+            dt.datetime: Parsed datetime object.
+        
+        Note:
+            If parsing fails for all formats, returns current datetime (dt.datetime.now()).
         """
-        for fmt in DateMixin.DATE_FORMATS:
+        for fmt in DATE_PARSING_FORMATS:
             try:
                 return dt.datetime.strptime(value, fmt)
-            except ValueError:
+            except Exception:
                 continue
+        logger.debug(f"Failed to parse date '{value}', falling back to now()")
         return dt.datetime.now()
 
     model_config = {"arbitrary_types_allowed": True}
@@ -115,12 +99,12 @@ class SingleDate(DateMixin):
     Used for endpoints that require a single date parameter, such as
     fetching daily logs or records for a specific day.
 
-    Query Parameters:
+    Attributes:
         date (str, optional): Date string. Defaults to today if empty.
             Supported formats: YYYY-MM-DD, YYYY-MM-DDTHH:MM:SS, YYYY-MM-DD HH:MM:SS
 
     Properties:
-        parsed_date (datetime): Parsed datetime object (read/write).
+        parsed_date (dt.datetime): Parsed datetime object (read/write).
     """
 
     date: str = Field(
@@ -129,9 +113,10 @@ class SingleDate(DateMixin):
     _parsed_date: dt.datetime = PrivateAttr(default_factory=dt.datetime.now)
 
     @model_validator(mode="after")
-    def parse_date(self):
+    def parse_date(self) -> "SingleDate":
         """
         Validates and parses the date string.
+
         Empty string defaults to today's date.
 
         Returns:
@@ -145,12 +130,22 @@ class SingleDate(DateMixin):
 
     @property
     def parsed_date(self) -> dt.datetime:
-        """Returns the parsed datetime object."""
+        """
+        Returns the parsed datetime object.
+
+        Returns:
+            dt.datetime: The parsed date.
+        """
         return self._parsed_date
 
     @parsed_date.setter
-    def parsed_date(self, value: dt.datetime):
-        """Sets custom datetime (overrides automatic parsing)."""
+    def parsed_date(self, value: dt.datetime) -> None:
+        """
+        Sets custom datetime (overrides automatic parsing).
+
+        Args:
+            value (dt.datetime): The datetime to set.
+        """
         self._parsed_date = value
 
 
@@ -161,16 +156,16 @@ class DateRange(DateMixin):
     Used for endpoints that require a start and end date, such as
     fetching nutrition history or progress reports over a time period.
 
-    Query Parameters:
+    Attributes:
         start (str, optional): Start date string. Defaults to today if empty.
         end (str, optional): End date string. Defaults to today if empty.
 
     Properties:
-        st_time_span (datetime): Parsed start datetime object (read/write).
-        fin_time_span (datetime): Parsed end datetime object (read/write).
+        st_time_span (dt.datetime): Parsed start datetime object (read/write).
+        fin_time_span (dt.datetime): Parsed end datetime object (read/write).
 
     Raises:
-        ValueError: If start date is after end date.
+        ValidationError: If start date is after end date.
     """
 
     start: str = Field(
@@ -184,9 +179,10 @@ class DateRange(DateMixin):
     _parsed_end: dt.datetime = PrivateAttr(default_factory=dt.datetime.now)
 
     @model_validator(mode="after")
-    def parse_dates(self):
+    def parse_dates(self) -> "DateRange":
         """
         Validates and parses both date strings.
+
         Empty strings default to today's date.
         Validates that start date is not after end date.
 
@@ -194,9 +190,8 @@ class DateRange(DateMixin):
             DateRange: The validated model instance with parsed dates.
 
         Raises:
-            ValueError: If start date is after end date.
+            ValidationError: If start date is after end date.
         """
-        # Handle empty strings → default to today
         if not self.start:
             self._parsed_start = dt.datetime.now()
         else:
@@ -207,30 +202,49 @@ class DateRange(DateMixin):
         else:
             self._parsed_end = self._parse_datetime(self.end)
 
-        # Validate date range
         if self._parsed_start > self._parsed_end:
-            raise ValueError("Start date cannot be after end date")
+            raise ValidationError("Start date cannot be after end date")
 
         return self
 
     @property
     def st_time_span(self) -> dt.datetime:
-        """Returns the parsed start datetime object."""
+        """
+        Returns the parsed start datetime object.
+
+        Returns:
+            dt.datetime: The parsed start date.
+        """
         return self._parsed_start
 
     @st_time_span.setter
-    def st_time_span(self, value: dt.datetime):
-        """Sets custom start datetime (overrides automatic parsing)."""
+    def st_time_span(self, value: dt.datetime) -> None:
+        """
+        Sets custom start datetime (overrides automatic parsing).
+
+        Args:
+            value (dt.datetime): The datetime to set.
+        """
         self._parsed_start = value
 
     @property
     def fin_time_span(self) -> dt.datetime:
-        """Returns the parsed end datetime object."""
+        """
+        Returns the parsed end datetime object.
+
+        Returns:
+            dt.datetime: The parsed end date.
+        """
         return self._parsed_end
 
     @fin_time_span.setter
-    def fin_time_span(self, value: dt.datetime):
-        """Sets custom end datetime (overrides automatic parsing)."""
+    def fin_time_span(self, value: dt.datetime) -> None:
+        """
+        Sets custom end datetime (overrides automatic parsing).
+
+        Args:
+            value (dt.datetime): The datetime to set.
+        """
         self._parsed_end = value
 
 
@@ -243,34 +257,42 @@ class User(BaseModel):
 
     Calculates daily caloric intake and macronutrient distribution using the
     Mifflin-St Jeor equation when the model is instantiated or validated.
+    LLM-based BMR calculation is handled in the endpoint layer, not in this model.
 
     Attributes:
         age (int): User's age in years. Range: 10-120.
-        bmr (float): Activity level multiplier. Range: 0-5 (e.g., 1.2=sedentary, 1.55=moderate).
-        gender (GenderStr): User's gender. Allowed: 'm', 'w', 'None'.
+        bmr (Optional[float]): Activity level multiplier. Range: 0-5.
+            Example: 1.2=sedentary, 1.55=moderate. Calculated via LLM or provided explicitly.
+        lifestyle_description (Optional[str]): User's lifestyle description or selected preset.
+            Max length: 300 characters. Used for analytics and profile display.
+        gender (GenderStr): User's gender. Allowed values: 'm', 'w', 'None'.
+        goal (UserGoal): User's fitness goal.
+            Allowed: 'weight_loss', 'weight_maintenance', 'weight_gain'.
         weight (float): User's weight in kilograms. Range: 20-500.
         height (float): User's height in centimeters. Range: 50-250.
 
     Properties (calculated automatically):
         norm_calories (float): Daily caloric needs based on BMR and activity.
-        norm_proteins (float): Daily protein needs in grams (30% of calories).
-        norm_fats (float): Daily fat needs in grams (30% of calories).
-        norm_carbohydrates (float): Daily carbohydrate needs in grams (40% of calories).
-
-    Formula:
-        BMR = (10 × weight) + (6.25 × height) - (5 × age) + gender_offset
-        Total Calories = BMR × activity_multiplier
+        norm_proteins (float): Daily protein needs in grams.
+        norm_fats (float): Daily fat needs in grams.
+        norm_carbohydrates (float): Daily carbohydrate needs in grams.
     """
 
     age: int = Field(ge=10, le=120, description="User's age in years (10-120)")
-    bmr: float = Field(gt=0, le=5, description="Activity level multiplier (0-5)")
+    bmr: Optional[float] = Field(
+        gt=0, le=5, description="Activity level multiplier (0-5)"
+    )
+    lifestyle_description: Optional[str] = Field(
+        default=None,
+        max_length=300,
+        description="User's lifestyle description or selected activity preset",
+    )
     gender: GenderStr = Field(
-        default="None",
-        description="User's gender: 'm' (male), 'w' (female), or 'None'"
+        default="None", description="User's gender: 'm' (male), 'w' (female), or 'None'"
     )
     goal: UserGoal = Field(
         default="weight_maintenance",
-        description="User's goal: 'weight_loss', 'weight_maintenance' or 'weight_gain'"
+        description="User's goal: 'weight_loss', 'weight_maintenance' or 'weight_gain'",
     )
     weight: float = Field(ge=20, le=500, description="Weight in kilograms (20-500)")
     height: float = Field(ge=50, le=250, description="Height in centimeters (50-250)")
@@ -281,8 +303,19 @@ class User(BaseModel):
     _norm_carbohydrates: float = PrivateAttr(default=0)
 
     @model_validator(mode="after")
-    def calculate_nutrition_norms(self):
-        """Calculates daily nutrition norms using Mifflin-St Jeor with goal adjustments."""
+    def calculate_nutrition_norms(self) -> "User":
+        """
+        Calculates daily nutrition norms using Mifflin-St Jeor with goal adjustments.
+
+        Uses effective_bmr: either the provided value or a safe default (1.375).
+        This method does NOT perform LLM calls; BMR calculation via LLM is handled
+        in the endpoint layer before model instantiation.
+
+        Returns:
+            Self: The validated model instance with calculated nutrition norms.
+        """
+        effective_bmr = self.bmr if self.bmr else 1.375
+
         base = 10 * self.weight + 6.25 * self.height - 5 * self.age
         if self.gender == "m":
             base += 5
@@ -291,7 +324,7 @@ class User(BaseModel):
         else:
             base -= 78
 
-        tdee = base * self.bmr
+        tdee = base * effective_bmr
 
         if self.goal == "weight_loss":
             target_calories = tdee - 300
@@ -306,47 +339,69 @@ class User(BaseModel):
             protein_factor = 1.2
             fat_ratio = 0.30
 
-        min_calories = 1200 if self.gender == "w" else (1500 if self.gender == "m" else 1400)
+        min_calories = (
+            1200 if self.gender == "w" else (1500 if self.gender == "m" else 1400)
+        )
         target_calories = max(target_calories, min_calories)
-        
+
         if self.goal == "weight_loss":
             target_calories = max(target_calories, tdee * 0.75)
-        
+
         self._norm_calories = round(target_calories, 1)
 
         protein_g = self.weight * protein_factor
         protein_cal = protein_g * 4
-        
+
         fat_cal = target_calories * fat_ratio
         fat_g = fat_cal / 9
-        
+
         carbs_cal = target_calories - protein_cal - fat_cal
         carbs_g = max(0, carbs_cal / 4)
-        
+
         self._norm_proteins = round(protein_g, 1)
         self._norm_fats = round(fat_g, 1)
         self._norm_carbohydrates = round(carbs_g, 1)
-        
+
         return self
 
     @property
     def norm_calories(self) -> float:
-        """Returns calculated daily caloric needs."""
+        """
+        Returns calculated daily caloric needs.
+
+        Returns:
+            float: Daily caloric target.
+        """
         return self._norm_calories
 
     @property
     def norm_proteins(self) -> float:
-        """Returns calculated daily protein needs in grams."""
+        """
+        Returns calculated daily protein needs in grams.
+
+        Returns:
+            float: Daily protein target in grams.
+        """
         return self._norm_proteins
 
     @property
     def norm_fats(self) -> float:
-        """Returns calculated daily fat needs in grams."""
+        """
+        Returns calculated daily fat needs in grams.
+
+        Returns:
+            float: Daily fat target in grams.
+        """
         return self._norm_fats
 
     @property
     def norm_carbohydrates(self) -> float:
-        """Returns calculated daily carbohydrate needs in grams."""
+        """
+        Returns calculated daily carbohydrate needs in grams.
+
+        Returns:
+            float: Daily carbohydrate target in grams.
+        """
         return self._norm_carbohydrates
 
 
@@ -376,7 +431,7 @@ class RegisterInput(User):
         username (UsernameStr): Unique username (3-20 chars, lowercase, no whitespace).
         password (PasswordStr): Password (min 6 chars, must contain special char,
             uppercase, lowercase, and 3+ digits).
-        age, bmr, gender, weight, height: Inherited from User model.
+        age, bmr, gender, goal, weight, height: Inherited from User model.
 
     Password Requirements:
         - At least one special character (#!$^*@)
@@ -401,11 +456,10 @@ class RegisterInput(User):
             str: The validated password.
 
         Raises:
-            ValueError: If password does not meet complexity requirements.
+            ValidationError: If password does not meet complexity requirements.
         """
-        pattern = r"^(?=.*[#!$^*@])(?=.*[a-z])(?=.*[A-Z])(?=(?:.*\d){3,}).+$"
-        if not re.match(pattern, v):
-            raise ValueError(
+        if not PASSWORD_COMPLEXITY_RE.match(v):
+            raise ValidationError(
                 "Password must contain: special char (#!$^*@), uppercase, lowercase, and 3+ digits"
             )
         return v
@@ -426,7 +480,7 @@ class IngredientRecognitionInput(BaseModel):
             - Must be a valid Base64 string
             - Supported formats: JPEG, PNG, WebP
             - Recommended max size: 5MB
-        user_description (str, optional): Custom description of the dish.
+        user_description (str, optional): Custom description of the meal.
             - Helps improve recognition accuracy
             - Max length: 500 characters
     """
@@ -439,7 +493,7 @@ class IngredientRecognitionInput(BaseModel):
     user_description: str = Field(
         default="",
         max_length=500,
-        description="Optional custom description of the dish to improve recognition accuracy.",
+        description="Optional custom description of the meal to improve recognition accuracy.",
     )
 
     @field_validator("image_base64")
@@ -455,20 +509,18 @@ class IngredientRecognitionInput(BaseModel):
             str: The validated Base64 string.
 
         Raises:
-            ValueError: If the string is not valid Base64 format.
+            ValidationError: If the string is not valid Base64 format.
         """
-        # Remove common data URI prefixes if present
         if v.startswith("data:"):
             v = v.split(",", 1)[-1]
 
-        # Strip whitespace
         v = v.strip()
 
-        # Validate Base64 format
         try:
             base64.b64decode(v, validate=True)
         except Exception as e:
-            raise ValueError(f"Invalid Base64 format: {str(e)}")
+            logger.debug(f"Base64 validation failed: {e}")
+            raise ValidationError(f"Invalid Base64 format: {str(e)}")
 
         return v
 
@@ -496,295 +548,157 @@ class NutritionOutput(BaseModel):
         ge=0, le=1000, description="Daily carbohydrate target (0-1000g)"
     )
 
+
 class IngredientItem(BaseModel):
     """
-    Model representing a single ingredient with nutritional information.
+    Ingredient with per-100g nutritional values (internal format).
 
-    All nutritional values are per 100g of the ingredient.
+    Input: actual values → converted to per-100g by DishPayload validator.
+    Output: per-100g values → converted to actual by to_actual() for API.
 
     Attributes:
-        name (str): Ingredient name. Length: 1-255 characters.
-        weight (float): Weight in grams. Range: 0-10000g.
-        calories (float): Calorie content per 100g. Range: 0-10000 kcal.
-        proteins (float): Protein content per 100g. Range: 0-1000g.
-        fats (float): Fat content per 100g. Range: 0-1000g.
-        carbohydrates (float): Carbohydrate content per 100g. Range: 0-1000g.
+        name (str): Ingredient name (1-255 chars).
+        weight (float): Portion weight in grams (0-10000).
+        calories (float): Calories per 100g (0-10000).
+        proteins (float): Proteins per 100g in grams (0-1000).
+        fats (float): Fats per 100g in grams (0-1000).
+        carbohydrates (float): Carbohydrates per 100g in grams (0-1000).
+        owner (str): Owner username (default: "admin").
     """
 
-    name: str = Field(
-        min_length=1,
-        max_length=255,
-        description="Ingredient name (1-255 characters)"
-    )
-    weight: float = Field(
-        ge=0,
-        le=10000.0,
-        description="Weight in grams (0-10000g)"
-    )
-    calories: float = Field(
-        ge=0,
-        le=10000.0,
-        description="Calories per 100g (0-10000 kcal)"
-    )
-    proteins: float = Field(
-        ge=0,
-        le=1000.0,
-        description="Proteins per 100g (0-1000g)"
-    )
-    fats: float = Field(
-        ge=0,
-        le=1000.0,
-        description="Fats per 100g (0-1000g)"
-    )
-    carbohydrates: float = Field(
-        ge=0,
-        le=1000.0,
-        description="Carbohydrates per 100g (0-1000g)"
-    )
+    name: str = Field(min_length=1, max_length=255)
+    weight: float = Field(ge=0, le=10000.0)
+    calories: float = Field(ge=0, le=10000.0)
+    proteins: float = Field(ge=0, le=1000.0)
+    fats: float = Field(ge=0, le=1000.0)
+    carbohydrates: float = Field(ge=0, le=1000.0)
+    owner: str = Field(min_length=1, max_length=255, default="admin")
 
-    def calculate_actual_macros(self) -> Dict[str, float]:
+    def to_actual(self) -> Dict[str, Any]:
         """
-        Calculates actual nutritional values based on weight.
-
-        Formula: actual_value = (per_100g_value * weight) / 100
+        Converts per-100g values to actual values for API response.
 
         Returns:
-            dict: Actual macros for this weight.
-                Example: {'calories': 78.0, 'proteins': 0.45, ...}
+            Dict[str, Any]: Dictionary with actual nutritional values for the portion:
+                name (str): Ingredient name.
+                weight (float): Portion weight in grams.
+                calories (float): Calories for the portion.
+                proteins (float): Proteins in grams for the portion.
+                fats (float): Fats in grams for the portion.
+                carbohydrates (float): Carbohydrates in grams for the portion.
+                owner (str): Owner username.
         """
         factor = self.weight / 100.0
         return {
+            "name": self.name,
+            "weight": self.weight,
             "calories": round(self.calories * factor, 1),
             "proteins": round(self.proteins * factor, 1),
             "fats": round(self.fats * factor, 1),
             "carbohydrates": round(self.carbohydrates * factor, 1),
+            "owner": self.owner,
         }
-
-    @classmethod
-    def from_db_result(
-        cls,
-        name: str,
-        weight: float,
-        calories_per_100g: float,
-        proteins_per_100g: float,
-        fats_per_100g: float,
-        carbohydrates_per_100g: float,
-    ) -> "IngredientItem":
-        """
-        Creates IngredientItem from database query result.
-
-        Args:
-            name: Ingredient name.
-            weight: Actual weight in grams.
-            calories_per_100g: Calories per 100g.
-            proteins_per_100g: Proteins per 100g.
-            fats_per_100g: Fats per 100g.
-            carbohydrates_per_100g: Carbohydrates per 100g.
-
-        Returns:
-            IngredientItem: Instance with per-100g values.
-        """
-        return cls(
-            name=name,
-            weight=weight,
-            calories=calories_per_100g,
-            proteins=proteins_per_100g,
-            fats=fats_per_100g,
-            carbohydrates=carbohydrates_per_100g,
-        )
-
-    @classmethod
-    def from_search_result(
-        cls,
-        name: str,
-        weight: float,
-        search_data: Dict[str, Any],
-    ) -> "IngredientItem":
-        """
-        Creates IngredientItem from search result.
-
-        Args:
-            name: Ingredient name (as searched).
-            weight: Actual weight in grams.
-            search_data: Dict with 'calories', 'proteins', 'fats', 'carbohydrates' (per 100g).
-
-        Returns:
-            IngredientItem: Instance with per-100g values.
-        """
-        return cls(
-            name=name,
-            weight=weight,
-            calories=search_data.get("calories", 0),
-            proteins=search_data.get("proteins", 0),
-            fats=search_data.get("fats", 0),
-            carbohydrates=search_data.get("carbohydrates", 0),
-        )
 
     def to_dict(self) -> Dict[str, Any]:
-        """Converts to dictionary."""
-        return self.model_dump()
-
-    def to_dict_with_actual_macros(self) -> Dict[str, Any]:
         """
-        Converts to dictionary with actual macros (not per 100g).
+        Returns per-100g values for internal use.
 
         Returns:
-            dict: {'name', 'weight', 'calories', 'proteins', 'fats', 'carbohydrates'}
-                  where macros are for actual weight.
+            Dict[str, Any]: Dict with per-100g nutritional values.
         """
-        actual = self.calculate_actual_macros()
-        return {
-            "name": self.name,
-            "weight": self.weight,
-            "calories": actual["calories"],
-            "proteins": actual["proteins"],
-            "fats": actual["fats"],
-            "carbohydrates": actual["carbohydrates"],
-        }
+        return self.model_dump()
 
 
 class DishPayload(SingleDate):
     """
-    Input model for adding multiple ingredients to a day record.
+    Input model for adding ingredients to a day record.
 
-    Accepts parallel lists of ingredient data and converts them into
-    IngredientItem objects with normalized nutritional values (per 100g).
+    Converts actual values → per-100g on validation.
+    All internal operations use per-100g format.
 
     Attributes:
-        created_at (str): Date string for the record. Defaults to current datetime.
-        name (List[str]): List of ingredient names.
-        weight (List[float]): List of weights in grams.
-        calories (List[float]): List of calorie values.
-        proteins (List[float]): List of protein values.
-        fats (List[float]): List of fat values.
-        carbohydrates (List[float]): List of carbohydrate values.
+        table (List[Dict]): List of ingredient dicts with actual values.
+        modified_ingredients (List[Dict]): List of modified ingredient dicts.
 
     Properties:
-        parsed_created_at (datetime): Parsed date object.
-        ingredients (List[IngredientItem]): Converted list of ingredient objects.
-
-    Validation:
-        - All lists must have the same length.
-        - Nutritional values are normalized to per 100g.
-        - Weight must be > 0 for normalization (defaults to 0 if weight is 0).
+        parse_table (List[IngredientItem]): Ingredients with per-100g values.
+        parse_modified_ingredients (List[IngredientItem]): Modified ingredients with per-100g values.
     """
 
-    name: List[str] = Field(min_length=1, description="List of ingredient names")
-    weight: List[float] = Field(min_length=1, description="List of weights in grams")
-    calories: List[float] = Field(min_length=1, description="List of calorie values")
-    proteins: List[float] = Field(min_length=1, description="List of protein values")
-    fats: List[float] = Field(min_length=1, description="List of fat values")
-    carbohydrates: List[float] = Field(
-        min_length=1, description="List of carbohydrate values"
-    )
+    table: List[Dict] = Field(min_length=1)
+    modified_ingredients: List[Dict] = Field(min_length=0)
 
-    _ingredients: List[IngredientItem] = PrivateAttr(default_factory=list)
+    _table: List[IngredientItem] = PrivateAttr(default_factory=list)
+    _modified_ingredients: List[IngredientItem] = PrivateAttr(default_factory=list)
+
+    @staticmethod
+    def _convert_to_per100g(ing: Dict[str, Any]) -> IngredientItem:
+        """Converts actual values to per-100g format.
+        
+        Args:
+            ing (Dict[str, Any]): Dictionary with actual nutritional values and weight.
+        
+        Returns:
+            IngredientItem: Ingredient model with per-100g values.
+        """
+        weight = ing["weight"]
+        factor = 100.0 / weight if weight > 0 else 0.0
+        return IngredientItem(
+            name=ing["name"].lower().strip(),
+            weight=weight,
+            calories=ing["calories"] * factor,
+            proteins=ing["proteins"] * factor,
+            fats=ing["fats"] * factor,
+            carbohydrates=ing["carbohydrates"] * factor,
+            owner=ing.get("owner", "admin").lower().strip(),
+        )
 
     @model_validator(mode="after")
-    def convert_and_validate(self):
-        """
-        Validates list lengths and converts to IngredientItem objects.
-
-        Normalizes nutritional values to per 100g basis.
-
-        Returns:
-            DishPayload: The validated model instance with converted ingredients.
-
-        Raises:
-            ValueError: If list lengths do not match.
-        """
-        names_len = len(self.name)
-
-        fields = ["weight", "calories", "proteins", "fats", "carbohydrates"]
-        for field in fields:
-            field_value = getattr(self, field)
-            if len(field_value) != names_len:
-                raise ValueError(
-                    f"Length mismatch: 'name' has {names_len} items, "
-                    f"but '{field}' has {len(field_value)} items"
-                )
-
-        self._ingredients = [
-            IngredientItem(
-                name=self.name[i],
-                weight=self.weight[i],
-                calories=(
-                    (self.calories[i] / self.weight[i] * 100)
-                    if self.weight[i] > 0
-                    else 0.0
-                ),
-                proteins=(
-                    (self.proteins[i] / self.weight[i] * 100)
-                    if self.weight[i] > 0
-                    else 0.0
-                ),
-                fats=(
-                    (self.fats[i] / self.weight[i] * 100) if self.weight[i] > 0 else 0.0
-                ),
-                carbohydrates=(
-                    (self.carbohydrates[i] / self.weight[i] * 100)
-                    if self.weight[i] > 0
-                    else 0.0
-                ),
-            )
-            for i in range(names_len)
+    def convert_and_validate(self) -> "DishPayload":
+        self._table = [self._convert_to_per100g(ing) for ing in self.table]
+        self._modified_ingredients = [
+            self._convert_to_per100g(ing) for ing in self.modified_ingredients
         ]
-
         return self
 
     @property
-    def ingredients(self) -> List[IngredientItem]:
-        """Returns the converted list of IngredientItem objects."""
-        return self._ingredients
-
-
-class ChangeDailyLog(SingleDate):
-    """
-    Input model for partial daily log updates (edited, added, deleted).
-
-    Used for the /daily_log/update endpoint to apply incremental changes
-    to a user's daily nutrition log.
-
-    Attributes:
-        date (str): Date string (YYYY-MM-DD). Defaults to today if empty.
-        edited (List[LogIngredientItem]): Ingredients with modified values.
-        added (List[LogIngredientItem]): New ingredients to add.
-        deleted (List[str]): Ingredient names to remove.
-
-    Example:
-        {
-            "date": "2024-04-23",
-            "edited": [{"ingredient": "Apple", "weight_g": 150, ...}],
-            "added": [{"ingredient": "Banana", "weight_g": 100, ...}],
-            "deleted": ["Orange"]
-        }
-
-    Properties:
-        parsed_date (datetime): Parsed date object (inherited from SingleDate).
-    """
-
-    edited: List[IngredientItem] = Field(
-        default_factory=list, description="List of edited ingredients with new values"
-    )
-    added: List[IngredientItem] = Field(
-        default_factory=list, description="List of new ingredients to add"
-    )
-    deleted: List[str] = Field(
-        default_factory=list, description="List of ingredient names to delete"
-    )
-
-    @model_validator(mode="after")
-    def validate_has_changes(self):
+    def parse_table(self) -> List[IngredientItem]:
         """
-        Validates that at least one change type is present.
+        Returns ingredients with per-100g values.
 
         Returns:
-            ChangeDailyLog: The validated model instance.
-
-        Note:
-            Empty changes are allowed (no-op), but logged for debugging.
+            List[IngredientItem]: List of validated ingredients.
         """
-        if not self.edited and not self.added and not self.deleted:
-            pass
+        return self._table
 
-        return self
+    @property
+    def parse_modified_ingredients(self) -> List[IngredientItem]:
+        """
+        Returns ingredients with per-100g values.
+
+        Returns:
+            List[IngredientItem]: List of modified validated ingredients.
+        """
+        return self._modified_ingredients
+
+
+class TranslatorInput(BaseModel):
+    """
+    Input model for ingredient translation requests.
+
+    Used for the /translate_ingredients endpoint to batch-translate
+    ingredient names to target languages.
+
+    Attributes:
+        ingredients (Dict[str, List[str]]): Dictionary mapping ingredient names
+            to lists of target language codes.
+            Example: {"яйцо": ["en", "de"], "butter, salted": ["ru"]}
+    
+    Note:
+        Empty `ingredients` dict is valid and returns empty result without error.
+    """
+
+    ingredients: Dict[str, List[str]] = Field(
+        default_factory=dict,
+        description="Dict mapping ingredient names to target language codes.",
+    )

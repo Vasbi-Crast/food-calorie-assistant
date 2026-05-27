@@ -1,20 +1,28 @@
+"""Handler module for main page authentication logic."""
 import streamlit as st
+import datetime as dt
+from typing import Optional, Dict, Any
 
 from handlers.api_handler import api_request
-import datetime as dt
 from translator import Translator
+
 t = Translator()
 
+
 def authorization(username: str, password: str) -> bool:
-    """
-    User login. Saves token to session_state on success.
-    
+    """Authenticates user credentials against the backend API.
+
+    Validates input, sends a POST request to the authentication endpoint,
+    and updates the session state with the access token and user data
+    upon successful response.
+
     Args:
-        username (str): User's username.
-        password (str): User's password.
-    
+        username (str): The user's login identifier.
+        password (str): The user's password.
+
     Returns:
-        bool: True if successful, False otherwise.
+        bool: True if authentication succeeds, False otherwise.
+        Displays error messages via Streamlit UI on validation or API failure.
     """
     if not username.strip():
         st.error(t("error.form.username_required"))
@@ -25,12 +33,12 @@ def authorization(username: str, password: str) -> bool:
 
     payload = {"username": username.lower(), "password": password}
 
-    response = api_request("POST", "authentication", json=payload)
+    response: Optional[Dict[str, Any]] = api_request("POST", "authentication", json=payload)
 
     if response:
-        
         st.session_state["token"] = response.get("access_token")
         st.session_state["last_active_time"] = dt.datetime.now(dt.timezone.utc)
         st.session_state["username"] = username
         return True
+
     return False

@@ -1,46 +1,58 @@
+"""Handler module for home page data retrieval and visualization.
+
+Provides functions to fetch user profile, nutrition history, norms,
+and ingredients from the backend API. Also handles rendering of
+today's nutrition overview using Matplotlib donut charts.
+"""
 import streamlit as st
-from typing import Dict, Any
+from typing import Dict, Any, List
 import datetime as dt
-from typing import List
 import matplotlib.pyplot as plt
 from threading import RLock
 
 from handlers.api_handler import api_request
 from translator import Translator
+
 t = Translator()
 
+
 def get_ui_label(db_value: Any, key: str) -> str:
-    """
-    Converts DB value to UI label using YAML mapping.
-    
+    """Converts a database value to its corresponding UI label.
+
     Args:
-        db_value (Any): Value from database (e.g., "weight_loss", "m", 1.55).
-        key (str): YAML key like "register.goal.options".
-    
+        db_value (Any): The value retrieved from the database
+            (e.g., "weight_loss", "m", 1.55).
+        key (str): The translation key pointing to the option list in YAML.
+            Example: "register.goal.options"
+
     Returns:
-        str: UI label for current language.
+        str: The UI label for the current language, or the string
+            representation of the database value if no match is found.
     """
     options = t(key)
-    if options and isinstance(options[0], dict):
+    if isinstance(options, list) and len(options) > 0 and isinstance(options[0], dict):
         for opt in options:
             if opt.get("value") == db_value:
                 return opt["label"]
     return str(db_value)
 
-def get_user_information() -> Dict:
-    """
-    Retrieves current user profile.
-    Requires authentication (token added by wrapper).
-    
+
+def get_user_information() -> Dict[str, Any]:
+    """Retrieves the current user's profile information from the backend.
+
+    Requires a valid authentication token in the session state.
+
     Returns:
-        dict: User's profile information with UI-ready labels.
+        Dict[str, Any]: A dictionary containing the user's profile data
+            with types cast to int/float where applicable. Returns an
+            empty dictionary if the API request fails.
     """
     response = api_request("GET", "users/me")
-
     if response:
         return {
             "age": int(response.get("age")),
             "bmr": float(response.get("bmr")),
+            "lifestyle_description": response.get("lifestyle_description"),
             "goal": response.get("goal", "weight_maintenance"),
             "gender": response.get("gender", "None"),
             "weight": float(response.get("weight")),
@@ -48,21 +60,20 @@ def get_user_information() -> Dict:
         }
     return {}
 
+
 def get_info_nutrition(
     time_span: List[dt.datetime] | dt.datetime = dt.datetime.now(),
-) -> Dict | None:
-    """
-    Retrieves nutrition history for a time period.
-    Requires authentication.
-    
+) -> Dict[str, Any] | None:
+    """Retrieves nutrition consumption history for a specified time period.
+
     Args:
-        time_span: Either a single datetime or a list/tuple of [start, end].
-    
+        time_span (Union[List[datetime], datetime]): A single datetime object
+            for a specific day, or a list/tuple of two datetimes [start, end].
+
     Returns:
-        dict: Nutrition info keyed by date, or None on error.
-    
-    Note:
-        Query params changed from st_time_span/fin_time_span to start/end.
+        Union[Dict[str, Any], None]: Dictionary keyed by date strings containing
+            nutrition data, or None if the request fails. Returns an empty
+            dict for a single day if no data exists.
     """
     if isinstance(time_span, (list, tuple)) and len(time_span) == 2:
         start = min(time_span).strftime("%Y-%m-%d")
@@ -89,21 +100,19 @@ def get_info_nutrition(
         return response
     return {}
 
+
 def get_nutrition_norms(
     time_span: List[dt.datetime] | dt.datetime = dt.datetime.now(),
 ) -> Dict[str, float] | List[Dict[str, float]] | None:
-    """
-    Retrieves nutrition norms history for a time period.
-    Requires authentication.
-    
+    """Retrieves daily nutrition norms for a specified time period.
+
     Args:
-        time_span: Either a single datetime or a list/tuple of [start, end].
-    
+        time_span (Union[List[datetime], datetime]): A single datetime object
+            for a specific day, or a list/tuple of two datetimes [start, end].
+
     Returns:
-        dict: Nutrition norms keyed by date, or None on error.
-    
-    Note:
-        Query params changed from st_time_span/fin_time_span to start/end.
+        Union[Dict[str, float], List[Dict[str, float]], None]: Nutrition norms
+            keyed by date. Returns None if the request fails.
     """
     if isinstance(time_span, (list, tuple)) and len(time_span) == 2:
         start = min(time_span).strftime("%Y-%m-%d")
@@ -114,14 +123,12 @@ def get_nutrition_norms(
         end = time_span.strftime("%Y-%m-%d")
         one_day = True
     else:
-        st.error("⚠️ Incorrect time interval format.")
+        st.error("️ Incorrect time interval format.")
         return {}
 
     params = {"start": start, "end": end}
 
-    response = api_request(
-        "GET", "daily_nutrition_norms", params=params
-    )
+    response = api_request("GET", "daily_nutrition_norms", params=params)
     if response:
         response = {
             r_key: {key: float(val) for key, val in r_val.items()}
@@ -132,17 +139,42 @@ def get_nutrition_norms(
         return response
     return {}
 
+
+def get_user_ingredients() -> List[Dict[str, Any]]:
+    """Retrieves the list of ingredients saved by the current user.
+
+    Requires authentication. Casts numerical fields (calories, proteins,
+    fats, carbohydrates) to float for consistency.
+
+    Returns:
+        List[Dict[str, Any]]: A list of dictionaries containing ingredient
+            data. Returns an empty list if the request fails or no ingredients exist.
+    """
+    response = api_request("GET", "user_ingredients")
+    if response:
+        for items in response:
+            items["calories"] = float(items["calories"])
+            items["proteins"] = float(items["proteins"])
+            items["fats"] = float(items["fats"])
+            items["carbohydrates"] = float(items["carbohydrates"])
+        return response
+    return []
+
+
 _lock = RLock()
 
-def display_days_nutrition_overview():
-    """
-    Displays today's nutrition overview with donut charts comparing actual vs norms.
-    Shows: calories, proteins, fats, carbohydrates.
+
+def display_days_nutrition_overview() -> None:
+    """Renders today's nutrition overview using Matplotlib donut charts.
+
+    Compares actual intake against daily norms for calories, proteins,
+    fats, and carbohydrates. Uses a reentrant lock to ensure thread-safe
+    rendering in Streamlit.
     """
     days_info = st.session_state.get("days_info", {})
     norms_info = st.session_state.get("daily_nutrition_norms", {})
 
-    st.subheader(t("ui.home.today_info"))
+    st.subheader(t("home.today_info"))
 
     if isinstance(norms_info, list) and len(norms_info) > 0:
         norms_info = norms_info[0]
@@ -161,7 +193,6 @@ def display_days_nutrition_overview():
 
     for el, val, norm, label, color in zip(ax, values_day, norms_day, labels, colors):
         label_title = t(f"macros.{label}").title()
-        
         remain = max(0, norm - val)
 
         if norm == 0:
@@ -190,7 +221,8 @@ def display_days_nutrition_overview():
 
         if label != "calories":
             el.text(
-                0, 0,
+                0,
+                0,
                 f"{int(val)} / {int(norm)}\n{unit_g}",
                 horizontalalignment="center",
                 verticalalignment="center",
@@ -200,7 +232,8 @@ def display_days_nutrition_overview():
             )
         else:
             el.text(
-                0, 0,
+                0,
+                0,
                 f"{int(val)} / {int(norm)}\n{unit_kcal}",
                 horizontalalignment="center",
                 verticalalignment="center",
@@ -210,6 +243,6 @@ def display_days_nutrition_overview():
             )
 
     with _lock:
-        st.pyplot(fig, width='stretch')
+        st.pyplot(fig, width="stretch")
 
     plt.close()
