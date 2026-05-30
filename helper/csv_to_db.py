@@ -4,6 +4,7 @@ This script reads nutrition data from a CSV file, generates vector embeddings
 using SentenceTransformer, and bulk inserts the data into the database.
 It also ensures an 'admin' user exists for global ingredient management.
 """
+
 import asyncpg
 import csv
 import asyncio
@@ -77,7 +78,9 @@ def safe_float(value: Any) -> float:
         return 0.0
 
 
-def load_data(dataset_path: str, fields_config: Dict[str, str]) -> Dict[str, Dict[str, Any]]:
+def load_data(
+    dataset_path: str, fields_config: Dict[str, str]
+) -> Dict[str, Dict[str, Any]]:
     """Loads ingredient nutrition data from a CSV file into a dictionary.
 
     Parses the CSV, maps columns using the provided configuration, and converts
@@ -105,14 +108,18 @@ def load_data(dataset_path: str, fields_config: Dict[str, str]) -> Dict[str, Dic
             if csv_reader.fieldnames:
                 for key, col_name in fields_config.items():
                     if col_name not in csv_reader.fieldnames:
-                        raise KeyError(f"Missing expected column in CSV file: '{col_name}'")
+                        raise KeyError(
+                            f"Missing expected column in CSV file: '{col_name}'"
+                        )
 
             ingredients = {
                 row[fields_config.get("name", "name")].lower(): {
                     "calories": safe_float(row.get(fields_config["calories"], 0)),
                     "fats": safe_float(row.get(fields_config["fats"], 0)),
                     "proteins": safe_float(row.get(fields_config["proteins"], 0)),
-                    "carbohydrates": safe_float(row.get(fields_config["carbohydrates"], 0)),
+                    "carbohydrates": safe_float(
+                        row.get(fields_config["carbohydrates"], 0)
+                    ),
                 }
                 for row in csv_reader
             }

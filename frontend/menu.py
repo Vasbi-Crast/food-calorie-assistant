@@ -13,10 +13,10 @@ ICON_PATH = Path(__file__).parent / "resources" / "icons8-chinese-noodle-100.png
 
 def _format_language(code: str) -> str:
     """Returns language label with flag emoji.
-    
+
     Args:
         code (str): Language code (e.g., "en", "ru").
-    
+
     Returns:
         str: Formatted string with flag and language.
     """
@@ -27,10 +27,11 @@ def _format_language(code: str) -> str:
 
 def show_help():
     """Displays the help modal dialog with topic selection.
-    
+
     Shows a Streamlit dialog containing step-by-step instructions
     for using the app. Topics are loaded from the translator.
     """
+
     @st.dialog(t("help_page.modal.title"), width="large")
     def help_dialog():
         steps = t("help_page.modal.steps")
@@ -53,7 +54,7 @@ def show_help():
 
 def authenticated_menu():
     """Renders sidebar navigation for authenticated users.
-    
+
     Displays buttons for: Home, Daily Log, Recognition, Statistics,
     Settings, and Logout. Clears session state on navigation.
     """
@@ -84,7 +85,7 @@ def authenticated_menu():
 
 def unauthenticated_menu():
     """Renders sidebar navigation for guests (not logged in).
-    
+
     Displays buttons for: Login and Register.
     """
     if st.sidebar.button(label=t("login.btn_title"), width="stretch"):
@@ -96,17 +97,17 @@ def unauthenticated_menu():
 
 def menu():
     """Main menu renderer: handles onboarding, language, and auth state.
-    
+
     Sets page config (title, icon, sidebar state), shows help dialog
     on first start per language, renders auth-aware sidebar buttons,
     and provides language selector with auto-rerun on change.
-    
+
     Note:
         Relies on session_state keys initialized in init_session_state.py:
         - first_start, onboarding_seen, username, language
     """
     current_lang = st.session_state.get("language", "en")
-    
+
     if not st.session_state["first_start"]:
         st.set_page_config(
             page_title="Food Assistant",
@@ -128,9 +129,9 @@ def menu():
         authenticated_menu()
     else:
         unauthenticated_menu()
-        
+
     st.sidebar.divider()
-    
+
     st.session_state["language"] = st.sidebar.selectbox(
         label="🌍 Language / Язык",
         options=t.available_languages,

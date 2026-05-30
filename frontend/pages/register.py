@@ -3,6 +3,7 @@
 Handles input of user credentials, profile details (gender, age, height, weight),
 and fitness goals. Validates input and redirects to login on success.
 """
+
 import streamlit as st
 
 from menu import menu

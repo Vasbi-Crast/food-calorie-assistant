@@ -4,6 +4,7 @@ Handles date range selection, fetches statistic data from the backend,
 and renders comparative charts for weight, calories, proteins, fats,
 and carbohydrates. Provides navigation back to home page.
 """
+
 import streamlit as st
 import datetime as dt
 

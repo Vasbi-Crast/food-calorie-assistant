@@ -11,11 +11,10 @@ from pydantic import (
     model_validator,
     PrivateAttr,
     StringConstraints,
-    ValidationError
+    ValidationError,
 )
 
 logger = logging.getLogger("schemas")
-
 
 
 DATE_PARSING_FORMATS: tuple[str] = (
@@ -77,7 +76,7 @@ class DateMixin(BaseModel):
 
         Returns:
             dt.datetime: Parsed datetime object.
-        
+
         Note:
             If parsing fails for all formats, returns current datetime (dt.datetime.now()).
         """
@@ -634,10 +633,10 @@ class DishPayload(SingleDate):
     @staticmethod
     def _convert_to_per100g(ing: Dict[str, Any]) -> IngredientItem:
         """Converts actual values to per-100g format.
-        
+
         Args:
             ing (Dict[str, Any]): Dictionary with actual nutritional values and weight.
-        
+
         Returns:
             IngredientItem: Ingredient model with per-100g values.
         """
@@ -693,7 +692,7 @@ class TranslatorInput(BaseModel):
         ingredients (Dict[str, List[str]]): Dictionary mapping ingredient names
             to lists of target language codes.
             Example: {"яйцо": ["en", "de"], "butter, salted": ["ru"]}
-    
+
     Note:
         Empty `ingredients` dict is valid and returns empty result without error.
     """

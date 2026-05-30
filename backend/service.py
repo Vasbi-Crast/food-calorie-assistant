@@ -61,16 +61,16 @@ assistant: Optional[LLMAssistant] = None
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Manage application startup and shutdown lifecycle.
-    
+
     Initializes database connection, loads prompts, and sets up LLM assistant
     on startup. Cleans up resources on shutdown.
-    
+
     Args:
         app (FastAPI): The FastAPI application instance.
-    
+
     Yields:
         None: Control returns to FastAPI after startup completes.
-    
+
     Raises:
         Exception: If LLM Assistant initialization fails, propagates error.
     """
@@ -79,15 +79,16 @@ async def lifespan(app: FastAPI):
 
     logger.info(" Starting application...")
 
-    connector = DBConnector(model_name=EMBEDDING_MODEL_NAME,
-                            embedding_batch_size = EMBEDDING_BATCH_SIZE)
+    connector = DBConnector(
+        model_name=EMBEDDING_MODEL_NAME, embedding_batch_size=EMBEDDING_BATCH_SIZE
+    )
     await connector.connection()
     await connector.load_model()
     logger.info("✅ Database connected.")
 
     try:
         prompts = {}
-        prompt_dir = Path(__file__).parent 
+        prompt_dir = Path(__file__).parent
         for name in [
             "ingredient_recognition",
             "macros_extraction",
@@ -147,19 +148,22 @@ app.add_middleware(
 @app.exception_handler(ValueError)
 async def value_error_handler(request: Request, exc: ValueError) -> JSONResponse:
     """Handle ValueError exceptions from business logic.
-    
+
     Args:
         request (Request): The incoming HTTP request.
         exc (ValueError): The raised ValueError exception.
-    
+
     Returns:
         JSONResponse: HTTP 400 response with error detail message.
     """
     logger.warning(f"ValueError | {request.method} {request.url.path} | {exc}")
     return JSONResponse(status_code=400, content={"detail": str(exc)})
 
+
 @app.exception_handler(UniqueViolationError)
-async def duplicate_key_handler(request: Request, exc: UniqueViolationError) -> JSONResponse:
+async def duplicate_key_handler(
+    request: Request, exc: UniqueViolationError
+) -> JSONResponse:
     """Handles database unique constraint violation errors.
 
     Catches asyncpg.UniqueViolationError exceptions (e.g., duplicate username),
@@ -173,21 +177,24 @@ async def duplicate_key_handler(request: Request, exc: UniqueViolationError) -> 
         JSONResponse: HTTP 409 response containing a JSON payload with the error detail.
             Example: {"detail": "duplicate key value violates unique constraint..."}
     """
-    logger.warning(f"UniqueViolationError | {request.method} {request.url.path} | {exc}")
+    logger.warning(
+        f"UniqueViolationError | {request.method} {request.url.path} | {exc}"
+    )
     return JSONResponse(status_code=409, content={"detail": str(exc)})
+
 
 @app.exception_handler(ValidationError)
 async def validation_exception_handler(
     request: Request, exc: ValidationError
 ) -> JSONResponse:
     """Handle Pydantic request validation errors.
-    
+
     Formats validation errors into a simplified list for frontend consumption.
-    
+
     Args:
         request (Request): The incoming HTTP request.
         exc (RequestValidationError): The raised validation exception.
-    
+
     Returns:
         JSONResponse: HTTP 422 response with formatted error details.
     """
@@ -207,11 +214,11 @@ async def validation_exception_handler(
 @app.exception_handler(RuntimeError)
 async def runtime_error_handler(request: Request, exc: RuntimeError) -> JSONResponse:
     """Handle critical runtime errors.
-    
+
     Args:
         request (Request): The incoming HTTP request.
         exc (RuntimeError): The raised RuntimeError exception.
-    
+
     Returns:
         JSONResponse: HTTP 500 response with generic error message.
     """
@@ -224,11 +231,11 @@ async def runtime_error_handler(request: Request, exc: RuntimeError) -> JSONResp
 @app.exception_handler(TimeoutError)
 async def timeout_error_handler(request: Request, exc: TimeoutError) -> JSONResponse:
     """Handle timeout errors from database or external services.
-    
+
     Args:
         request (Request): The incoming HTTP request.
         exc (TimeoutError): The raised TimeoutError exception.
-    
+
     Returns:
         JSONResponse: HTTP 504 response with timeout message.
     """
@@ -300,18 +307,18 @@ async def authentication(data: LoginInput) -> Dict[str, str]:
 @app.post("/registration")
 async def registration(request: Request) -> Dict[str, bool]:
     """Register a new user account.
-    
+
     Parses JSON body, handles lifestyle description marker, calculates BMR
     via LLM for custom descriptions, validates payload via Pydantic,
     and persists user data to database.
-    
+
     Args:
         request (Request): FastAPI request object containing JSON body with
             user registration data.
-    
+
     Returns:
         Dict[str, bool]: Dictionary with key 'response' indicating success.
-    
+
     Raises:
         HTTPException:
             422: If request body is invalid JSON or Pydantic validation fails.
@@ -421,7 +428,6 @@ async def update_user_info(
         else:
             logger.warning("⚠️ lifestyle description was mise, BMR using default 1.375")
             body["bmr"] = DEFAULT_BMR
-        
 
     user_data = User(**body)
     success = await connector.update_user(current_user, user_data)
@@ -441,12 +447,12 @@ async def info_nutrition(
     end: str = Query(default="", description="End date (YYYY-MM-DD)"),
 ) -> Dict[str, Dict[str, Any]]:
     """Get daily nutrition history for a date range.
-    
+
     Args:
         current_user (str): Authenticated username from JWT token.
         start (str): Start date in YYYY-MM-DD format. Defaults to today if empty.
         end (str): End date in YYYY-MM-DD format. Defaults to today if empty.
-    
+
     Returns:
         Dict[str, Dict[str, Any]]: Nutrition info keyed by date. Example:
             {
@@ -454,7 +460,7 @@ async def info_nutrition(
                 "2024-04-02": {"calories": 0, "proteins": 0, ...},
             }
             Note: All days in range returned; gaps filled with zeros.
-    
+
     Raises:
         HTTPException:
             401: If token invalid/expired.
@@ -610,19 +616,19 @@ async def ingredient_recognition(
     current_user: Annotated[str, Depends(get_current_user)],
 ) -> Dict[str, Any]:
     """Recognize ingredients from a food image using AI analysis.
-    
+
     Processes base64 image, extracts ingredients via LLM, searches database
     for matches, and falls back to macros extraction for unknown items.
     Returns actual nutritional values (for portion weight).
-    
+
     Args:
         data (IngredientRecognitionInput): Input containing base64 image
             and optional user description.
         current_user (str): Authenticated username from JWT token.
-    
+
     Returns:
         Dict[str, Any]: LLM response with recognized ingredients and nutritional data.
-    
+
     Raises:
         HTTPException: Propagated from underlying service calls on failure.
     """
@@ -705,15 +711,15 @@ async def get_daily_log(
     date: str = Query(default="", description="Date (YYYY-MM-DD)"),
 ) -> List[Dict[str, Any]]:
     """Get daily nutrition log for a specific date.
-    
+
     Args:
         current_user (str): Authenticated username from JWT token.
         date (str): Target date in YYYY-MM-DD format. Defaults to today if empty.
-    
+
     Returns:
         List[Dict[str, Any]]: List of meal entries with actual nutritional
             values (portion-based, not per-100g).
-    
+
     Raises:
         HTTPException:
             401: If token invalid/expired.
@@ -745,7 +751,7 @@ async def save_daily_log(
 
     Args:
         current_user (str): Authenticated username extracted from JWT token.
-        data (DishPayload): DishPayload containing the complete desired state 
+        data (DishPayload): DishPayload containing the complete desired state
             for the day:
             - `table`: Final list of ingredients that should remain in the log.
             - `modified_ingredients`: Ingredients with corrected per-100g macros.
@@ -771,21 +777,21 @@ async def translate_ingredients(
     data: TranslatorInput,
 ) -> Dict[str, Any]:
     """Translate and normalize ingredient names to target languages.
-    
+
     Accepts a dictionary where keys are original ingredient names and values
     are lists of target language codes. Returns structured JSON with canonical
     English keys and translations.
-    
+
     Args:
         current_user (str): Authenticated username from JWT token.
         data (TranslatorInput): Input containing ingredients dict mapping
             original names to list of target language codes.
-    
+
     Returns:
         Dict[str, Any]: Translation result with status, result dict, and
             optional error message. Example:
             {"status": "success", "result": {...}, "error": ""}
-    
+
     Raises:
         HTTPException:
             502: If translation service returns error status.

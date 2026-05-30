@@ -1,170 +1,4030 @@
 {
-  "scrapple, pork": {
-    "en": "scrapple, pork",
-    "ru": "скрэппл с мясом свинины"
+  "cornstarch": {
+    "en": "Cornstarch",
+    "ru": "крахмал кукурузный"
+  },
+  "nuts, pecans": {
+    "en": "Nuts, pecans",
+    "ru": "орехи, пекан"
+  },
+  "eggplant, raw": {
+    "en": "Eggplant, raw",
+    "ru": "баклажан, сырой"
+  },
+  "teff, uncooked": {
+    "en": "Teff, uncooked",
+    "ru": "теф, невареный"
+  },
+  "sherbet, orange": {
+    "en": "Sherbet, orange",
+    "ru": "сорбет, апельсиновый"
+  },
+  "cauliflower, raw": {
+    "en": "Cauliflower, raw",
+    "ru": "цветная капуста, сырая"
+  },
+  "taro leaves, raw": {
+    "en": "Taro leaves, raw",
+    "ru": "листья таро, сырые"
+  },
+  "lamb, raw, ground": {
+    "en": "Lamb, raw, ground",
+    "ru": "ягнятина, сырая, фарш"
+  },
+  "cheese, camembert": {
+    "en": "Cheese, camembert",
+    "ru": "сыр, камамбер"
+  },
+  "vegetarian fillets": {
+    "en": "Vegetarian fillets",
+    "ru": "вегетарианские филе"
+  },
+  "pace, picante sauce": {
+    "en": "PACE, Picante Sauce",
+    "ru": "соус пиканте Pace"
+  },
+  "goji berries, dried": {
+    "en": "Goji berries, dried",
+    "ru": "годжи-ягоды, сушеные"
+  },
+  "mango nectar, canned": {
+    "en": "Mango nectar, canned",
+    "ru": "нектар манго, консервированный"
+  },
+  "crackers, rusk toast": {
+    "en": "Crackers, rusk toast",
+    "ru": "крекеры, тостовые сухари"
+  },
+  "chicken, boiled, feet": {
+    "en": "Chicken, boiled, feet",
+    "ru": "курица, вареная, лапки"
+  },
+  "quail, raw, meat only": {
+    "en": "Quail, raw, meat only",
+    "ru": "перепел, сырой, только мясо"
+  },
+  "pie, lemon, fried pies": {
+    "en": "Pie, lemon, fried pies",
+    "ru": "пирог, лимонный, жареные пироги"
+  },
+  "peppers, raw, jalapeno": {
+    "en": "Peppers, raw, jalapeno",
+    "ru": "перец, сырой, халапеньо"
+  },
+  "winged bean tuber, raw": {
+    "en": "Winged bean tuber, raw",
+    "ru": "клубень крылатого бобового, сырой"
+  },
+  "salami, turkey, cooked": {
+    "en": "Salami, turkey, cooked",
+    "ru": "салями, индейка, вареное"
+  },
+  "grapes, raw, muscadine": {
+    "en": "Grapes, raw, muscadine",
+    "ru": "виноград, сырой, мускадин"
+  },
+  "nuts, raw, ginkgo nuts": {
+    "en": "Nuts, raw, ginkgo nuts",
+    "ru": "орехи, сырые, гинкго"
+  },
+  "spices, ground, savory": {
+    "en": "Spices, ground, savory",
+    "ru": "специи, молотые, савури"
+  },
+  "candies, sesame crunch": {
+    "en": "Candies, sesame crunch",
+    "ru": "конфеты, кунжутные хрустящие"
+  },
+  "cheese, low fat, cream": {
+    "en": "Cheese, low fat, cream",
+    "ru": "сыр, обезжиренный, сливочный"
+  },
+  "pace, green taco sauce": {
+    "en": "PACE, Green Taco Sauce",
+    "ru": "соус для тако зеленый Pace"
+  },
+  "syrup, canadian, maple": {
+    "en": "Syrup, Canadian, maple",
+    "ru": "сироп, канадский, кленовый"
+  },
+  "ostrich, raw, top loin": {
+    "en": "Ostrich, raw, top loin",
+    "ru": "страус, сырой, верхняя часть лопатки"
+  },
+  "chewing gum, sugarless": {
+    "en": "Chewing gum, sugarless",
+    "ru": "жевательная резинка, без сахара"
+  },
+  "nuts, dried, pine nuts": {
+    "en": "Nuts, dried, pine nuts",
+    "ru": "орехи, сушеные, кедровые"
+  },
+  "pasta, unenriched, dry": {
+    "en": "Pasta, unenriched, dry",
+    "ru": "макароны, необогащенные, сухие"
+  },
+  "mcdonald's, side salad": {
+    "en": "McDONALD'S, Side Salad",
+    "ru": "салат-комплект McDonald's"
+  },
+  "cookies, marie biscuit": {
+    "en": "Cookies, Marie biscuit",
+    "ru": "печенье, марие-бисквит"
+  },
+  "broccoli, raw, chinese": {
+    "en": "Broccoli, raw, chinese",
+    "ru": "брокколи, сырая, китайская"
+  },
+  "mcdonald's, hash brown": {
+    "en": "McDONALD'S, Hash Brown",
+    "ru": "хэшбраун McDonald's"
+  },
+  "agave, raw (southwest)": {
+    "en": "Agave, raw (Southwest)",
+    "ru": "агава, сырая (юго-западная)"
+  },
+  "emu, raw, outside drum": {
+    "en": "emu, raw, outside drum",
+    "ru": "эму, сырое, бедро снаружи"
+  },
+  "nuts, dried, beechnuts": {
+    "en": "nuts, dried, beechnuts",
+    "ru": "орехи, сушеные, каштаны"
+  },
+  "currants, dried, zante": {
+    "en": "currants, dried, zante",
+    "ru": "изюм, сушеный, занте"
+  },
+  "lentils, raw, sprouted": {
+    "en": "lentils, raw, sprouted",
+    "ru": "лентилы, сырые, пророщенные"
+  },
+  "gravy, mix, dry, onion": {
+    "en": "gravy, mix, dry, onion",
+    "ru": "соус, смесь, сухой, с луком"
+  },
+  "pie, fruit, fried pies": {
+    "en": "pie, fruit, fried pies",
+    "ru": "пирог, фруктовый, жареные пироги"
+  },
+  "snacks, cakes, popcorn": {
+    "en": "snacks, cakes, popcorn",
+    "ru": "закуски, торты, попкорн"
+  },
+  "snack, mixed berry bar": {
+    "en": "snack, mixed berry bar",
+    "ru": "закуска, бар с смесью ягод"
+  },
+  "fish, raw, sheepshead": {
+    "en": "fish, raw, sheepshead",
+    "ru": "рыба, сырая, морской окунь"
+  },
+  "babyfood, pear, juice": {
+    "en": "babyfood, pear, juice",
+    "ru": "детское питание, груша, сок"
+  },
+  "brussels sprouts, raw": {
+    "en": "brussels sprouts, raw",
+    "ru": "брюссельская капуста, сырая"
+  },
+  "broccoli raab, cooked": {
+    "en": "broccoli raab, cooked",
+    "ru": "брокколи рааб, приготовленная"
+  },
+  "butter oil, anhydrous": {
+    "en": "butter oil, anhydrous",
+    "ru": "масло сливочное, безводное"
+  },
+  "chicory, raw, witloof": {
+    "en": "chicory, raw, witloof",
+    "ru": "цикорий, сырой, витлоф"
+  },
+  "keebler, waffle cones": {
+    "en": "keebler, waffle cones",
+    "ru": "кеблер, вафельные рожки"
+  },
+  "keebler, waffle bowls": {
+    "en": "keebler, waffle bowls",
+    "ru": "кеблер, вафельные миски"
+  },
+  "broccoli, raw, leaves": {
+    "en": "broccoli, raw, leaves",
+    "ru": "брокколи, сырая, листья"
+  },
+  "durian, raw or frozen": {
+    "en": "durian, raw or frozen",
+    "ru": "дуриан, сырой или замороженный"
+  },
+  "tomatoes, raw, orange": {
+    "en": "tomatoes, raw, orange",
+    "ru": "томаты, сырые, оранжевые"
+  },
+  "tomatoes, raw, yellow": {
+    "en": "tomatoes, raw, yellow",
+    "ru": "томаты, сырые, желтые"
+  },
+  "egg custards, dry mix": {
+    "en": "egg custards, dry mix",
+    "ru": "яичный пудинг, сухая смесь"
+  },
+  "peanut flour, low fat": {
+    "en": "peanut flour, low fat",
+    "ru": "арахисовая мука, с низким содержанием жира"
+  },
+  "fish, smoked, haddock": {
+    "en": "fish, smoked, haddock",
+    "ru": "рыба, копченая, треска"
+  },
+  "denny's, french fries": {
+    "en": "denny's, french fries",
+    "ru": "денни, картофель фри"
+  },
+  "ground turkey, cooked": {
+    "en": "ground turkey, cooked",
+    "ru": "фарш из индейки, приготовленный"
+  },
+  "murray, vanilla wafer": {
+    "en": "murray, vanilla wafer",
+    "ru": "мюррей, ванильное печенье"
+  },
+  "wendy's, french fries": {
+    "en": "wendy's, french fries",
+    "ru": "венди, картофель фри"
+  },
+  "bread, toasted, wheat": {
+    "en": "bread, toasted, wheat",
+    "ru": "хлеб, поджаренный, пшеничный"
+  },
+  "danish pastry, cheese": {
+    "en": "danish pastry, cheese",
+    "ru": "датское печенье, с сыром"
+  },
+  "nuts, glazed, walnuts": {
+    "en": "nuts, glazed, walnuts",
+    "ru": "орехи, глазурованные, грецкие"
+  },
+  "spices, garlic powder": {
+    "en": "spices, garlic powder",
+    "ru": "специи, чесночный порошок"
+  },
+  "oil, soybean lecithin": {
+    "en": "oil, soybean lecithin",
+    "ru": "масло, соевый лецитин"
+  },
+  "egg, fresh, raw, yolk": {
+    "en": "egg, fresh, raw, yolk",
+    "ru": "яйцо, свежее, сырое, желток"
+  },
+  "fireweed, raw, leaves": {
+    "en": "fireweed, raw, leaves",
+    "ru": "огненная крапива, сырая, листья"
+  },
+  "beef, pastrami, cured": {
+    "en": "beef, pastrami, cured",
+    "ru": "говядина, пастрма, копченая"
+  },
+  "frankfurter, meatless": {
+    "en": "frankfurter, meatless",
+    "ru": "колбаска, безмясная"
+  },
+  "emu, raw, flat fillet": {
+    "en": "emu, raw, flat fillet",
+    "ru": "эму, сырое, плоский стейк"
+  },
+  "emu, raw, inside drum": {
+    "en": "emu, raw, inside drum",
+    "ru": "эму, сырое, бедро внутри"
+  },
+  "ice creams, chocolate": {
+    "en": "ice creams, chocolate",
+    "ru": "мороженое, шоколадное"
+  },
+  "snacks, potato sticks": {
+    "en": "snacks, potato sticks",
+    "ru": "закуски, картофельные палочки"
+  },
+  "usda commodity, salsa": {
+    "en": "usda commodity, salsa",
+    "ru": "товар usda, сальса"
+  },
+  "figs, uncooked, dried": {
+    "en": "figs, uncooked, dried",
+    "ru": "финики, невареные, сушеные"
+  },
+  "game meat, raw, horse": {
+    "en": "game meat, raw, horse",
+    "ru": "дичь, сырая, лошадь"
+  },
+  "syrup, fruit flavored": {
+    "en": "syrup, fruit flavored",
+    "ru": "сироп, с фруктовым вкусом"
+  },
+  "broccoli, raw, stalks": {
+    "en": "broccoli, raw, stalks",
+    "ru": "брокколи, сырая, стебли"
+  },
+  "cream, cultured, sour": {
+    "en": "cream, cultured, sour",
+    "ru": "сливки, сквашенные, кислые"
+  },
+  "gravy, canned, au jus": {
+    "en": "gravy, canned, au jus",
+    "ru": "соус, консервированный, с бульоном"
+  },
+  "mcdonald's, hamburger": {
+    "en": "mcdonald's, hamburger",
+    "ru": "макдональдс, гамбургер"
+  },
+  "cheese, port de salut": {
+    "en": "cheese, port de salut",
+    "ru": "сыр, порт де салют"
+  },
+  "silk original creamer": {
+    "en": "silk original creamer",
+    "ru": "сilk, оригинальный сливочный напиток"
+  },
+  "mushrooms, raw, enoki": {
+    "en": "mushrooms, raw, enoki",
+    "ru": "грибы, сырые, энки"
+  },
+  "bacon and beef sticks": {
+    "en": "bacon and beef sticks",
+    "ru": "палочки из бекона и говядины"
+  },
+  "salami, pork, italian": {
+    "en": "salami, pork, italian",
+    "ru": "салами, свиное, итальянское"
+  },
+  "crackers, whole-wheat": {
+    "en": "crackers, whole-wheat",
+    "ru": "крекеры, цельнозерновые"
+  },
+  "peanuts, raw, spanish": {
+    "en": "peanuts, raw, spanish",
+    "ru": "арахис, сырой, испанский"
+  },
+  "hominy, white, canned": {
+    "en": "hominy, white, canned",
+    "ru": "гомини, белый, консервированный"
+  },
+  "game meat, raw, moose": {
+    "en": "game meat, raw, moose",
+    "ru": "дичь, сырая, олень"
+  },
+  "pears, red anjou, raw": {
+    "en": "pears, red anjou, raw",
+    "ru": "груши, красные анжу, сырые"
+  },
+  "horseradish, prepared": {
+    "en": "horseradish, prepared",
+    "ru": "горчица кореньевая, приготовленная"
+  },
+  "fish, raw, butterfish": {
+    "en": "fish, raw, butterfish",
+    "ru": "рыба, сырая, масляная рыба"
+  },
+  "lebanon bologna, beef": {
+    "en": "lebanon bologna, beef",
+    "ru": "лобанон бологна, говяжья"
+  },
+  "ham and cheese spread": {
+    "en": "ham and cheese spread",
+    "ru": "паштет из ветчины и сыра"
+  },
+  "taco bell, taco salad": {
+    "en": "taco bell, taco salad",
+    "ru": "тако бэлл, салат тако"
+  },
+  "sauce, worcestershire": {
+    "en": "sauce, worcestershire",
+    "ru": "соус, винегрет"
+  },
+  "candies, marshmallows": {
+    "en": "candies, marshmallows",
+    "ru": "конфеты, маршмеллоу"
+  },
+  "hummus, home prepared": {
+    "en": "hummus, home prepared",
+    "ru": "хуммус, домашний"
+  },
+  "ice cream sundae cone": {
+    "en": "ice cream sundae cone",
+    "ru": "конус для мороженого санди"
+  },
+  "peppers, raw, serrano": {
+    "en": "peppers, raw, serrano",
+    "ru": "перецы, сырые, сьера"
+  },
+  "cabbage, cooked, napa": {
+    "en": "cabbage, cooked, napa",
+    "ru": "капуста, приготовленная, напа"
+  },
+  "peppers, dried, ancho": {
+    "en": "peppers, dried, ancho",
+    "ru": "перецы, сушеные, анчо"
+  },
+  "parsley, freeze-dried": {
+    "en": "parsley, freeze-dried",
+    "ru": "петрушка, сушеная"
+  },
+  "spices, black, pepper": {
+    "en": "spices, black, pepper",
+    "ru": "специи, черный, перец"
+  },
+  "spices, white, pepper": {
+    "en": "spices, white, pepper",
+    "ru": "специи, белый, перец"
+  },
+  "nuts, dried, pilinuts": {
+    "en": "nuts, dried, pilinuts",
+    "ru": "орехи, сушеные, пилинаты"
+  },
+  "kiwifruit, raw, green": {
+    "en": "kiwifruit, raw, green",
+    "ru": "киви, сырой, зеленый"
+  },
+  "drumstick leaves, raw": {
+    "en": "drumstick leaves, raw",
+    "ru": "листья куриных голеней, сырые"
+  },
+  "candies, butterscotch": {
+    "en": "candies, butterscotch",
+    "ru": "конфеты, карамель с маслом"
+  },
+  "cucumber, raw, peeled": {
+    "en": "cucumber, raw, peeled",
+    "ru": "огурец, сырой, очищенный"
+  },
+  "dandelion greens, raw": {
+    "en": "dandelion greens, raw",
+    "ru": "зелень одуванчика, сырая"
+  },
+  "melons, raw, honeydew": {
+    "en": "melons, raw, honeydew",
+    "ru": "арбузы, сырые, медовый"
+  },
+  "potato salad with egg": {
+    "en": "potato salad with egg",
+    "ru": "салат из картофеля с яйцом"
   },
   "mushrooms, raw, white": {
-    "en": "mushrooms, raw, white",
+    "en": "Mushrooms, raw, white",
     "ru": "грибы, сырые, белые"
   },
-  "bread, cheese": {
-    "en": "bread, cheese",
-    "ru": "хлеб, сыр"
+  "mushrooms, raw, morel": {
+    "en": "mushrooms, raw, morel",
+    "ru": "грибы, сырые, сморчки"
   },
-  "butter, salted": {
-    "en": "butter, salted",
-    "ru": "масло, соленое"
+  "cheese, mexican blend": {
+    "en": "cheese, mexican blend",
+    "ru": "сыр, мексиканская смесь"
   },
-  "garlic, raw": {
-    "en": "garlic, raw",
-    "ru": "чеснок, сырой"
+  "oranges, florida, raw": {
+    "en": "oranges, florida, raw",
+    "ru": "апельсины, флоридские, сырые"
   },
-  "onions, raw": {
-    "en": "onions, raw",
-    "ru": "лук, сырой"
+  "papaya nectar, canned": {
+    "en": "papaya nectar, canned",
+    "ru": "нектар папайи, консервированный"
   },
-  "bread, wheat": {
-    "en": "bread, wheat",
-    "ru": "хлеб, пшеничный"
+  "fiddlehead ferns, raw": {
+    "en": "fiddlehead ferns, raw",
+    "ru": "молодые папоротники, сырые"
   },
-  "bread, egg": {
-    "en": "bread, egg",
-    "ru": "хлеб, яичный"
+  "tomatoes, raw, green": {
+    "en": "tomatoes, raw, green",
+    "ru": "помидоры, сырые, зеленые"
   },
-  "oil, salad or cooking, olive": {
-    "en": "oil, salad or cooking, olive",
-    "ru": "масло, салатное или кулинарное, оливковое"
+  "mollusks, raw, snail": {
+    "en": "mollusks, raw, snail",
+    "ru": "моллюски, сырые, улитка"
   },
-  "salt, table": {
-    "en": "salt, table",
-    "ru": "соль, пищевая"
+  "emu, raw, fan fillet": {
+    "en": "emu, raw, fan fillet",
+    "ru": "эму, сырой, филе-веер"
   },
-  "spices, paprika": {
-    "en": "spices, paprika",
-    "ru": "специи, паприка"
+  "pasta, enriched, dry": {
+    "en": "pasta, enriched, dry",
+    "ru": "макароны, обогащенные, сухие"
   },
-  "rosemary, fresh": {
-    "en": "rosemary, fresh",
-    "ru": "розмарин, свежий"
+  "cookies, gingersnaps": {
+    "en": "cookies, gingersnaps",
+    "ru": "печенье, гингерснэпс"
   },
-  "parsley, fresh": {
-    "en": "parsley, fresh",
-    "ru": "петрушка, свежая"
+  "sour cream, fat free": {
+    "en": "sour cream, fat free",
+    "ru": "сметана, обезжиренная"
   },
-  "~herbs": {
-    "en": "~herbs",
-    "ru": "~травы"
+  "murray, honey graham": {
+    "en": "murray, honey graham",
+    "ru": "мюррей, медовый грахам"
   },
-  "chicken": {
-    "en": "chicken",
-    "ru": "~курица"
+  "frankfurter, chicken": {
+    "en": "frankfurter, chicken",
+    "ru": "франкфуртер, куриный"
   },
-  "spaghetti, cooked, spinach": {
-    "en": "spaghetti, cooked, spinach",
-    "ru": "спагетти, приготовленные, со шпинатом"
+  "ham, canned, chopped": {
+    "en": "ham, canned, chopped",
+    "ru": "бекон, консервированный, нарезанный"
+  },
+  "spices, dried, thyme": {
+    "en": "spices, dried, thyme",
+    "ru": "специи, сушеные, тимьян"
+  },
+  "carrot juice, canned": {
+    "en": "carrot juice, canned",
+    "ru": "морковный сок, консервированный"
+  },
+  "corn, dried (navajo)": {
+    "en": "corn, dried (navajo)",
+    "ru": "кукуруза, сушеная (навахо)"
+  },
+  "pate, truffle flavor": {
+    "en": "pate, truffle flavor",
+    "ru": "паштет, вкус трюфеля"
+  },
+  "fruit butters, apple": {
+    "en": "fruit butters, apple",
+    "ru": "фруктовые пасты, яблочные"
+  },
+  "fast foods, coleslaw": {
+    "en": "fast foods, coleslaw",
+    "ru": "фастфуд, салат из капусты"
+  },
+  "salami, beef, cooked": {
+    "en": "salami, beef, cooked",
+    "ru": "салями, говяжья, вареная"
+  },
+  "spices, chili powder": {
+    "en": "spices, chili powder",
+    "ru": "специи, порошок чили"
+  },
+  "spices, caraway seed": {
+    "en": "spices, caraway seed",
+    "ru": "специи, семена укропа"
+  },
+  "spices, dried, basil": {
+    "en": "spices, dried, basil",
+    "ru": "специи, сушеные, базилик"
+  },
+  "pickle relish, sweet": {
+    "en": "pickle relish, sweet",
+    "ru": "маринованный огурец, сладкий"
+  },
+  "chives, freeze-dried": {
+    "en": "chives, freeze-dried",
+    "ru": "зеленый лук, сушеный методом заморозки"
+  },
+  "fish, raw, sablefish": {
+    "en": "fish, raw, sablefish",
+    "ru": "рыба, сырая, черная морская рыба"
+  },
+  "crackers, multigrain": {
+    "en": "crackers, multigrain",
+    "ru": "крекеры, мультисерые"
+  },
+  "spices, ground, mace": {
+    "en": "spices, ground, mace",
+    "ru": "специи, молотый, мускатный орех"
+  },
+  "spices, onion powder": {
+    "en": "spices, onion powder",
+    "ru": "специи, лук, порошок"
+  },
+  "butter, without salt": {
+    "en": "butter, without salt",
+    "ru": "масло, без соли"
+  },
+  "rice noodles, cooked": {
+    "en": "rice noodles, cooked",
+    "ru": "рисовая лапша, вареная"
+  },
+  "barley flour or meal": {
+    "en": "barley flour or meal",
+    "ru": "ячменная мука или крупа"
+  },
+  "sesbania flower, raw": {
+    "en": "sesbania flower, raw",
+    "ru": "цветок сесбании, сырой"
+  },
+  "garlic bread, frozen": {
+    "en": "garlic bread, frozen",
+    "ru": "чесночный хлеб, замороженный"
+  },
+  "kfc, popcorn chicken": {
+    "en": "kfc, popcorn chicken",
+    "ru": "kfc, курица попкорн"
+  },
+  "applebee's, coleslaw": {
+    "en": "applebee's, coleslaw",
+    "ru": "applebee's, салат из капусты"
+  },
+  "rolls, sweet, dinner": {
+    "en": "rolls, sweet, dinner",
+    "ru": "булочки, сладкие, на ужин"
+  },
+  "cherries, raw, sweet": {
+    "en": "cherries, raw, sweet",
+    "ru": "вишня, сырая, сладкая"
+  },
+  "ostrich, raw, ground": {
+    "en": "ostrich, raw, ground",
+    "ru": "страус, сырой, молотый"
+  },
+  "silk coffee, soymilk": {
+    "en": "silk coffee, soymilk",
+    "ru": "сilk кофе, соевое молоко"
+  },
+  "snacks, banana chips": {
+    "en": "snacks, banana chips",
+    "ru": "закуски, чипсы из банана"
+  },
+  "peaches, raw, yellow": {
+    "en": "peaches, raw, yellow",
+    "ru": "персики, сырые, желтые"
+  },
+  "rolls, wheat, dinner": {
+    "en": "rolls, wheat, dinner",
+    "ru": "булочки, пшеничные, на ужин"
+  },
+  "candies, heath bites": {
+    "en": "candies, heath bites",
+    "ru": "конфеты, хит битс"
+  },
+  "chicken, raw, ground": {
+    "en": "chicken, raw, ground",
+    "ru": "курица, сырая, молотая"
+  },
+  "pears, bartlett, raw": {
+    "en": "pears, bartlett, raw",
+    "ru": "груши, бартолет, сырые"
+  },
+  "toppings, strawberry": {
+    "en": "toppings, strawberry",
+    "ru": "топпинги, клубничные"
+  },
+  "keebler, sugar cones": {
+    "en": "keebler, sugar cones",
+    "ru": "киблер, сахарные конусы"
+  },
+  "seaweed, raw, wakame": {
+    "en": "seaweed, raw, wakame",
+    "ru": "морская капуста, сырая, вакаме"
+  },
+  "seaweed, dried, agar": {
+    "en": "seaweed, dried, agar",
+    "ru": "морская капуста, сушеная, агар"
+  },
+  "bread, cracked-wheat": {
+    "en": "bread, cracked-wheat",
+    "ru": "хлеб, треснутая пшеница"
+  },
+  "amaranth leaves, raw": {
+    "en": "amaranth leaves, raw",
+    "ru": "листья амаранта, сырые"
+  },
+  "barley, raw, pearled": {
+    "en": "barley, raw, pearled",
+    "ru": "ячмень, сырой, пропаренный"
+  },
+  "polish sausage, pork": {
+    "en": "polish sausage, pork",
+    "ru": "польская колбаса, свиная"
+  },
+  "spices, curry powder": {
+    "en": "spices, curry powder",
+    "ru": "специи, порошок карри"
+  },
+  "bacon bits, meatless": {
+    "en": "bacon bits, meatless",
+    "ru": "кусочки бекона, без мяса"
+  },
+  "semolina, unenriched": {
+    "en": "semolina, unenriched",
+    "ru": "полба, необогащенная"
+  },
+  "grape leaves, canned": {
+    "en": "grape leaves, canned",
+    "ru": "виноградные листья, консервированные"
+  },
+  "ostrich, raw, oyster": {
+    "en": "ostrich, raw, oyster",
+    "ru": "страус, сырой, устричный"
+  },
+  "oil, corn and canola": {
+    "en": "oil, corn and canola",
+    "ru": "масло, кукурузное и рапсовое"
+  },
+  "pumpkin flowers, raw": {
+    "en": "pumpkin flowers, raw",
+    "ru": "цветки тыквы, сырые"
+  },
+  "celery flakes, dried": {
+    "en": "celery flakes, dried",
+    "ru": "укропные хлопья, сушеные"
+  },
+  "loganberries, frozen": {
+    "en": "loganberries, frozen",
+    "ru": "логанберри, замороженные"
+  },
+  "tangerine juice, raw": {
+    "en": "tangerine juice, raw",
+    "ru": "сок мандарина, сырой"
+  },
+  "soybeans, raw, green": {
+    "en": "soybeans, raw, green",
+    "ru": "соя, сырая, зеленая"
+  },
+  "game meat, raw, bear": {
+    "en": "game meat, raw, bear",
+    "ru": "дичь, сырая, медвежья"
+  },
+  "game meat, raw, deer": {
+    "en": "game meat, raw, deer",
+    "ru": "дичь, сырая, оленья"
+  },
+  "oranges, navels, raw": {
+    "en": "oranges, navels, raw",
+    "ru": "апельсины, пупырчатые, сырые"
+  },
+  "tostada shells, corn": {
+    "en": "tostada shells, corn",
+    "ru": "оболочки для тостады, кукурузные"
+  },
+  "taro, raw, tahitian": {
+    "en": "taro, raw, tahitian",
+    "ru": "таро, сырое, таитянское"
+  },
+  "chicory greens, raw": {
+    "en": "chicory greens, raw",
+    "ru": "зелень цикория, сырая"
+  },
+  "hearts of palm, raw": {
+    "en": "hearts of palm, raw",
+    "ru": "сердце пальмы, сырое"
+  },
+  "chayote, raw, fruit": {
+    "en": "chayote, raw, fruit",
+    "ru": "чайот, сырой, фруктовый"
+  },
+  "fish, smoked, cisco": {
+    "en": "fish, smoked, cisco",
+    "ru": "рыба, копченая, сиско"
+  },
+  "frankfurter, turkey": {
+    "en": "frankfurter, turkey",
+    "ru": "франкфуртская колбаса, индейка"
+  },
+  "oil, ucuhuba butter": {
+    "en": "oil, ucuhuba butter",
+    "ru": "масло, укухаба-масло"
+  },
+  "soy protein isolate": {
+    "en": "soy protein isolate",
+    "ru": "изолят соевого белка"
+  },
+  "syrups, light, corn": {
+    "en": "syrups, light, corn",
+    "ru": "сиропы, легкие, кукурузные"
+  },
+  "fish, raw, milkfish": {
+    "en": "fish, raw, milkfish",
+    "ru": "рыба, сырая, молочная рыба"
+  },
+  "fish, raw, monkfish": {
+    "en": "fish, raw, monkfish",
+    "ru": "рыба, сырая, монах-рыба"
+  },
+  "mother's loaf, pork": {
+    "en": "mother's loaf, pork",
+    "ru": "хлеб матери, свинина"
+  },
+  "tapioca, dry, pearl": {
+    "en": "tapioca, dry, pearl",
+    "ru": "тапиока, сухая, перловая"
+  },
+  "guavas, raw, common": {
+    "en": "guavas, raw, common",
+    "ru": "гуава, сырая, обычная"
+  },
+  "bread, toasted, rye": {
+    "en": "bread, toasted, rye",
+    "ru": "хлеб, поджаренный, ржаной"
+  },
+  "oil, apricot kernel": {
+    "en": "oil, apricot kernel",
+    "ru": "масло, ядра абрикоса"
   },
   "meatballs, meatless": {
     "en": "meatballs, meatless",
     "ru": "котлеты, безмясные"
   },
-  "tomato powder": {
-    "en": "tomato powder",
-    "ru": "томатная мука"
+  "emu, raw, full rump": {
+    "en": "emu, raw, full rump",
+    "ru": "эму, сырое, полное заднее"
   },
-  "lettuce, raw, cos or romaine": {
-    "en": "lettuce, raw, cos or romaine",
-    "ru": "салат, сырой, кос или ромэн"
+  "mustard greens, raw": {
+    "en": "mustard greens, raw",
+    "ru": "зелень горчицы, сырая"
   },
-  "pace, green taco sauce": {
-    "en": "pace, green taco sauce",
-    "ru": "соус Pace, зеленый тачо"
+  "seaweed, raw, laver": {
+    "en": "seaweed, raw, laver",
+    "ru": "морская капуста, сырая, лавер"
+  },
+  "sweet rolls, cheese": {
+    "en": "sweet rolls, cheese",
+    "ru": "сладкие рулетики, с сыром"
+  },
+  "figs, stewed, dried": {
+    "en": "figs, stewed, dried",
+    "ru": "финики, тушеные, сушеные"
+  },
+  "bread sticks, plain": {
+    "en": "bread sticks, plain",
+    "ru": "хлебные палочки, простые"
+  },
+  "silk mocha, soymilk": {
+    "en": "silk mocha, soymilk",
+    "ru": "сilk мока, соевое молоко"
+  },
+  "milk and cereal bar": {
+    "en": "milk and cereal bar",
+    "ru": "батончик с молоком и хлопьями"
+  },
+  "bread, pumpernickel": {
+    "en": "bread, pumpernickel",
+    "ru": "хлеб, пумперникель"
+  },
+  "game meat, raw, elk": {
+    "en": "game meat, raw, elk",
+    "ru": "дичь, сырая, лосиная"
+  },
+  "ostrich, raw, round": {
+    "en": "ostrich, raw, round",
+    "ru": "страусиное мясо, сырое, круглое"
+  },
+  "hormel, cure 81 ham": {
+    "en": "hormel, cure 81 ham",
+    "ru": "хормель, ветчина с консервантом 81"
+  },
+  "prune juice, canned": {
+    "en": "prune juice, canned",
+    "ru": "сок чернослива, консервированный"
+  },
+  "mcdonald's, big mac": {
+    "en": "mcdonald's, big mac",
+    "ru": "макдональдс, биг мак"
+  },
+  "soy flour, defatted": {
+    "en": "soy flour, defatted",
+    "ru": "соевая мука, обезжиренная"
+  },
+  "bread, toasted, egg": {
+    "en": "bread, toasted, egg",
+    "ru": "хлеб, поджаренный, с яйцом"
+  },
+  "fish, raw, mahimahi": {
+    "en": "fish, raw, mahimahi",
+    "ru": "рыба, сырая, махи-махи"
+  },
+  "fish, raw, bluefish": {
+    "en": "fish, raw, bluefish",
+    "ru": "рыба, сырая, голубая рыба"
+  },
+  "spices, fennel seed": {
+    "en": "spices, fennel seed",
+    "ru": "специи, семена фенхеля"
+  },
+  "potatoes, skin, raw": {
+    "en": "potatoes, skin, raw",
+    "ru": "картофель, с кожурой, сырой"
+  },
+  "pepper, raw, banana": {
+    "en": "pepper, raw, banana",
+    "ru": "перец, сырой, банановый"
+  },
+  "drumstick pods, raw": {
+    "en": "drumstick pods, raw",
+    "ru": "стручки гороха, сырые"
+  },
+  "toppings, pineapple": {
+    "en": "toppings, pineapple",
+    "ru": "топпинги, ананас"
+  },
+  "acorn stew (apache)": {
+    "en": "acorn stew (apache)",
+    "ru": "суп из желудей (апаچی)"
+  },
+  "tomatoes, sun-dried": {
+    "en": "tomatoes, sun-dried",
+    "ru": "томаты, сушеные на солнце"
+  },
+  "guava sauce, cooked": {
+    "en": "guava sauce, cooked",
+    "ru": "гуава соус, приготовленный"
+  },
+  "pumpkin leaves, raw": {
+    "en": "pumpkin leaves, raw",
+    "ru": "листья тыквы, сырые"
+  },
+  "melons, raw, casaba": {
+    "en": "melons, raw, casaba",
+    "ru": "арбузы, сырые, касаба"
+  },
+  "melon balls, frozen": {
+    "en": "melon balls, frozen",
+    "ru": "шарики из арбуза, замороженные"
+  },
+  "fish oil, cod liver": {
+    "en": "fish oil, cod liver",
+    "ru": "рыбий жир, печень трески"
+  },
+  "nuts, dried, acorns": {
+    "en": "nuts, dried, acorns",
+    "ru": "орехи, сушеные, жёлуди"
+  },
+  "rolls, pumpernickel": {
+    "en": "rolls, pumpernickel",
+    "ru": "булочки, пумперникель"
+  },
+  "gravy, dry, chicken": {
+    "en": "gravy, dry, chicken",
+    "ru": "соус, сухой, куриный"
+  },
+  "fish, raw, tilefish": {
+    "en": "fish, raw, tilefish",
+    "ru": "рыба, сырая, каменный окунь"
+  },
+  "ice creams, vanilla": {
+    "en": "ice creams, vanilla",
+    "ru": "мороженое, ванильное"
+  },
+  "silk plain, soymilk": {
+    "en": "silk plain, soymilk",
+    "ru": "сильк, обычный, соевое молоко"
+  },
+  "cabbage, raw, savoy": {
+    "en": "cabbage, raw, savoy",
+    "ru": "капуста, сырая, савойская"
+  },
+  "fish, raw, tilapia": {
+    "en": "fish, raw, tilapia",
+    "ru": "рыба, сырая, тиляпия"
+  },
+  "broccoli raab, raw": {
+    "en": "broccoli raab, raw",
+    "ru": "брокколи рааб, сырой"
+  },
+  "corn grain, yellow": {
+    "en": "corn grain, yellow",
+    "ru": "кукурузные зерна, желтые"
+  },
+  "turtle, raw, green": {
+    "en": "turtle, raw, green",
+    "ru": "черепаха, сырая, зеленая"
+  },
+  "chicory roots, raw": {
+    "en": "chicory roots, raw",
+    "ru": "корни цикория, сырые"
+  },
+  "ice cream sandwich": {
+    "en": "ice cream sandwich",
+    "ru": "сэндвич с мороженым"
+  },
+  "croutons, seasoned": {
+    "en": "croutons, seasoned",
+    "ru": "хрустяшки, приправленные"
+  },
+  "snacks, taro chips": {
+    "en": "snacks, taro chips",
+    "ru": "закуски, чипсы из таро"
+  },
+  "prickly pears, raw": {
+    "en": "prickly pears, raw",
+    "ru": "иглистые груши, сырые"
+  },
+  "fish, raw, haddock": {
+    "en": "fish, raw, haddock",
+    "ru": "рыба, сырая, хаддок"
+  },
+  "liver cheese, pork": {
+    "en": "liver cheese, pork",
+    "ru": "печеночный сыр, свиной"
+  },
+  "ground turkey, raw": {
+    "en": "ground turkey, raw",
+    "ru": "фарш из индейки, сырой"
+  },
+  "jams and preserves": {
+    "en": "jams and preserves",
+    "ru": "джемы и консервы"
+  },
+  "carrots, raw, baby": {
+    "en": "carrots, raw, baby",
+    "ru": "морковь, сырая, детская"
+  },
+  "oil, nutmeg butter": {
+    "en": "oil, nutmeg butter",
+    "ru": "масло, масло из мускатного ореха"
+  },
+  "semolina, enriched": {
+    "en": "semolina, enriched",
+    "ru": "полба, обогащенная"
+  },
+  "spices, anise seed": {
+    "en": "spices, anise seed",
+    "ru": "специи, семена аниса"
+  },
+  "snacks, corn cakes": {
+    "en": "snacks, corn cakes",
+    "ru": "закуски, кукурузные блинчики"
+  },
+  "catsup, low sodium": {
+    "en": "catsup, low sodium",
+    "ru": "кетчуп, с низким содержанием натрия"
+  },
+  "croissants, cheese": {
+    "en": "croissants, cheese",
+    "ru": "круассаны, с сыром"
+  },
+  "milk, fluid, sheep": {
+    "en": "milk, fluid, sheep",
+    "ru": "молоко, жидкое, овечье"
+  },
+  "acerola juice, raw": {
+    "en": "acerola juice, raw",
+    "ru": "сок ацеролы, сырой"
+  },
+  "jute, raw, potherb": {
+    "en": "jute, raw, potherb",
+    "ru": "джут, сырой, полевой овощ"
+  },
+  "fast food, biscuit": {
+    "en": "Fast food, biscuit",
+    "ru": "быстрое питание, бисквит"
+  },
+  "bagels, multigrain": {
+    "en": "Bagels, multigrain",
+    "ru": "багеты, мультизерновые"
+  },
+  "beef, dried, cured": {
+    "en": "Beef, dried, cured",
+    "ru": "говядина, сушеная, копченая"
+  },
+  "nuts, almond paste": {
+    "en": "Nuts, almond paste",
+    "ru": "орехи, миндальная паста"
+  },
+  "seaweed, raw, kelp": {
+    "en": "Seaweed, raw, kelp",
+    "ru": "морская капуста, сырая, ламинария"
+  },
+  "seaweed, raw, agar": {
+    "en": "Seaweed, raw, agar",
+    "ru": "морская капуста, сырая, агар"
+  },
+  "fish oil, menhaden": {
+    "en": "Fish oil, menhaden",
+    "ru": "рыбий жир, менхаден"
+  },
+  "rolls, egg, dinner": {
+    "en": "Rolls, egg, dinner",
+    "ru": "булочки, яичные, на ужин"
+  },
+  "bread, white wheat": {
+    "en": "Bread, white wheat",
+    "ru": "хлеб, пшеничный белый"
+  },
+  "onions, raw, sweet": {
+    "en": "Onions, raw, sweet",
+    "ru": "лук, сырой, сладкий"
+  },
+  "onions, raw, welsh": {
+    "en": "Onions, raw, welsh",
+    "ru": "лук, сырой, валлийский"
+  },
+  "silk chai, soymilk": {
+    "en": "SILK Chai, soymilk",
+    "ru": "чай Silk, соевое молоко"
+  },
+  "rolls, rye, dinner": {
+    "en": "Rolls, rye, dinner",
+    "ru": "булочки, ржаные, на ужин"
+  },
+  "gravy, dry, au jus": {
+    "en": "Gravy, dry, au jus",
+    "ru": "соус, сухой, с бульоном"
+  },
+  "cheese, neufchatel": {
+    "en": "Cheese, neufchatel",
+    "ru": "сыр, neufchâtel"
+  },
+  "hummus, commercial": {
+    "en": "Hummus, commercial",
+    "ru": "хумmus, промышленного производства"
+  },
+  "croissants, butter": {
+    "en": "Croissants, butter",
+    "ru": "круассаны, с маслом"
+  },
+  "carrot, dehydrated": {
+    "en": "Carrot, dehydrated",
+    "ru": "морковь, обезвоженная"
+  },
+  "vinegar, distilled": {
+    "en": "Vinegar, distilled",
+    "ru": "уксус, дистиллированный"
+  },
+  "sapote, raw, mamey": {
+    "en": "Sapote, raw, mamey",
+    "ru": "сапоте, сырой, мамей"
+  },
+  "soy flour, low-fat": {
+    "en": "Soy flour, low-fat",
+    "ru": "соевая мука, с низким содержанием жира"
+  },
+  "syrups, sugar free": {
+    "en": "Syrups, sugar free",
+    "ru": "сиропы, без сахара"
+  },
+  "syrups, dark, corn": {
+    "en": "Syrups, dark, corn",
+    "ru": "сиропы, темные, кукурузные"
+  },
+  "taco shells, baked": {
+    "en": "Taco shells, baked",
+    "ru": "оболочки для тако, запеченные"
+  },
+  "spices, cumin seed": {
+    "en": "Spices, cumin seed",
+    "ru": "специи, семена кумина"
+  },
+  "bamboo shoots, raw": {
+    "en": "Bamboo shoots, raw",
+    "ru": "бамбуковые побеги, сырые"
+  },
+  "fish, raw, lingcod": {
+    "en": "Fish, raw, lingcod",
+    "ru": "рыба, сырая, лингкод"
+  },
+  "whey, dried, sweet": {
+    "en": "Whey, dried, sweet",
+    "ru": "сыворотка, сухая, сладкая"
+  },
+  "whey, fluid, sweet": {
+    "en": "Whey, fluid, sweet",
+    "ru": "сыворотка, жидкая, сладкая"
+  },
+  "spices, poppy seed": {
+    "en": "Spices, poppy seed",
+    "ru": "специи, семена мака"
+  },
+  "babyfood, pretzels": {
+    "en": "Babyfood, pretzels",
+    "ru": "детское питание, претзели"
+  },
+  "fat, mutton tallow": {
+    "en": "Fat, mutton tallow",
+    "ru": "жир, бараний топленый жир"
+  },
+  "coffeecake, cheese": {
+    "en": "Coffeecake, cheese",
+    "ru": "кофейный торт, с сыром"
+  },
+  "sauce, horseradish": {
+    "en": "Sauce, horseradish",
+    "ru": "соус, хрен"
+  },
+  "yardlong bean, raw": {
+    "en": "Yardlong bean, raw",
+    "ru": "фасоль длинная, сырая"
+  },
+  "cress, raw, garden": {
+    "en": "Cress, raw, garden",
+    "ru": "горчица, сырая, садовая"
+  },
+  "dates, deglet noor": {
+    "en": "Dates, deglet noor",
+    "ru": "даты, деглет-ноор"
+  },
+  "lambsquarters, raw": {
+    "en": "Lambsquarters, raw",
+    "ru": "овечья трава, сырая"
+  },
+  "gravy, dry, turkey": {
+    "en": "Gravy, dry, turkey",
+    "ru": "соус, сухой, индейка"
+  },
+  "vital wheat gluten": {
+    "en": "Vital wheat gluten",
+    "ru": "витальный пшеничный глютен"
+  },
+  "turnip greens, raw": {
+    "en": "Turnip greens, raw",
+    "ru": "зелень репы, сырая"
+  },
+  "sugars, granulated": {
+    "en": "Sugars, granulated",
+    "ru": "сахара, гранулированные"
+  },
+  "frankfurter, pork": {
+    "en": "Frankfurter, pork",
+    "ru": "франкфуртер, свиной"
+  },
+  "pomegranates, raw": {
+    "en": "Pomegranates, raw",
+    "ru": "гранаты, сырые"
+  },
+  "pears, raw, asian": {
+    "en": "Pears, raw, asian",
+    "ru": "груши, сырые, азиатские"
+  },
+  "cookies, molasses": {
+    "en": "Cookies, molasses",
+    "ru": "печенье, с патокой"
+  },
+  "cookies, fig bars": {
+    "en": "Cookies, fig bars",
+    "ru": "печенье, с инжиром"
+  },
+  "liverwurst spread": {
+    "en": "Liverwurst spread",
+    "ru": "паштет из печени"
+  },
+  "roast beef spread": {
+    "en": "Roast beef spread",
+    "ru": "паштет из жареной говядины"
+  },
+  "chard, raw, swiss": {
+    "en": "Chard, raw, swiss",
+    "ru": "шпинат, сырой, швейцарский"
+  },
+  "goose, raw, liver": {
+    "en": "goose, raw, liver",
+    "ru": "гусиная печень, сырая"
+  },
+  "taco bell, nachos": {
+    "en": "taco bell, nachos",
+    "ru": "нахосы taco bell"
+  },
+  "sausage, meatless": {
+    "en": "sausage, meatless",
+    "ru": "колбаса без мяса"
+  },
+  "frankfurter, meat": {
+    "en": "frankfurter, meat",
+    "ru": "франкфуртская колбаса, мясная"
+  },
+  "rice flour, brown": {
+    "en": "rice flour, brown",
+    "ru": "рисовая мука, коричневая"
+  },
+  "peppermint, fresh": {
+    "en": "peppermint, fresh",
+    "ru": "мята перечная, свежая"
+  },
+  "vinegar, red wine": {
+    "en": "vinegar, red wine",
+    "ru": "уксус, красное вино"
+  },
+  "vinegar, balsamic": {
+    "en": "vinegar, balsamic",
+    "ru": "уксус, бальзамический"
+  },
+  "luxury loaf, pork": {
+    "en": "luxury loaf, pork",
+    "ru": "паштет из свинины, люксовый"
+  },
+  "rye flour, medium": {
+    "en": "rye flour, medium",
+    "ru": "ржаная мука, средняя"
+  },
+  "denny's, coleslaw": {
+    "en": "denny's, coleslaw",
+    "ru": "коул-слоу denny's"
+  },
+  "bread, wheat bran": {
+    "en": "bread, wheat bran",
+    "ru": "хлеб с отрубями пшеничными"
+  },
+  "croissants, apple": {
+    "en": "croissants, apple",
+    "ru": "круассаны с яблоком"
+  },
+  "candies, tamarind": {
+    "en": "candies, tamarind",
+    "ru": "конфеты, тамаринд"
+  },
+  "oheloberries, raw": {
+    "en": "oheloberries, raw",
+    "ru": "черника, сырая"
+  },
+  "pace, salsa verde": {
+    "en": "pace, salsa verde",
+    "ru": "салса верде pace"
+  },
+  "barley malt flour": {
+    "en": "barley malt flour",
+    "ru": "ячменный солодовый порошок"
+  },
+  "rice noodles, dry": {
+    "en": "rice noodles, dry",
+    "ru": "рисовая лапша, сухая"
+  },
+  "fish oil, sardine": {
+    "en": "fish oil, sardine",
+    "ru": "рыбий жир, сардина"
+  },
+  "fish oil, herring": {
+    "en": "fish oil, herring",
+    "ru": "рыбий жир, сельдь"
+  },
+  "plantains, cooked": {
+    "en": "plantains, cooked",
+    "ru": "плантайн, приготовленный"
+  },
+  "burdock root, raw": {
+    "en": "burdock root, raw",
+    "ru": "корень лопуха, сырой"
+  },
+  "butterbur, canned": {
+    "en": "butterbur, canned",
+    "ru": "цикорник, консервированный"
+  },
+  "ostrich, raw, fan": {
+    "en": "ostrich, raw, fan",
+    "ru": "страус, сырой, филе"
+  },
+  "silk nog, soymilk": {
+    "en": "silk nog, soymilk",
+    "ru": "соевое молоко silk nog"
+  },
+  "gravy, dry, brown": {
+    "en": "gravy, dry, brown",
+    "ru": "сухой коричневый соус"
+  },
+  "cheese, provolone": {
+    "en": "cheese, provolone",
+    "ru": "сыр, проволоне"
+  },
+  "cheese, roquefort": {
+    "en": "cheese, roquefort",
+    "ru": "сыр, рокфор"
+  },
+  "muffins, oat bran": {
+    "en": "muffins, oat bran",
+    "ru": "маффины с овсяными отрубями"
+  },
+  "syrups, grenadine": {
+    "en": "syrups, grenadine",
+    "ru": "сироп, гранатовый"
+  },
+  "raisins, seedless": {
+    "en": "raisins, seedless",
+    "ru": "изюм, без косточек"
+  },
+  "strawberries, raw": {
+    "en": "strawberries, raw",
+    "ru": "клубника, сырая"
+  },
+  "fish, raw, burbot": {
+    "en": "fish, raw, burbot",
+    "ru": "щука, сырая"
+  },
+  "wheat germ, crude": {
+    "en": "wheat germ, crude",
+    "ru": "пшеничный зародыш, сырой"
+  },
+  "wheat, hard white": {
+    "en": "wheat, hard white",
+    "ru": "пшеница, твердая белая"
+  },
+  "wheat bran, crude": {
+    "en": "wheat bran, crude",
+    "ru": "пшеничные отруби, сырые"
+  },
+  "gooseberries, raw": {
+    "en": "gooseberries, raw",
+    "ru": "голубика, сырая"
+  },
+  "spices, dill seed": {
+    "en": "spices, dill seed",
+    "ru": "специи, укропное семя"
+  },
+  "oil, cocoa butter": {
+    "en": "oil, cocoa butter",
+    "ru": "масло какао"
+  },
+  "applebee's, chili": {
+    "en": "applebee's, chili",
+    "ru": "чили applebee's"
+  },
+  "grape leaves, raw": {
+    "en": "grape leaves, raw",
+    "ru": "виноградные листья, сырые"
+  },
+  "kale, raw, scotch": {
+    "en": "kale, raw, scotch",
+    "ru": "капуста брюссельская, сырая, шотландская"
+  },
+  "marmalade, orange": {
+    "en": "marmalade, orange",
+    "ru": "мармелад, апельсиновый"
+  },
+  "whey, dried, acid": {
+    "en": "whey, dried, acid",
+    "ru": "сыворотка, сухая, кислая"
+  },
+  "whey, fluid, acid": {
+    "en": "whey, fluid, acid",
+    "ru": "сыворотка, жидкая, кислая"
+  },
+  "eggplant, pickled": {
+    "en": "eggplant, pickled",
+    "ru": "баклажан, маринованный"
+  },
+  "babyfood, cookies": {
+    "en": "babyfood, cookies",
+    "ru": "детское питание, печенье"
+  },
+  "fennel, raw, bulb": {
+    "en": "fennel, raw, bulb",
+    "ru": "фенхель, сырой, луковица"
+  },
+  "egg, dried, whole": {
+    "en": "egg, dried, whole",
+    "ru": "яйцо, сушеное, целое"
+  },
+  "coffeecake, fruit": {
+    "en": "coffeecake, fruit",
+    "ru": "кофейный торт с фруктами"
+  },
+  "candies, caramels": {
+    "en": "candies, caramels",
+    "ru": "конфеты, карамель"
+  },
+  "sour cream, light": {
+    "en": "sour cream, light",
+    "ru": "сметана, легкая"
+  },
+  "egg, dried, white": {
+    "en": "egg, dried, white",
+    "ru": "яйцо, сушеное, белое"
+  },
+  "wild rice, cooked": {
+    "en": "wild rice, cooked",
+    "ru": "дикорос, вареный"
+  },
+  "chicken, meatless": {
+    "en": "chicken, meatless",
+    "ru": "курица, без мяса"
+  },
+  "corn grain, white": {
+    "en": "corn grain, white",
+    "ru": "кукурузное зерно, белое"
+  },
+  "veal, raw, ground": {
+    "en": "veal, raw, ground",
+    "ru": "телятина, сырая, фарш"
+  },
+  "wheat, soft white": {
+    "en": "wheat, soft white",
+    "ru": "пшеница, мягкая, белая"
+  },
+  "elderberries, raw": {
+    "en": "elderberries, raw",
+    "ru": " elderberries, сырые"
+  },
+  "nuts, raw, acorns": {
+    "en": "nuts, raw, acorns",
+    "ru": "орехи, сырые, дубовые"
+  },
+  "orange juice, raw": {
+    "en": "orange juice, raw",
+    "ru": "апельсиновый сок, сырой"
+  },
+  "popeyes, coleslaw": {
+    "en": "popeyes, coleslaw",
+    "ru": "попайс, салат из капусты"
+  },
+  "cabbage, raw, red": {
+    "en": "cabbage, raw, red",
+    "ru": "капуста, сырая, красная"
+  },
+  "blackberries, raw": {
+    "en": "blackberries, raw",
+    "ru": "черника, сырая"
+  },
+  "wasabi, raw, root": {
+    "en": "wasabi, raw, root",
+    "ru": "ваасаби, сырой, корень"
+  },
+  "cheese, limburger": {
+    "en": "cheese, limburger",
+    "ru": "сыр, лимбургер"
+  },
+  "raspberries, raw": {
+    "en": "raspberries, raw",
+    "ru": "малина, сырая"
+  },
+  "corn bran, crude": {
+    "en": "corn bran, crude",
+    "ru": "кукурузная оболочка, сырая"
+  },
+  "bread, rice bran": {
+    "en": "bread, rice bran",
+    "ru": "хлеб, рисовая шелуха"
+  },
+  "taro shoots, raw": {
+    "en": "taro shoots, raw",
+    "ru": "стрелки таро, сырые"
+  },
+  "sugars, powdered": {
+    "en": "sugars, powdered",
+    "ru": "сахар, порошкообразный"
+  },
+  "emu, raw, ground": {
+    "en": "emu, raw, ground",
+    "ru": "эму, сырой, фарш"
+  },
+  "cookies, fortune": {
+    "en": "cookies, fortune",
+    "ru": "печенье, с предсказанием"
+  },
+  "fish, raw, cisco": {
+    "en": "fish, raw, cisco",
+    "ru": "рыба, сырая, сисо"
+  },
+  "couscous, cooked": {
+    "en": "couscous, cooked",
+    "ru": "кусукус, вареный"
+  },
+  "dill weed, fresh": {
+    "en": "dill weed, fresh",
+    "ru": "укроп, свежий"
+  },
+  "spearmint, dried": {
+    "en": "spearmint, dried",
+    "ru": "мята перечная, сушеная"
+  },
+  "spearmint, fresh": {
+    "en": "spearmint, fresh",
+    "ru": "мята перечная, свежая"
+  },
+  "tamales (navajo)": {
+    "en": "tamales (navajo)",
+    "ru": "тамалес (навахо)"
+  },
+  "rice bran, crude": {
+    "en": "rice bran, crude",
+    "ru": "рисовая шелуха, сырая"
+  },
+  "rye flour, light": {
+    "en": "rye flour, light",
+    "ru": "ржаная мука, светлая"
+  },
+  "spices, bay leaf": {
+    "en": "spices, bay leaf",
+    "ru": "специи, лавровый лист"
+  },
+  "spices, cardamom": {
+    "en": "spices, cardamom",
+    "ru": "специи, кардамон"
+  },
+  "lemon juice, raw": {
+    "en": "lemon juice, raw",
+    "ru": "лимонный сок, сырой"
+  },
+  "ginger root, raw": {
+    "en": "ginger root, raw",
+    "ru": "имбирный корень, сырой"
+  },
+  "fish oil, salmon": {
+    "en": "fish oil, salmon",
+    "ru": "рыбий жир, лосось"
+  },
+  "fish, tuna salad": {
+    "en": "fish, tuna salad",
+    "ru": "рыба, салат из тунца"
+  },
+  "orange peel, raw": {
+    "en": "orange peel, raw",
+    "ru": "апельсиновая цедра, сырая"
+  },
+  "blueberries, raw": {
+    "en": "blueberries, raw",
+    "ru": "голубика, сырая"
+  },
+  "cheese, muenster": {
+    "en": "cheese, muenster",
+    "ru": "сыр, мюнстер"
+  },
+  "beet greens, raw": {
+    "en": "beet greens, raw",
+    "ru": "зелень свеклы, сырая"
+  },
+  "cheese, cheshire": {
+    "en": "cheese, cheshire",
+    "ru": "сыр, чешир"
+  },
+  "bagels, oat bran": {
+    "en": "bagels, oat bran",
+    "ru": "багеты, овсяная шелуха"
+  },
+  "fat, beef tallow": {
+    "en": "fat, beef tallow",
+    "ru": "жир, говяжий жир"
+  },
+  "clementines, raw": {
+    "en": "clementines, raw",
+    "ru": "клематин, сырой"
+  },
+  "peas, raw, green": {
+    "en": "peas, raw, green",
+    "ru": "горошек, сырой, зеленый"
+  },
+  "oat bran, cooked": {
+    "en": "oat bran, cooked",
+    "ru": "овсяная шелуха, вареная"
+  },
+  "pears, bosc, raw": {
+    "en": "pears, bosc, raw",
+    "ru": "груша, боск, сырая"
+  },
+  "sugar, turbinado": {
+    "en": "sugar, turbinado",
+    "ru": "сахар, турбинадо"
+  },
+  "headcheese, pork": {
+    "en": "headcheese, pork",
+    "ru": "головной сыр, свинина"
+  },
+  "ham salad spread": {
+    "en": "ham salad spread",
+    "ru": "хлебная паста из ветчины"
+  },
+  "olive loaf, pork": {
+    "en": "olive loaf, pork",
+    "ru": "колбаска из свинины с оливками"
+  },
+  "pastrami, turkey": {
+    "en": "pastrami, turkey",
+    "ru": "пастрами из индейки"
+  },
+  "cranberries, raw": {
+    "en": "cranberries, raw",
+    "ru": "клюква, сырая"
+  },
+  "popeyes, biscuit": {
+    "en": "popeyes, biscuit",
+    "ru": "булочка Popeyes"
+  },
+  "egg, dried, yolk": {
+    "en": "egg, dried, yolk",
+    "ru": "яичный желток, высушенный"
+  },
+  "quinoa, uncooked": {
+    "en": "quinoa, uncooked",
+    "ru": "киноа, сырое"
+  },
+  "emu, raw, oyster": {
+    "en": "emu, raw, oyster",
+    "ru": "эму, сырое, устричное"
+  },
+  "rose-apples, raw": {
+    "en": "rose-apples, raw",
+    "ru": "роза-яблоки, сырые"
+  },
+  "cheese, monterey": {
+    "en": "cheese, monterey",
+    "ru": "сыр Монтерей Джек"
+  },
+  "fish, raw, scup": {
+    "en": "fish, raw, scup",
+    "ru": "рыба, сырая, скуп"
+  },
+  "cheese, cheddar": {
+    "en": "cheese, cheddar",
+    "ru": "сыр чеддер"
+  },
+  "cheese, caraway": {
+    "en": "cheese, caraway",
+    "ru": "сыр с тмином"
+  },
+  "oil, wheat germ": {
+    "en": "oil, wheat germ",
+    "ru": "масло зародышей пшеницы"
+  },
+  "bread, oat bran": {
+    "en": "bread, oat bran",
+    "ru": "хлеб с отрубями овса"
+  },
+  "watermelon, raw": {
+    "en": "watermelon, raw",
+    "ru": "арбуз, сырой"
+  },
+  "potato pancakes": {
+    "en": "potato pancakes",
+    "ru": "картофельные оладьи"
+  },
+  "spinach souffle": {
+    "en": "spinach souffle",
+    "ru": "суфле со шпинатом"
+  },
+  "bacon, meatless": {
+    "en": "bacon, meatless",
+    "ru": "бекон без мяса"
+  },
+  "rosemary, fresh": {
+    "en": "Rosemary, fresh",
+    "ru": "розмарин, свежий"
+  },
+  "syrups, sorghum": {
+    "en": "syrups, sorghum",
+    "ru": "сироп сорго"
+  },
+  "rye flour, dark": {
+    "en": "rye flour, dark",
+    "ru": "ржаная мука, темная"
+  },
+  "oil, tomatoseed": {
+    "en": "oil, tomatoseed",
+    "ru": "масло семян томатов"
+  },
+  "croutons, plain": {
+    "en": "croutons, plain",
+    "ru": "хрустящие сухарики, простые"
+  },
+  "lemon peel, raw": {
+    "en": "lemon peel, raw",
+    "ru": "цедра лимона, сырая"
+  },
+  "spices, paprika": {
+    "en": "Spices, paprika",
+    "ru": "специи, паприка"
+  },
+  "nectarines, raw": {
+    "en": "nectarines, raw",
+    "ru": "нектарины, сырые"
+  },
+  "mulberries, raw": {
+    "en": "mulberries, raw",
+    "ru": "малина, сырая"
+  },
+  "lotus root, raw": {
+    "en": "lotus root, raw",
+    "ru": "корень лотоса, сырой"
+  },
+  "sauce, barbecue": {
+    "en": "sauce, barbecue",
+    "ru": "соус барбекю"
+  },
+  "fish, raw, spot": {
+    "en": "fish, raw, spot",
+    "ru": "рыба, сырая, спот"
+  },
+  "crabapples, raw": {
+    "en": "crabapples, raw",
+    "ru": "яблоки-крабы, сырые"
+  },
+  "breadfruit, raw": {
+    "en": "breadfruit, raw",
+    "ru": "хлебное дерево, сырое"
+  },
+  "arrowroot flour": {
+    "en": "arrowroot flour",
+    "ru": "крахмал таро"
+  },
+  "pimento, canned": {
+    "en": "pimento, canned",
+    "ru": "пименто, консервированный"
+  },
+  "tomatillos, raw": {
+    "en": "tomatillos, raw",
+    "ru": "томатилло, сырой"
+  },
+  "raisins, seeded": {
+    "en": "raisins, seeded",
+    "ru": "изюм, очищенный"
+  },
+  "bologna, turkey": {
+    "en": "bologna, turkey",
+    "ru": "болонья из индейки"
+  },
+  "vanilla extract": {
+    "en": "vanilla extract",
+    "ru": "ванильный экстракт"
+  },
+  "fish, raw, carp": {
+    "en": "fish, raw, carp",
+    "ru": "рыба, сырая, карп"
+  },
+  "wheat, sprouted": {
+    "en": "wheat, sprouted",
+    "ru": "пшеница, пророщенная"
+  },
+  "fish, raw, cusk": {
+    "en": "fish, raw, cusk",
+    "ru": "рыба, сырая, киск"
+  },
+  "watercress, raw": {
+    "en": "watercress, raw",
+    "ru": "водный кресс, сырой"
+  },
+  "fish, raw, ling": {
+    "en": "fish, raw, ling",
+    "ru": "рыба, сырая, линг"
+  },
+  "bread, cinnamon": {
+    "en": "bread, cinnamon",
+    "ru": "хлеб с корицей"
+  },
+  "spices, saffron": {
+    "en": "spices, saffron",
+    "ru": "специи, шафран"
+  },
+  "lime juice, raw": {
+    "en": "lime juice, raw",
+    "ru": "сок лайма, сырой"
+  },
+  "spelt, uncooked": {
+    "en": "spelt, uncooked",
+    "ru": "спельта, сырая"
+  },
+  "cabbage, kimchi": {
+    "en": "cabbage, kimchi",
+    "ru": "капуста, кимчи"
+  },
+  "seeds, flaxseed": {
+    "en": "seeds, flaxseed",
+    "ru": "семена, льняное семя"
+  },
+  "cheese, gruyere": {
+    "en": "cheese, gruyere",
+    "ru": "сыр грюйер"
+  },
+  "cheese, gjetost": {
+    "en": "cheese, gjetost",
+    "ru": "сыр гьетошт"
+  },
+  "cheese, fontina": {
+    "en": "cheese, fontina",
+    "ru": "сыр, фонтина"
+  },
+  "butter, salted": {
+    "en": "Butter, salted",
+    "ru": "масло, соленое"
+  },
+  "oil, rice bran": {
+    "en": "oil, rice bran",
+    "ru": "масло, рисовая шелуха"
+  },
+  "crackers, milk": {
+    "en": "crackers, milk",
+    "ru": "крекеры, молочные"
+  },
+  "dates, medjool": {
+    "en": "dates, medjool",
+    "ru": "финики, меджол"
+  },
+  "arrowroot, raw": {
+    "en": "arrowroot, raw",
+    "ru": "тапиока, сырая"
+  },
+  "bread, oatmeal": {
+    "en": "bread, oatmeal",
+    "ru": "хлеб, овсяный"
+  },
+  "bread, italian": {
+    "en": "bread, italian",
+    "ru": "хлеб, итальянский"
+  },
+  "tamarinds, raw": {
+    "en": "tamarinds, raw",
+    "ru": "тамаринды, сырые"
+  },
+  "millet, puffed": {
+    "en": "millet, puffed",
+    "ru": "просо, пuffed"
+  },
+  "vinegar, cider": {
+    "en": "vinegar, cider",
+    "ru": "уксус, яблочный"
+  },
+  "scrapple, pork": {
+    "en": "Scrapple, pork",
+    "ru": "ломтик, свинина"
+  },
+  "oil, poppyseed": {
+    "en": "oil, poppyseed",
+    "ru": "масло, кунжутное"
+  },
+  "oil, grapeseed": {
+    "en": "oil, grapeseed",
+    "ru": "масло, виноградное"
+  },
+  "longans, dried": {
+    "en": "longans, dried",
+    "ru": "лонган, сушеный"
+  },
+  "pectin, liquid": {
+    "en": "pectin, liquid",
+    "ru": "пектин, жидкий"
+  },
+  "pretzels, soft": {
+    "en": "pretzels, soft",
+    "ru": "цукаты, мягкие"
+  },
+  "quinoa, cooked": {
+    "en": "quinoa, cooked",
+    "ru": "киноа, вареное"
+  },
+  "plantains, raw": {
+    "en": "plantains, raw",
+    "ru": "плантан, сырой"
+  },
+  "parsley, fresh": {
+    "en": "Parsley, fresh",
+    "ru": "петрушка, свежая"
+  },
+  "barley, hulled": {
+    "en": "barley, hulled",
+    "ru": "ячмень, очищенный"
+  },
+  "cheese, romano": {
+    "en": "cheese, romano",
+    "ru": "сыр, романо"
+  },
+  "dulce de leche": {
+    "en": "dulce de leche",
+    "ru": "дольсе де леche"
+  },
+  "radicchio, raw": {
+    "en": "radicchio, raw",
+    "ru": "радиккио, сырой"
+  },
+  "bulgur, cooked": {
+    "en": "bulgur, cooked",
+    "ru": "булгур, вареный"
+  },
+  "tempeh, cooked": {
+    "en": "tempeh, cooked",
+    "ru": "темпе, вареный"
+  },
+  "chicken spread": {
+    "en": "chicken spread",
+    "ru": "паштет из курицы"
+  },
+  "millet, cooked": {
+    "en": "millet, cooked",
+    "ru": "просо, вареное"
+  },
+  "capers, canned": {
+    "en": "capers, canned",
+    "ru": "каперсы, консервированные"
+  },
+  "sapodilla, raw": {
+    "en": "sapodilla, raw",
+    "ru": "саподилла, сырой"
+  },
+  "wild rice, raw": {
+    "en": "wild rice, raw",
+    "ru": "дикий рис, сырой"
+  },
+  "arrowhead, raw": {
+    "en": "arrowhead, raw",
+    "ru": "стрелка, сырая"
+  },
+  "frog legs, raw": {
+    "en": "frog legs, raw",
+    "ru": "лягушачьи ножки, сырые"
+  },
+  "jackfruit, raw": {
+    "en": "jackfruit, raw",
+    "ru": "джекфрут, сырой"
+  },
+  "litchis, dried": {
+    "en": "litchis, dried",
+    "ru": "личи, сушеные"
+  },
+  "rutabagas, raw": {
+    "en": "rutabagas, raw",
+    "ru": "рютабага, сырой"
+  },
+  "cornsalad, raw": {
+    "en": "cornsalad, raw",
+    "ru": "кукурузный салат, сырой"
+  },
+  "strudel, apple": {
+    "en": "strudel, apple",
+    "ru": "штрудель, яблочный"
+  },
+  "oil, cupu assu": {
+    "en": "oil, cupu assu",
+    "ru": "масло, купуассу"
+  },
+  "cherimoya, raw": {
+    "en": "cherimoya, raw",
+    "ru": "черимоя, сырой"
+  },
+  "cheese, tilsit": {
+    "en": "cheese, tilsit",
+    "ru": "сыр, тильзит"
+  },
+  "asparagus, raw": {
+    "en": "asparagus, raw",
+    "ru": "аспарагус, сырой"
+  },
+  "apricots, raw": {
+    "en": "apricots, raw",
+    "ru": "абрикосы, сырые"
+  },
+  "broccoli, raw": {
+    "en": "broccoli, raw",
+    "ru": "брокколи, сырой"
+  },
+  "cheese, brick": {
+    "en": "cheese, brick",
+    "ru": "сыр, кирпичный"
+  },
+  "sugars, brown": {
+    "en": "sugars, brown",
+    "ru": "сахар, коричневый"
+  },
+  "candied fruit": {
+    "en": "candied fruit",
+    "ru": "конфитюр из фруктов"
+  },
+  "bologna, beef": {
+    "en": "bologna, beef",
+    "ru": "болонья, говяжья"
+  },
+  "blood sausage": {
+    "en": "blood sausage",
+    "ru": "кровяная колбаса"
   },
   "nuts, almonds": {
     "en": "nuts, almonds",
     "ru": "орехи, миндаль"
   },
-  "~steak": {
-    "en": "~steak",
-    "ru": "~стейк"
+  "shallots, raw": {
+    "en": "shallots, raw",
+    "ru": "шалот, сырой"
   },
-  "phyllo dough": {
-    "en": "phyllo dough",
-    "ru": "филло"
+  "couscous, dry": {
+    "en": "couscous, dry",
+    "ru": "кукурузная каша, сухая"
+  },
+  "candies, hard": {
+    "en": "candies, hard",
+    "ru": "конфеты, твердые"
   },
   "meat extender": {
     "en": "meat extender",
     "ru": "мясной разбавитель"
   },
+  "syrups, maple": {
+    "en": "syrups, maple",
+    "ru": "сиропы, кленовые"
+  },
+  "sorghum grain": {
+    "en": "sorghum grain",
+    "ru": "зерно сорго"
+  },
+  "oil, hazelnut": {
+    "en": "oil, hazelnut",
+    "ru": "масло, фундук"
+  },
+  "pepeao, dried": {
+    "en": "pepeao, dried",
+    "ru": "пепао, сушеный"
+  },
+  "purslane, raw": {
+    "en": "purslane, raw",
+    "ru": "гречиха, сырой"
+  },
+  "radishes, raw": {
+    "en": "radishes, raw",
+    "ru": "редис, сырой"
+  },
+  "rolls, french": {
+    "en": "rolls, french",
+    "ru": "булочки, французские"
+  },
+  "bagels, wheat": {
+    "en": "bagels, wheat",
+    "ru": "багеты, пшеничные"
+  },
+  "kfc, coleslaw": {
+    "en": "kfc, coleslaw",
+    "ru": "кфс, салат из капусты"
+  },
+  "parsnips, raw": {
+    "en": "parsnips, raw",
+    "ru": "сельдерей, сырой"
+  },
+  "sugars, maple": {
+    "en": "sugars, maple",
+    "ru": "сахар, кленовый"
+  },
+  "collards, raw": {
+    "en": "collards, raw",
+    "ru": "капуста, сырая"
+  },
+  "rice crackers": {
+    "en": "rice crackers",
+    "ru": "рисовые крекеры"
+  },
+  "cheese, colby": {
+    "en": "cheese, colby",
+    "ru": "сыр, колби"
+  },
+  "cheese, cream": {
+    "en": "cheese, cream",
+    "ru": "сыр, сливочный"
+  },
+  "bologna, pork": {
+    "en": "bologna, pork",
+    "ru": "болонья, свиная"
+  },
+  "celeriac, raw": {
+    "en": "celeriac, raw",
+    "ru": "сельдерей, сырой"
+  },
+  "kumquats, raw": {
+    "en": "kumquats, raw",
+    "ru": "кумкваты, сырые"
+  },
+  "oat bran, raw": {
+    "en": "oat bran, raw",
+    "ru": "отруби овсяные, сырые"
+  },
+  "spelt, cooked": {
+    "en": "spelt, cooked",
+    "ru": "спельта, вареная"
+  },
+  "bread, cheese": {
+    "en": "Bread, cheese",
+    "ru": "хлеб, сыр"
+  },
+  "bread, potato": {
+    "en": "bread, potato",
+    "ru": "хлеб, картофельный"
+  },
+  "kohlrabi, raw": {
+    "en": "kohlrabi, raw",
+    "ru": "кохльраби, сырой"
+  },
+  "cheese, swiss": {
+    "en": "cheese, swiss",
+    "ru": "сыр, швейцарский"
+  },
+  "cheese, gouda": {
+    "en": "cheese, gouda",
+    "ru": "сыр, гауда"
+  },
+  "tomato powder": {
+    "en": "tomato powder",
+    "ru": "томатная мука"
+  },
+  "cheese, blue": {
+    "en": "cheese, blue",
+    "ru": "сыр, блю"
+  },
+  "cheese, brie": {
+    "en": "cheese, brie",
+    "ru": "сыр, бри"
+  },
+  "celtuce, raw": {
+    "en": "celtuce, raw",
+    "ru": "китайская капуста, сырая"
+  },
+  "thyme, fresh": {
+    "en": "thyme, fresh",
+    "ru": "тимьян, свежий"
+  },
+  "basil, fresh": {
+    "en": "basil, fresh",
+    "ru": "базилик, свежий"
+  },
+  "rhubarb, raw": {
+    "en": "rhubarb, raw",
+    "ru": "ревень, сырой"
+  },
+  "nopales, raw": {
+    "en": "nopales, raw",
+    "ru": "нопаляс, сырой"
+  },
+  "syrups, malt": {
+    "en": "syrups, malt",
+    "ru": "сиропы, солодовые"
+  },
+  "oil, teaseed": {
+    "en": "oil, teaseed",
+    "ru": "масло, тисовое"
+  },
+  "oil, sheanut": {
+    "en": "oil, sheanut",
+    "ru": "масло, ши"
+  },
+  "oil, babassu": {
+    "en": "oil, babassu",
+    "ru": "масло, бабассу"
+  },
+  "longans, raw": {
+    "en": "longans, raw",
+    "ru": "лонган, сырой"
+  },
+  "loquats, raw": {
+    "en": "loquats, raw",
+    "ru": "локуаты, сырые"
+  },
+  "epazote, raw": {
+    "en": "epazote, raw",
+    "ru": "эпазот, сырой"
+  },
+  "pumpkin, raw": {
+    "en": "pumpkin, raw",
+    "ru": "тыква, сырая"
+  },
+  "carrots, raw": {
+    "en": "carrots, raw",
+    "ru": "морковь, сырая"
+  },
+  "fish, surimi": {
+    "en": "fish, surimi",
+    "ru": "рыба, сурими"
+  },
+  "cabbage, raw": {
+    "en": "cabbage, raw",
+    "ru": "капуста, сырая"
+  },
+  "cardoon, raw": {
+    "en": "cardoon, raw",
+    "ru": "кардаун, сырой"
+  },
+  "abiyuch, raw": {
+    "en": "abiyuch, raw",
+    "ru": "абиюч, сырой"
+  },
+  "bread, wheat": {
+    "en": "Bread, wheat",
+    "ru": "хлеб, пшеничный"
+  },
+  "cheese, edam": {
+    "en": "cheese, edam",
+    "ru": "сыр, эдам"
+  },
+  "cheese, feta": {
+    "en": "cheese, feta",
+    "ru": "сыр, фета"
+  },
+  "pummelo, raw": {
+    "en": "pummelo, raw",
+    "ru": "пуммело, сырое"
+  },
+  "quinces, raw": {
+    "en": "quinces, raw",
+    "ru": "киви, сырые"
+  },
+  "cracker meal": {
+    "en": "cracker meal",
+    "ru": "крупка для печенья"
+  },
+  "roselle, raw": {
+    "en": "roselle, raw",
+    "ru": "мальва, сырая"
+  },
+  "soursop, raw": {
+    "en": "soursop, raw",
+    "ru": "грайпфрут, сырой"
+  },
+  "oil, coconut": {
+    "en": "oil, coconut",
+    "ru": "масло, кокосовое"
+  },
+  "wheat, durum": {
+    "en": "wheat, durum",
+    "ru": "пшеница, твердая"
+  },
+  "kfc, biscuit": {
+    "en": "kfc, biscuit",
+    "ru": "кфк, бисквит"
+  },
+  "millet flour": {
+    "en": "millet flour",
+    "ru": "мука просо"
+  },
+  "arugula, raw": {
+    "en": "arugula, raw",
+    "ru": "руккола, сырая"
+  },
   "potato flour": {
     "en": "potato flour",
-    "ru": "картофельная мука"
+    "ru": "мука картофельная"
   },
-  "bread, chicken": {
-    "en": "bread, chicken",
-    "ru": "хлеб, куриный"
+  "litchis, raw": {
+    "en": "litchis, raw",
+    "ru": "личи, сырые"
   },
-  "egg, poached": {
-    "en": "egg, poached",
-    "ru": "яйцо, пашот"
+  "teff, cooked": {
+    "en": "teff, cooked",
+    "ru": "теф, вареный"
+  },
+  "spinach, raw": {
+    "en": "spinach, raw",
+    "ru": "шпинат, сырой"
+  },
+  "oil, mustard": {
+    "en": "oil, mustard",
+    "ru": "масло, горчичное"
+  },
+  "oil, avocado": {
+    "en": "oil, avocado",
+    "ru": "масло, авокадо"
+  },
+  "phyllo dough": {
+    "en": "phyllo dough",
+    "ru": "филло"
+  },
+  "lentils, raw": {
+    "en": "lentils, raw",
+    "ru": "лентиль, сырые"
+  },
+  "fat, chicken": {
+    "en": "fat, chicken",
+    "ru": "жир, куриный"
+  },
+  "cassava, raw": {
+    "en": "cassava, raw",
+    "ru": "кассава, сырая"
+  },
+  "turnips, raw": {
+    "en": "turnips, raw",
+    "ru": "репа, сырая"
+  },
+  "bananas, raw": {
+    "en": "bananas, raw",
+    "ru": "бананы, сырые"
+  },
+  "papayas, raw": {
+    "en": "papayas, raw",
+    "ru": "папайя, сырая"
+  },
+  "fruit syrup": {
+    "en": "fruit syrup",
+    "ru": "фруктовый сироп"
+  },
+  "chives, raw": {
+    "en": "chives, raw",
+    "ru": "черемша, сырая"
+  },
+  "carob flour": {
+    "en": "carob flour",
+    "ru": "мука каробо"
+  },
+  "prune puree": {
+    "en": "prune puree",
+    "ru": "пюре из чернослива"
+  },
+  "salt, table": {
+    "en": "Salt, table",
+    "ru": "соль, пищевая"
+  },
+  "chewing gum": {
+    "en": "chewing gum",
+    "ru": "жевательная резинка"
+  },
+  "fat, turkey": {
+    "en": "fat, turkey",
+    "ru": "жир, индюшиный"
+  },
+  "tofu, fried": {
+    "en": "tofu, fried",
+    "ru": "тофу, жареный"
+  },
+  "borage, raw": {
+    "en": "borage, raw",
+    "ru": "борраж, сырой"
+  },
+  "mangos, raw": {
+    "en": "mangos, raw",
+    "ru": "манго, сырые"
+  },
+  "garlic, raw": {
+    "en": "Garlic, raw",
+    "ru": "чеснок, сырой"
+  },
+  "endive, raw": {
+    "en": "endive, raw",
+    "ru": "эндивий, сырой"
+  },
+  "tofu yogurt": {
+    "en": "tofu yogurt",
+    "ru": "йогурт из тофу"
+  },
+  "celery, raw": {
+    "en": "celery, raw",
+    "ru": "сельдерей, сырой"
+  },
+  "bagels, egg": {
+    "en": "bagels, egg",
+    "ru": "багеты, яичные"
+  },
+  "bulgur, dry": {
+    "en": "bulgur, dry",
+    "ru": "булгур, сухой"
+  },
+  "feijoa, raw": {
+    "en": "feijoa, raw",
+    "ru": "фейхоа, сырая"
+  },
+  "millet, raw": {
+    "en": "millet, raw",
+    "ru": "просо, сырое"
+  },
+  "ham, minced": {
+    "en": "ham, minced",
+    "ru": "бекон, рубленый"
+  },
+  "oil, almond": {
+    "en": "oil, almond",
+    "ru": "масло, миндальное"
+  },
+  "oil, walnut": {
+    "en": "oil, walnut",
+    "ru": "масло, грецкое"
+  },
+  "jujube, raw": {
+    "en": "jujube, raw",
+    "ru": "дерево жужуба, сырое"
+  },
+  "oil, canola": {
+    "en": "oil, canola",
+    "ru": "масло, рапсовое"
+  },
+  "syrup, cane": {
+    "en": "syrup, cane",
+    "ru": "сироп, тростниковый"
+  },
+  "onions, raw": {
+    "en": "Onions, raw",
+    "ru": "лук, сырой"
+  },
+  "clif z bar": {
+    "en": "clif z bar",
+    "ru": "клиф з бар"
+  },
+  "fish broth": {
+    "en": "fish broth",
+    "ru": "рыбный бульон"
+  },
+  "fat, goose": {
+    "en": "fat, goose",
+    "ru": "жир, гусиный"
+  },
+  "bread, rye": {
+    "en": "bread, rye",
+    "ru": "хлеб, ржаной"
+  },
+  "eppaw, raw": {
+    "en": "eppaw, raw",
+    "ru": "эппау, сырой"
+  },
+  "limes, raw": {
+    "en": "limes, raw",
+    "ru": "лайм, сырой"
+  },
+  "pie, peach": {
+    "en": "pie, peach",
+    "ru": "пирог, персиковый"
+  },
+  "pears, raw": {
+    "en": "pears, raw",
+    "ru": "груши, сырые"
+  },
+  "plums, raw": {
+    "en": "plums, raw",
+    "ru": "сливы, сырые"
+  },
+  "rowal, raw": {
+    "en": "rowal, raw",
+    "ru": "rowal, сырые"
+  },
+  "beets, raw": {
+    "en": "beets, raw",
+    "ru": "свекла, сырая"
+  },
+  "bread, egg": {
+    "en": "Bread, egg",
+    "ru": "хлеб, яичный"
+  },
+  "buckwheat": {
+    "en": "buckwheat",
+    "ru": "гречка"
+  },
+  "oil, palm": {
+    "en": "oil, palm",
+    "ru": "пальмовое масло"
+  },
+  "fat, duck": {
+    "en": "fat, duck",
+    "ru": "утин жир"
+  },
+  "triticale": {
+    "en": "triticale",
+    "ru": "тритикале"
+  },
+  "rye grain": {
+    "en": "rye grain",
+    "ru": "рожь"
+  },
+  "dock, raw": {
+    "en": "dock, raw",
+    "ru": "щавель, сырой"
+  },
+  "kale, raw": {
+    "en": "kale, raw",
+    "ru": "капуста, сырая"
+  },
+  "okra, raw": {
+    "en": "okra, raw",
+    "ru": "okra, сырая"
+  },
+  "taro, raw": {
+    "en": "taro, raw",
+    "ru": "тапиока, сырая"
+  },
+  "figs, raw": {
+    "en": "figs, raw",
+    "ru": "финики, сырые"
+  },
+  "goat, raw": {
+    "en": "goat, raw",
+    "ru": "коза, сырая"
+  },
+  "molasses": {
+    "en": "molasses",
+    "ru": "меласса"
+  },
+  "zwieback": {
+    "en": "zwieback",
+    "ru": "звиебак"
+  },
+  "yam, raw": {
+    "en": "yam, raw",
+    "ru": "ямс, сырой"
+  },
+  "oil, oat": {
+    "en": "oil, oat",
+    "ru": "овсяное масло"
+  },
+  "jellies": {
+    "en": "jellies",
+    "ru": "желе"
+  },
+  "eggnog": {
+    "en": "eggnog",
+    "ru": "эгг-ног"
+  },
+  "catsup": {
+    "en": "catsup",
+    "ru": "кетчуп"
+  },
+  "tempeh": {
+    "en": "tempeh",
+    "ru": "темпе"
+  },
+  "wasabi": {
+    "en": "wasabi",
+    "ru": "васаби"
+  },
+  "honey": {
+    "en": "honey",
+    "ru": "мед"
+  },
+  "natto": {
+    "en": "natto",
+    "ru": "натто"
+  },
+  "okara": {
+    "en": "okara",
+    "ru": "окара"
+  },
+  "papad": {
+    "en": "papad",
+    "ru": "папад"
+  },
+  "lard": {
+    "en": "lard",
+    "ru": "сало"
+  },
+  "oats": {
+    "en": "oats",
+    "ru": "овсянка"
+  },
+  "miso": {
+    "en": "miso",
+    "ru": "мисо"
+  },
+  "poi": {
+    "en": "poi",
+    "ru": "пои"
+  },
+  "spices, dried, oregano": {
+    "en": "spices, dried, oregano",
+    "ru": "сушеные специи, орегано"
+  },
+  "winged bean leaves, raw": {
+    "en": "winged bean leaves, raw",
+    "ru": "сырые листья крылатого бобового"
+  },
+  "corn, raw, white, sweet": {
+    "en": "corn, raw, white, sweet",
+    "ru": "кукуруза, сырая, белая, сладкая"
+  },
+  "wheat flour, whole-grain": {
+    "en": "wheat flour, whole-grain",
+    "ru": "пшеничная мука, цельнозерновая"
+  },
+  "cracker barrel, coleslaw": {
+    "en": "cracker barrel, coleslaw",
+    "ru": "салат из капусты, крэкер баррел"
+  },
+  "fish, raw, king, mackerel": {
+    "en": "fish, raw, king, mackerel",
+    "ru": "рыба, сырая, король, макрель"
+  },
+  "cookies, chocolate wafers": {
+    "en": "cookies, chocolate wafers",
+    "ru": "печенье, шоколадные вафли"
+  },
+  "mushrooms, raw, portabella": {
+    "en": "mushrooms, raw, portabella",
+    "ru": "грибы, сырые, портобелло"
+  },
+  "fish, raw, striped, mullet": {
+    "en": "fish, raw, striped, mullet",
+    "ru": "рыба, сырая, полосатая, мурена"
+  },
+  "egg, poached, cooked, whole": {
+    "en": "egg, poached, cooked, whole",
+    "ru": "яйцо, приготовленное на пару, сваренное, целое"
+  },
+  "noodles, chow mein, chinese": {
+    "en": "noodles, chow mein, chinese",
+    "ru": "лапша чов-мейн, китайская"
+  },
+  "oil, cold pressed, flaxseed": {
+    "en": "oil, cold pressed, flaxseed",
+    "ru": "масло, холодного отжима, льняное"
+  },
+  "triticale flour, whole-grain": {
+    "en": "triticale flour, whole-grain",
+    "ru": "мука тритикале, цельнозерновая"
+  },
+  "cheese, queso anejo, mexican": {
+    "en": "cheese, queso anejo, mexican",
+    "ru": "сыр, queso anejo, мексиканский"
+  },
+  "smelt, dried (alaska native)": {
+    "en": "smelt, dried (alaska native)",
+    "ru": "сметка, сушеная (аласкская)"
+  },
+  "lamb, broiled, cooked, ground": {
+    "en": "lamb, broiled, cooked, ground",
+    "ru": "ягнятина, запеченная, приготовленная, фарш"
+  },
+  "tofu, dried-frozen (koyadofu)": {
+    "en": "tofu, dried-frozen (koyadofu)",
+    "ru": "тофу, высушенный-замороженный (койадодзу)"
+  },
+  "poultry salad sandwich spread": {
+    "en": "poultry salad sandwich spread",
+    "ru": "заправка для сэндвича с салатом из птицы"
+  },
+  "salami, beef and pork, cooked": {
+    "en": "salami, beef and pork, cooked",
+    "ru": "салами из говядины и свинины, приготовленный"
+  },
+  "rice flour, unenriched, white": {
+    "en": "rice flour, unenriched, white",
+    "ru": "рисовая мука, необогащенная, белая"
+  },
+  "yogurt, nonfat, fruit variety": {
+    "en": "yogurt, nonfat, fruit variety",
+    "ru": "йогурт обезжиренный, фруктовый"
+  },
+  "babyfood, vegetable, crackers": {
+    "en": "babyfood, vegetable, crackers",
+    "ru": "детское питание овощное, сухарики"
+  },
+  "babyfood, fruit, baby, cookie": {
+    "en": "babyfood, fruit, baby, cookie",
+    "ru": "детское питание фруктовое, печенье"
+  },
+  "chicken, raw, giblets, capons": {
+    "en": "chicken, raw, giblets, capons",
+    "ru": "курица сырая, внутренности, цыплята-петухи"
+  },
+  "fish, raw, mixed species, roe": {
+    "en": "fish, raw, mixed species, roe",
+    "ru": "рыба сырая, смешанные виды, икра"
+  },
+  "fish, smoked, chinook, salmon": {
+    "en": "fish, smoked, chinook, salmon",
+    "ru": "рыба копченая, чинок, лосось"
+  },
+  "house foods premium firm tofu": {
+    "en": "house foods premium firm tofu",
+    "ru": "тофу твердый премиум-класса"
+  },
+  "crackers, whole grain, cheese": {
+    "en": "crackers, whole grain, cheese",
+    "ru": "сухари цельнозерновые, с сыром"
+  },
+  "seeds, high-fat, sesame flour": {
+    "en": "seeds, high-fat, sesame flour",
+    "ru": "семена высокожирные, кунжутная мука"
+  },
+  "peppers, canned, green, chili": {
+    "en": "peppers, canned, green, chili",
+    "ru": "перецы консервированные, зеленые, чили"
+  },
+  "egg, raw, fresh, whole, quail": {
+    "en": "egg, raw, fresh, whole, quail",
+    "ru": "яйцо сырое, свежее, целое, перепелиное"
+  },
+  "pumpkin, without salt, canned": {
+    "en": "pumpkin, without salt, canned",
+    "ru": "тыква без соли, консервированная"
+  },
+  "dove, cooked (includes squab)": {
+    "en": "dove, cooked (includes squab)",
+    "ru": "голубь приготовленный (включает голубя)"
+  },
+  "beverages, orange, carbonated": {
+    "en": "beverages, orange, carbonated",
+    "ru": "напитки апельсиновые, газированные"
+  },
+  "kefir, lifeway, plain, lowfat": {
+    "en": "kefir, lifeway, plain, lowfat",
+    "ru": "кефир lifeway, простой, с низким содержанием жира"
+  },
+  "candies, almond joy candy bar": {
+    "en": "candies, almond joy candy bar",
+    "ru": "конфеты, батончик Almond Joy"
+  },
+  "cheese substitute, mozzarella": {
+    "en": "cheese substitute, mozzarella",
+    "ru": "заменитель сыра, моцарелла"
+  },
+  "crustaceans, raw, queen, crab": {
+    "en": "crustaceans, raw, queen, crab",
+    "ru": "ракообразные сырые, королевский краб"
+  },
+  "wheat, cooked, kamut khorasan": {
+    "en": "wheat, cooked, kamut khorasan",
+    "ru": "пшеница приготовленная, камут хорасан"
+  },
+  "sauce, ready-to-serve, hoisin": {
+    "en": "sauce, ready-to-serve, hoisin",
+    "ru": "соус готовый к подаче, хойсин"
+  },
+  "sauce, ready-to-serve, oyster": {
+    "en": "sauce, ready-to-serve, oyster",
+    "ru": "соус готовый к подаче, устричный"
+  },
+  "noodles, dry, somen, japanese": {
+    "en": "noodles, dry, somen, japanese",
+    "ru": "лапша сухая, сомен, японская"
+  },
+  "crackers, reduced fat, cheese": {
+    "en": "crackers, reduced fat, cheese",
+    "ru": "сухари с пониженным содержанием жира, с сыром"
+  },
+  "cookies, reduced fat, oatmeal": {
+    "en": "cookies, reduced fat, oatmeal",
+    "ru": "печенье с пониженным содержанием жира, овсяное"
+  },
+  "cranberries, sweetened, dried": {
+    "en": "cranberries, sweetened, dried",
+    "ru": "клюква подслащенная, сушеная"
+  },
+  "cheese, queso cotija, mexican": {
+    "en": "cheese, queso cotija, mexican",
+    "ru": "сыр, кесо котия, мексиканский"
+  },
+  "rolls, hard (includes kaiser)": {
+    "en": "rolls, hard (includes kaiser)",
+    "ru": "булочки твердые (включает кайзер)"
+  },
+  "ostrich, cooked, inside strip": {
+    "en": "ostrich, cooked, inside strip",
+    "ru": "страус приготовленный, внутренняя часть"
+  },
+  "silk light chocolate, soymilk": {
+    "en": "silk light chocolate, soymilk",
+    "ru": "соевое молоко шоколадное, легкое"
+  },
+  "candies, sugar-coated almonds": {
+    "en": "candies, sugar-coated almonds",
+    "ru": "конфеты, миндаль в сахарной глазури"
+  },
+  "kellogg's, corn flakes crumbs": {
+    "en": "kellogg's, corn flakes crumbs",
+    "ru": "хлопья кукурузные Kellogg's, крошки"
+  },
+  "cheese, queso seco, dry white": {
+    "en": "cheese, queso seco, dry white",
+    "ru": "сыр, кесо секо, сухой белый"
+  },
+  "fish, raw, wild, coho, salmon": {
+    "en": "fish, raw, wild, coho, salmon",
+    "ru": "рыба сырая, дикая, кохо, лосось"
+  },
+  "beets, drained solids, canned": {
+    "en": "beets, drained solids, canned",
+    "ru": "свекла, отжатые, консервированная"
+  },
+  "beef, reduced sodium, bologna": {
+    "en": "beef, reduced sodium, bologna",
+    "ru": "говядина с пониженным содержанием натрия, бало"
+  },
+  "fast foods, hot fudge, sundae": {
+    "en": "fast foods, hot fudge, sundae",
+    "ru": "фастфуд, горячий шоколад, су-дэй"
+  },
+  "keebler, iced oatmeal cookies": {
+    "en": "keebler, iced oatmeal cookies",
+    "ru": "печенье овсяное с глазурью Keebler"
+  },
+  "ice creams, fat free, vanilla": {
+    "en": "ice creams, fat free, vanilla",
+    "ru": "мороженое без жира, ванильное"
+  },
+  "turkey pot pie, frozen entree": {
+    "en": "turkey pot pie, frozen entree",
+    "ru": "пирог с индейкой, замороченное блюдо"
+  },
+  "peanut butter, reduced sodium": {
+    "en": "peanut butter, reduced sodium",
+    "ru": "арахисовая паста с пониженным содержанием натрия"
+  },
+  "oil, salad or cooking, peanut": {
+    "en": "oil, salad or cooking, peanut",
+    "ru": "масло для салата или жарки, арахисовое"
+  },
+  "turkey, raw, meat only, whole": {
+    "en": "turkey, raw, meat only, whole",
+    "ru": "индейка сырая, только мясо, целая"
+  },
+  "syrups, fudge-type, chocolate": {
+    "en": "syrups, fudge-type, chocolate",
+    "ru": "сиропы типа фадж, шоколадные"
+  },
+  "corn, steamed (navajo), white": {
+    "en": "corn, steamed (navajo), white",
+    "ru": "кукуруза пареная (навахо), белая"
+  },
+  "fish, raw, mixed species, eel": {
+    "en": "fish, raw, mixed species, eel",
+    "ru": "рыба сырая, смешанные виды, угорь"
+  },
+  "spices, dried, coriander leaf": {
+    "en": "spices, dried, coriander leaf",
+    "ru": "специи сушеные, листья кориандра"
+  },
+  "popovers, unenriched, dry mix": {
+    "en": "popovers, unenriched, dry mix",
+    "ru": "поп-оверсы необогащенные, сухая смесь"
+  },
+  "lemon grass (citronella), raw": {
+    "en": "lemon grass (citronella), raw",
+    "ru": "лимонная трава (цитронелла), сырая"
+  },
+  "candies, with almonds, nougat": {
+    "en": "candies, with almonds, nougat",
+    "ru": "конфеты с миндалем и нугатом"
+  },
+  "fish, raw, atlantic, mackerel": {
+    "en": "fish, raw, atlantic, mackerel",
+    "ru": "сырая атлантическая скумбрия"
+  },
+  "candies, reese's pieces candy": {
+    "en": "candies, reese's pieces candy",
+    "ru": "конфеты Reese's Pieces"
+  },
+  "sauce, ready-to-serve, cheese": {
+    "en": "sauce, ready-to-serve, cheese",
+    "ru": "готовый сырный соус"
+  },
+  "noodles, unenriched, dry, egg": {
+    "en": "noodles, unenriched, dry, egg",
+    "ru": "сухие яичные макароны без обогащения"
+  },
+  "egg, scrambled, cooked, whole": {
+    "en": "egg, scrambled, cooked, whole",
+    "ru": "цельное вареное яичница"
+  },
+  "egg, raw, fresh, whole, goose": {
+    "en": "egg, raw, fresh, whole, goose",
+    "ru": "свежее сырое целое гусиное яйцо"
+  },
+  "jujube, dried, fresh, chinese": {
+    "en": "jujube, dried, fresh, chinese",
+    "ru": "сушеные китайские свежие жужубы"
+  },
+  "girl scouts, trefoils cookies": {
+    "en": "girl scouts, trefoils cookies",
+    "ru": "печенье Girl Scouts Trefoils"
+  },
+  "quail, raw, meat only, breast": {
+    "en": "quail, raw, meat only, breast",
+    "ru": "сырая грудка перепела только мясо"
+  },
+  "blueberries, sweetened, dried": {
+    "en": "blueberries, sweetened, dried",
+    "ru": "сушеные сладкие голубики"
+  },
+  "mcdonald's, hot mustard sauce": {
+    "en": "mcdonald's, hot mustard sauce",
+    "ru": "горчичный соус McDonald's"
+  },
+  "candies, payday bar, hersheys": {
+    "en": "candies, payday bar, hersheys",
+    "ru": "конфеты Payday Hershey's"
+  },
+  "sauce, ready-to-serve, tartar": {
+    "en": "sauce, ready-to-serve, tartar",
+    "ru": "готовый соус тарар"
+  },
+  "pulled pork in barbecue sauce": {
+    "en": "pulled pork in barbecue sauce",
+    "ru": "свинина по-американски в барбекю-соусе"
+  },
+  "sauce, thick, white, homemade": {
+    "en": "sauce, thick, white, homemade",
+    "ru": "домашний густой белый соус"
+  },
+  "veal, broiled, cooked, ground": {
+    "en": "veal, broiled, cooked, ground",
+    "ru": "запеченное вареное фарш из телятины"
+  },
+  "bison, raw, grass-fed, ground": {
+    "en": "bison, raw, grass-fed, ground",
+    "ru": "сырой фарш из буйвола на травном корме"
+  },
+  "bread, bollilo, mexican, roll": {
+    "en": "bread, bollilo, mexican, roll",
+    "ru": "мексиканский хлеб боллильо"
+  },
+  "mcdonald's, chicken mcnuggets": {
+    "en": "mcdonald's, chicken mcnuggets",
+    "ru": "куриные McNuggets McDonald's"
+  },
+  "currants, raw, european black": {
+    "en": "currants, raw, european black",
+    "ru": "сырые европейские черные изюм"
+  },
+  "pineapple, all varieties, raw": {
+    "en": "pineapple, all varieties, raw",
+    "ru": "сырой ананас всех сортов"
+  },
+  "fish, raw, atlantic, wolffish": {
+    "en": "fish, raw, atlantic, wolffish",
+    "ru": "сырая атлантическая треска"
+  },
+  "cereals ready-to-eat, familia": {
+    "en": "cereals ready-to-eat, familia",
+    "ru": "готовые к употреблению завтраки Familia"
+  },
+  "leavening agents, baking soda": {
+    "en": "leavening agents, baking soda",
+    "ru": "разрыхлитель пищевая сода"
+  },
+  "asparagus, unprepared, frozen": {
+    "en": "asparagus, unprepared, frozen",
+    "ru": "замороженный необработанный спаржа"
+  },
+  "english muffins, whole-wheat": {
+    "en": "english muffins, whole-wheat",
+    "ru": "английские кексы из цельнозерновой муки"
+  },
+  "ice creams, light, chocolate": {
+    "en": "ice creams, light, chocolate",
+    "ru": "легкое шоколадное мороженое"
+  },
+  "crackers, wheat, melba toast": {
+    "en": "crackers, wheat, melba toast",
+    "ru": "пшеничные крекеры мелба-тост"
+  },
+  "crackers, plain, melba toast": {
+    "en": "crackers, plain, melba toast",
+    "ru": "простые крекеры мелба-тост"
+  },
+  "crackers, plain, wafers, rye": {
+    "en": "crackers, plain, wafers, rye",
+    "ru": "простые ржаные вафельные крекеры"
+  },
+  "apples, with skin, gala, raw": {
+    "en": "apples, with skin, gala, raw",
+    "ru": "сырые яблоки гала с кожурой"
+  },
+  "fish, dry heat, cooked, ling": {
+    "en": "fish, dry heat, cooked, ling",
+    "ru": "запеченная вареная рыба линг"
+  },
+  "fish, dry heat, cooked, cusk": {
+    "en": "fish, dry heat, cooked, cusk",
+    "ru": "запеченная вареная рыба киск"
+  },
+  "peanut spread, reduced sugar": {
+    "en": "peanut spread, reduced sugar",
+    "ru": "паста из арахиса с уменьшенным содержанием сахара"
+  },
+  "beerwurst, pork, beer salami": {
+    "en": "beerwurst, pork, beer salami",
+    "ru": "пивная колбаса из свинины"
+  },
+  "babyfood, junior, beef, meat": {
+    "en": "babyfood, junior, beef, meat",
+    "ru": "детское питание из говядины"
+  },
+  "peppers, sauteed, red, sweet": {
+    "en": "peppers, sauteed, red, sweet",
+    "ru": "жареные красные сладкие перцы"
+  },
+  "tree fern, with salt, cooked": {
+    "en": "tree fern, with salt, cooked",
+    "ru": "запеченный папоротник с солью"
+  },
+  "pheasant, meat and skin, raw": {
+    "en": "pheasant, meat and skin, raw",
+    "ru": "сырая дичь фазана мясо и кожа"
+  },
+  "oil, salad or cooking, olive": {
+    "en": "Oil, salad or cooking, olive",
+    "ru": "масло, салатное или кулинарное, оливковое"
+  },
+  "squash, raw, hubbard, winter": {
+    "en": "squash, raw, hubbard, winter",
+    "ru": "сырая тыква хаббард зимняя"
+  },
+  "rambutan, syrup pack, canned": {
+    "en": "rambutan, syrup pack, canned",
+    "ru": "консервированный рамбутан в сиропе"
+  },
+  "fish, raw, atlantic, herring": {
+    "en": "fish, raw, atlantic, herring",
+    "ru": "сырая атлантическая сельдь"
+  },
+  "bologna, beef, pork, chicken": {
+    "en": "bologna, beef, pork, chicken",
+    "ru": "колбаса бало из говядины свинины и курицы"
+  },
+  "denny's, golden fried shrimp": {
+    "en": "denny's, golden fried shrimp",
+    "ru": "золотистые жареные креветки Denny's"
+  },
+  "mcdonald's, hot fudge sundae": {
+    "en": "mcdonald's, hot fudge sundae",
+    "ru": "горячий фудж-сундей McDonald's"
+  },
+  "fish, raw, spanish, mackerel": {
+    "en": "fish, raw, spanish, mackerel",
+    "ru": "сырая испанская скумбрия"
+  },
+  "pepperidge farm, white bread": {
+    "en": "pepperidge farm, white bread",
+    "ru": "белый хлеб Pepperidge Farm"
+  },
+  "crackers, low sodium, cheese": {
+    "en": "crackers, low sodium, cheese",
+    "ru": "крекеры с низким содержанием натрия с сыром"
+  },
+  "usda commodity, canned, pork": {
+    "en": "usda commodity, canned, pork",
+    "ru": "консервированная свинина USDA"
+  },
+  "orange pineapple juice blend": {
+    "en": "orange pineapple juice blend",
+    "ru": "смесь апельсинового и ананасового сока"
+  },
+  "cornmeal, white, whole-grain": {
+    "en": "cornmeal, white, whole-grain",
+    "ru": "кукурузная мука, белая, цельнозерновая"
+  },
+  "ground turkey, raw, fat free": {
+    "en": "ground turkey, raw, fat free",
+    "ru": "индейка, фарш, сырая, без жира"
+  },
+  "pancakes, reduced fat, plain": {
+    "en": "pancakes, reduced fat, plain",
+    "ru": "блины, с пониженным содержанием жира, простые"
+  },
+  "tennis bread, plain (apache)": {
+    "en": "tennis bread, plain (apache)",
+    "ru": "хлеб теннис, простой (апахи)"
+  },
+  "cockles, raw (alaska native)": {
+    "en": "cockles, raw (alaska native)",
+    "ru": "мидии, сырые (аласкские аборигены)"
+  },
+  "yogurt, lowfat, plain, greek": {
+    "en": "yogurt, lowfat, plain, greek",
+    "ru": "йогурт, обезжиренный, простой, греческий"
+  },
+  "apples, with skin, fuji, raw": {
+    "en": "apples, with skin, fuji, raw",
+    "ru": "яблоки, с кожурой, фуji, сырые"
+  },
+  "cheese, low sodium, parmesan": {
+    "en": "cheese, low sodium, parmesan",
+    "ru": "сыр, пармезан, с низким содержанием натрия"
+  },
+  "peppers, canned, hot pickled": {
+    "en": "peppers, canned, hot pickled",
+    "ru": "перецы, консервы, горячие, маринованные"
+  },
+  "lettuce, raw, cos or romaine": {
+    "en": "lettuce, raw, cos or romaine",
+    "ru": "салат, сырой, кос или ромэн"
+  },
+  "noodles, dry, soba, japanese": {
+    "en": "noodles, dry, soba, japanese",
+    "ru": "лапша, сухая, соба, японская"
+  },
+  "game meat, raw, ground, deer": {
+    "en": "game meat, raw, ground, deer",
+    "ru": "дичь, сырая, фарш, олень"
+  },
+  "dessert topping, pressurized": {
+    "en": "dessert topping, pressurized",
+    "ru": "топпинг для десерта, под давлением"
+  },
+  "cheese, reduced fat, cheddar": {
+    "en": "cheese, reduced fat, cheddar",
+    "ru": "сыр, чеддер, с пониженным содержанием жира"
+  },
+  "cream, light whipping, fluid": {
+    "en": "cream, light whipping, fluid",
+    "ru": "сливки, легкие взбитые, жидкие"
+  },
+  "cream, heavy whipping, fluid": {
+    "en": "cream, heavy whipping, fluid",
+    "ru": "сливки, тяжелые взбитые, жидкие"
+  },
+  "pinon nuts, roasted (navajo)": {
+    "en": "pinon nuts, roasted (navajo)",
+    "ru": "орехи пинон, жареные (навахо)"
+  },
+  "mothbeans, raw, mature seeds": {
+    "en": "mothbeans, raw, mature seeds",
+    "ru": "мотыльковые бобы, сырые, зрелые семена"
+  },
+  "bread, toasted, pumpernickel": {
+    "en": "bread, toasted, pumpernickel",
+    "ru": "хлеб, тост, пумперникель"
+  },
+  "bread, enriched, white, pita": {
+    "en": "bread, enriched, white, pita",
+    "ru": "хлеб, обогащенный, белый, пита"
+  },
+  "beef, raw, ground, grass-fed": {
+    "en": "beef, raw, ground, grass-fed",
+    "ru": "говядина, сырая, фарш, на траве"
+  },
+  "muffins, dry mix, wheat bran": {
+    "en": "muffins, dry mix, wheat bran",
+    "ru": "маффины, сухая смесь, отруби пшеничные"
+  },
+  "candies, semisweet chocolate": {
+    "en": "candies, semisweet chocolate",
+    "ru": "конфеты, шоколад полусладкий"
+  },
+  "cranberry juice, unsweetened": {
+    "en": "cranberry juice, unsweetened",
+    "ru": "сок клюквы, несладкий"
+  },
+  "ostrich, cooked, tip trimmed": {
+    "en": "ostrich, cooked, tip trimmed",
+    "ru": "страус, приготовленный, кончик обрезанный"
+  },
+  "cake, dry mix, light, yellow": {
+    "en": "cake, dry mix, light, yellow",
+    "ru": "торт, сухая смесь, легкий, желтый"
+  },
+  "buckwheat flour, whole-groat": {
+    "en": "buckwheat flour, whole-groat",
+    "ru": "гречневая мука, цельнозерновая"
+  },
+  "sweet potato, mashed, canned": {
+    "en": "sweet potato, mashed, canned",
+    "ru": "батат, пюре, консервы"
+  },
+  "sausage, smoked, hot, turkey": {
+    "en": "sausage, smoked, hot, turkey",
+    "ru": "колбаса, копченая, острая, индейка"
+  },
+  "pastrami, 98% fat-free, beef": {
+    "en": "pastrami, 98% fat-free, beef",
+    "ru": "пастрами, 98% обезжиренный, говядина"
+  },
+  "fish, dry heat, cooked, scup": {
+    "en": "fish, dry heat, cooked, scup",
+    "ru": "рыба, сухой жар, приготовленная, скуп"
+  },
+  "fish, dry heat, cooked, spot": {
+    "en": "fish, dry heat, cooked, spot",
+    "ru": "рыба, сухой жар, приготовленная, спот"
+  },
+  "rice, raw, long-grain, brown": {
+    "en": "rice, raw, long-grain, brown",
+    "ru": "рис, сырой, длиннозерный, коричневый"
+  },
+  "babyfood, junior, lamb, meat": {
+    "en": "babyfood, junior, lamb, meat",
+    "ru": "детское питание, джунior, ягнятина, мясо"
+  },
+  "oil, and olive, peanut, corn": {
+    "en": "oil, and olive, peanut, corn",
+    "ru": "масло, и оливковое, арахисовое, кукурузное"
+  },
+  "soy flour, roasted, full-fat": {
+    "en": "soy flour, roasted, full-fat",
+    "ru": "соевая мука, жареная, полножирная"
+  },
+  "fish, dry heat, cooked, carp": {
+    "en": "fish, dry heat, cooked, carp",
+    "ru": "рыба, сухой жар, приготовленная, карп"
+  },
+  "fish, raw, european, anchovy": {
+    "en": "fish, raw, european, anchovy",
+    "ru": "рыба, сырая, европейская, анчоус"
+  },
+  "game meat, raw, wild, rabbit": {
+    "en": "game meat, raw, wild, rabbit",
+    "ru": "дичь, сырая, дикая, кролик"
+  },
+  "pace, dry taco seasoning mix": {
+    "en": "PACE, Dry Taco Seasoning Mix",
+    "ru": "порошок для тако Pace, сухой"
+  },
+  "alfalfa seeds, raw, sprouted": {
+    "en": "Alfalfa seeds, raw, sprouted",
+    "ru": "кунжут, сырой, пророщенный"
+  },
+  "squash, raw (navajo), indian": {
+    "en": "Squash, raw (Navajo), Indian",
+    "ru": "тыква, сырая (навахо), индейская"
+  },
+  "fish, raw, atlantic, croaker": {
+    "en": "Fish, raw, Atlantic, croaker",
+    "ru": "рыба, сырая, атлантическая, крокер"
+  },
+  "smart soup, greek minestrone": {
+    "en": "SMART SOUP, Greek Minestrone",
+    "ru": "суп Smart, греческий минестроне"
+  },
+  "cream, lowfat, half and half": {
+    "en": "Cream, lowfat, half and half",
+    "ru": "сливки, обезжиренные, половина и половина"
+  },
+  "babyfood, mixed fruit, juice": {
+    "en": "Babyfood, mixed fruit, juice",
+    "ru": "детское питание, смешанные фрукты, сок"
+  },
+  "milk shakes, thick chocolate": {
+    "en": "Milk shakes, thick chocolate",
+    "ru": "молочные коктейли, густые, шоколадные"
+  },
+  "grapefruit juice, raw, white": {
+    "en": "Grapefruit juice, raw, white",
+    "ru": "сок грейпфрута, сырой, белый"
+  },
+  "babyfood, arrowroot, cookies": {
+    "en": "Babyfood, arrowroot, cookies",
+    "ru": "детское питание, тапиока, печенье"
+  },
+  "fish, raw, atlantic, pollock": {
+    "en": "Fish, raw, Atlantic, pollock",
+    "ru": "рыба, сырая, атлантическая, треска"
+  },
+  "egg, raw, fresh, whole, duck": {
+    "en": "Egg, raw, fresh, whole, duck",
+    "ru": "яйцо, сырое, свежее, целое, утиное"
+  },
+  "mcdonald's, sausage mcmuffin": {
+    "en": "McDONALD'S, Sausage McMUFFIN",
+    "ru": "McDonald's, сарделька, McMuffin"
+  },
+  "healthy request tomato juice": {
+    "en": "HEALTHY REQUEST Tomato juice",
+    "ru": "Healthy Request, томатный сок"
+  },
+  "crackers, whole-wheat, matzo": {
+    "en": "Crackers, whole-wheat, matzo",
+    "ru": "крекеры, цельнозерновые, матзо"
+  },
+  "soup, dry, cubed, beef broth": {
+    "en": "Soup, dry, cubed, beef broth",
+    "ru": "суп, сухой, кубики, говяжий бульон"
+  },
+  "puddings, ready-to-eat, rice": {
+    "en": "Puddings, ready-to-eat, rice",
+    "ru": "пудинги, готовые к употреблению, рисовые"
+  },
+  "pectin, dry mix, unsweetened": {
+    "en": "Pectin, dry mix, unsweetened",
+    "ru": "пектин, сухой, несладкий"
+  },
+  "candies, caramello candy bar": {
+    "en": "Candies, CARAMELLO Candy Bar",
+    "ru": "конфеты, карамелло, шоколадная палочка"
+  },
+  "veal, raw, external fat only": {
+    "en": "Veal, raw, external fat only",
+    "ru": "телятина, сырая, только внешний жир"
+  },
+  "seeds, raw, breadfruit seeds": {
+    "en": "Seeds, raw, breadfruit seeds",
+    "ru": "семена, сырые, хлебного дерева"
+  },
+  "mushrooms, stir-fried, white": {
+    "en": "Mushrooms, stir-fried, white",
+    "ru": "грибы, жареные во фритюре, белые"
+  },
+  "snacks, rolls, fruit leather": {
+    "en": "Snacks, rolls, fruit leather",
+    "ru": "закуски, рулетики, фруктовая кожа"
+  },
+  "sauce, thin, white, homemade": {
+    "en": "Sauce, thin, white, homemade",
+    "ru": "соус, жидкий, белый, домашний"
+  },
+  "sauce, ready-to-serve, salsa": {
+    "en": "Sauce, ready-to-serve, salsa",
+    "ru": "соус, готовый к подаче, сальса"
+  },
+  "peppers, raw, red, hot chili": {
+    "en": "Peppers, raw, red, hot chili",
+    "ru": "перецы, сырые, красные, острый чили"
+  },
+  "squash, raw, scallop, summer": {
+    "en": "Squash, raw, scallop, summer",
+    "ru": "тыква, сырая, летняя, скалоп"
+  },
+  "currants, raw, red and white": {
+    "en": "Currants, raw, red and white",
+    "ru": "изюм, сырой, красный и белый"
+  },
+  "crustaceans, raw, blue, crab": {
+    "en": "Crustaceans, raw, blue, crab",
+    "ru": "ракообразные, сырые, синие, краб"
+  },
+  "pie fillings, cherry, canned": {
+    "en": "Pie fillings, cherry, canned",
+    "ru": "начинка для пирогов, вишневая, консервированная"
+  },
+  "yogurt, nonfat, plain, greek": {
+    "en": "Yogurt, nonfat, plain, Greek",
+    "ru": "йогурт, обезжиренный, простой, греческий"
+  },
+  "crackers, reduced fat, wheat": {
+    "en": "Crackers, reduced fat, wheat",
+    "ru": "крекеры, с пониженным содержанием жира, пшеничные"
+  },
+  "gravy, powder, dry, mushroom": {
+    "en": "Gravy, powder, dry, mushroom",
+    "ru": "соус, порошок, сухой, грибной"
+  },
+  "gravy, dry, unspecified type": {
+    "en": "Gravy, dry, unspecified type",
+    "ru": "соус, сухой, неопределенный тип"
+  },
+  "seeds, low-fat, sesame flour": {
+    "en": "Seeds, low-fat, sesame flour",
+    "ru": "семена, с низким содержанием жира, кунжутная мука"
+  },
+  "mushrooms, microwaved, white": {
+    "en": "Mushrooms, microwaved, white",
+    "ru": "грибы, приготовленные в микроволновке, белые"
+  },
+  "beverages, amp, energy drink": {
+    "en": "Beverages, AMP, Energy drink",
+    "ru": "напитки, AMP, энергетический напиток"
+  },
+  "silk black cherry soy yogurt": {
+    "en": "SILK Black Cherry soy yogurt",
+    "ru": "Silk, черная вишня, соевый йогурт"
+  },
+  "snack, original bar, balance": {
+    "en": "Snack, original bar, BALANCE",
+    "ru": "закуска, оригинальный батончик, баланс"
+  },
+  "beverages, well, tap, water": {
+    "en": "Beverages, well, tap, water",
+    "ru": "напитки, колодец, кран, вода"
+  },
+  "chrysanthemum, raw, garland": {
+    "en": "Chrysanthemum, raw, garland",
+    "ru": "хризантема, сырая, гирлянда"
+  },
+  "stew, moose (alaska native)": {
+    "en": "Stew, moose (Alaska Native)",
+    "ru": "гуляш, лось (аласкский коренной)"
+  },
+  "ice creams, rich, chocolate": {
+    "en": "Ice creams, rich, chocolate",
+    "ru": "мороженое, богатое, шоколадное"
+  },
+  "oil, walrus (alaska native)": {
+    "en": "Oil, walrus (Alaska Native)",
+    "ru": "масло, морж (аласкский коренной)"
+  },
+  "grapefruit juice, raw, pink": {
+    "en": "Grapefruit juice, raw, pink",
+    "ru": "сок грейпфрута, сырой, розовый"
+  },
+  "babyfood, junior, ham, meat": {
+    "en": "Babyfood, junior, ham, meat",
+    "ru": "детское питание, джуньюр, ветчина, мясо"
+  },
+  "radish seeds, raw, sprouted": {
+    "en": "Radish seeds, raw, sprouted",
+    "ru": "семена редиса, сырые, пророщенные"
+  },
+  "mori-nu, firm, silken, tofu": {
+    "en": "MORI-NU, firm, silken, Tofu",
+    "ru": "Mori-Nu, твердый, нежный, тофу"
+  },
+  "mori-nu, soft, silken, tofu": {
+    "en": "MORI-NU, soft, silken, Tofu",
+    "ru": "Mori-Nu, мягкий, нежный, тофу"
+  },
+  "bread, rye, reduced-calorie": {
+    "en": "Bread, rye, reduced-calorie",
+    "ru": "хлеб, ржаной, с пониженной калорийностью"
+  },
+  "snacks, air-popped, popcorn": {
+    "en": "snacks, air-popped, popcorn",
+    "ru": "снеки, воздушный попкорн"
+  },
+  "muffins, dry mix, blueberry": {
+    "en": "muffins, dry mix, blueberry",
+    "ru": "сухие смеси для маффинов, с голубикой"
+  },
+  "frankfurter, unheated, beef": {
+    "en": "frankfurter, unheated, beef",
+    "ru": "колбаски, не нагретые, говяжьи"
+  },
+  "turkey, raw, giblets, whole": {
+    "en": "turkey, raw, giblets, whole",
+    "ru": "индейка, сырая, с внутренностями, целая"
+  },
+  "corn pudding, home prepared": {
+    "en": "corn pudding, home prepared",
+    "ru": "кукурузный пудинг, домашний"
+  },
+  "popovers, enriched, dry mix": {
+    "en": "popovers, enriched, dry mix",
+    "ru": "поп-оверы, обогащенные, сухая смесь"
+  },
+  "soybeans, raw, mature seeds": {
+    "en": "soybeans, raw, mature seeds",
+    "ru": "соя, сырая, зрелые семена"
+  },
+  "beef sausage, cooked, fresh": {
+    "en": "beef sausage, cooked, fresh",
+    "ru": "говяжья колбаса, приготовленная, свежая"
+  },
+  "luncheon meat, canned, pork": {
+    "en": "luncheon meat, canned, pork",
+    "ru": "мясо для сэндвичей, консервированное, свиное"
+  },
+  "murray, vanilla sugar wafer": {
+    "en": "murray, vanilla sugar wafer",
+    "ru": "мюррей, ванильное сахарное печенье"
+  },
+  "radishes, raw, white icicle": {
+    "en": "radishes, raw, white icicle",
+    "ru": "редис, сырой, белый, игольчатый"
+  },
+  "vinespinach, raw, (basella)": {
+    "en": "vinespinach, raw, (basella)",
+    "ru": "листовая свекла, сырая, (баселла)"
+  },
+  "syrups, high-fructose, corn": {
+    "en": "syrups, high-fructose, corn",
+    "ru": "сиропы, с высоким содержанием фруктозы, кукурузные"
+  },
+  "stew, steamed corn (navajo)": {
+    "en": "stew, steamed corn (navajo)",
+    "ru": "гуляш, паровая кукуруза (навахо)"
+  },
+  "oscar mayer, bologna (beef)": {
+    "en": "oscar mayer, bologna (beef)",
+    "ru": "оскар майер, болонья (говяжья)"
+  },
+  "ostrich, raw, outside strip": {
+    "en": "ostrich, raw, outside strip",
+    "ru": "страус, сырой, внешняя часть"
+  },
+  "milk, fluid, indian buffalo": {
+    "en": "milk, fluid, indian buffalo",
+    "ru": "молоко, жидкое, индийское, буйволиное"
+  },
+  "nuts, dried, black, walnuts": {
+    "en": "nuts, dried, black, walnuts",
+    "ru": "орехи, высушенные, черные, грецкие"
+  },
+  "on the border, mexican rice": {
+    "en": "on the border, mexican rice",
+    "ru": "на грани, рис мексиканский"
+  },
+  "mushrooms, raw, chanterelle": {
+    "en": "mushrooms, raw, chanterelle",
+    "ru": "грибы, сырые, шампиньоны"
+  },
+  "mcdonald's, baked apple pie": {
+    "en": "mcdonald's, baked apple pie",
+    "ru": "макдональдс, запеченное яблочное пирожное"
+  },
+  "mcdonald's, sausage biscuit": {
+    "en": "mcdonald's, sausage biscuit",
+    "ru": "макдональдс, булочка с колбасой"
+  },
+  "chick-fil-a, chick-n-strips": {
+    "en": "chick-fil-a, chick-n-strips",
+    "ru": "чик-фил-а, чик-н-стрипс"
+  },
+  "edamame, unprepared, frozen": {
+    "en": "edamame, unprepared, frozen",
+    "ru": "эдамаме, не приготовленные, замороженные"
+  },
+  "mollusks, raw, blue, mussel": {
+    "en": "mollusks, raw, blue, mussel",
+    "ru": "моллюски, сырые, синие, мидии"
+  },
+  "quail, total edible, cooked": {
+    "en": "quail, total edible, cooked",
+    "ru": "перепел, полностью съедобный, приготовленный"
+  },
+  "cereals, dry, cream of rice": {
+    "en": "cereals, dry, cream of rice",
+    "ru": "злаковые, сухие, крем из риса"
+  },
+  "lean pockets, ham n cheddar": {
+    "en": "lean pockets, ham n cheddar",
+    "ru": "пакеты с ветчиной и чеддером"
+  },
+  "snacks, tropical, trail mix": {
+    "en": "snacks, tropical, trail mix",
+    "ru": "снеки, тропические, микс для походов"
+  },
+  "nuts, full fat, acorn flour": {
+    "en": "nuts, full fat, acorn flour",
+    "ru": "орехи, полный жир, каштановая мука"
+  },
+  "sauce, ready-to-serve, fish": {
+    "en": "sauce, ready-to-serve, fish",
+    "ru": "соус, готовый к подаче, рыбный"
+  },
+  "fish, raw, european, turbot": {
+    "en": "fish, raw, european, turbot",
+    "ru": "рыба, сырая, европейская, палтус"
+  },
+  "fast foods, caramel, sundae": {
+    "en": "fast foods, caramel, sundae",
+    "ru": "фастфуд, карамельное суфле"
+  },
+  "pie fillings, canned, apple": {
+    "en": "pie fillings, canned, apple",
+    "ru": "заполнители для пирогов, консервированные, яблочные"
+  },
+  "sauce, ready-to-serve, plum": {
+    "en": "sauce, ready-to-serve, plum",
+    "ru": "соус, готовый к подаче, сливовый"
+  },
+  "ostrich, cooked, inside leg": {
+    "en": "ostrich, cooked, inside leg",
+    "ru": "страус, приготовленный, внутренняя часть ноги"
+  },
+  "gravy, mushroom, campbell's": {
+    "en": "gravy, mushroom, campbell's",
+    "ru": "соус, грибной, кампбелл"
+  },
+  "snacks, smoked, beef sticks": {
+    "en": "snacks, smoked, beef sticks",
+    "ru": "снеки, копченые, говяжьи палочки"
+  },
+  "cheese, whole milk, ricotta": {
+    "en": "cheese, whole milk, ricotta",
+    "ru": "сыр, цельное молоко, рикотта"
+  },
+  "silk french vanilla creamer": {
+    "en": "silk french vanilla creamer",
+    "ru": "кремер, французская ваниль, silk"
+  },
+  "bread, canned, boston brown": {
+    "en": "bread, canned, boston brown",
+    "ru": "хлеб, консервированный, бостонский коричневый"
+  },
+  "cheese, queso blanco, white": {
+    "en": "cheese, queso blanco, white",
+    "ru": "сыр, кесо бланко, белый"
+  },
+  "cheese, queso fresco, fresh": {
+    "en": "cheese, queso fresco, fresh",
+    "ru": "сыр, кесо фреско, свежий"
+  },
+  "beverages, powder, lemonade": {
+    "en": "beverages, powder, lemonade",
+    "ru": "напитки, порошок, лимонад"
+  },
+  "apricots, sweetened, frozen": {
+    "en": "apricots, sweetened, frozen",
+    "ru": "абрикосы, подслащенные, замороженные"
+  },
+  "muffins, toaster-type, corn": {
+    "en": "muffins, toaster-type, corn",
+    "ru": "маффины, для тостера, кукурузные"
+  },
+  "tomatoes, cooked, ripe, red": {
+    "en": "tomatoes, cooked, ripe, red",
+    "ru": "помидоры, приготовленные, спелые, красные"
+  },
+  "squash, raw, baby, zucchini": {
+    "en": "squash, raw, baby, zucchini",
+    "ru": "тыква, сырая, детская, цукини"
+  },
+  "hormel canadian style bacon": {
+    "en": "hormel canadian style bacon",
+    "ru": "хормел, бекон канадского стиля"
+  },
+  "mcdonald's, quarter pounder": {
+    "en": "mcdonald's, quarter pounder",
+    "ru": "макдональдс, четверть фунта"
+  },
+  "brotwurst, link, beef, pork": {
+    "en": "Brotwurst, link, beef, pork",
+    "ru": "броквюрст, колбаска, говядина, свинина"
+  },
+  "pork, cooked, ground, fresh": {
+    "en": "Pork, cooked, ground, fresh",
+    "ru": "свинина, приготовленная, фарш, свежая"
+  },
+  "sausage, raw, pork, italian": {
+    "en": "Sausage, raw, pork, Italian",
+    "ru": "колбаса, сырая, свинина, итальянская"
+  },
+  "ham and cheese loaf or roll": {
+    "en": "Ham and cheese loaf or roll",
+    "ru": "хлеб с ветчиной и сыром или рулет с ветчиной и сыром"
+  },
+  "cracker barrel, steak fries": {
+    "en": "CRACKER BARREL, steak fries",
+    "ru": "cracker barrel, картофель фри из стейка"
+  },
+  "mcdonald's, sausage burrito": {
+    "en": "McDONALD'S, Sausage Burrito",
+    "ru": "mcdonald's, буррито с колбасой"
+  },
+  "candies, chunky bar, nestle": {
+    "en": "Candies, CHUNKY Bar, NESTLE",
+    "ru": "конфеты, кусочковый батончик, nestle"
+  },
+  "fish, raw, freshwater, drum": {
+    "en": "Fish, raw, freshwater, drum",
+    "ru": "рыба, сырая, пресноводная, судак"
+  },
+  "pate, canned, chicken liver": {
+    "en": "Pate, canned, chicken liver",
+    "ru": "паштет, консервированный, куриная печень"
+  },
+  "burger king, chicken strips": {
+    "en": "BURGER KING, Chicken Strips",
+    "ru": "burger king, куриные полоски"
+  },
+  "pork, raw, salt pork, cured": {
+    "en": "Pork, raw, salt pork, cured",
+    "ru": "свинина, сырая, соленая свинина, копченая"
+  },
+  "cereals ready-to-eat, alpen": {
+    "en": "Cereals ready-to-eat, ALPEN",
+    "ru": "завтраки, готовые к употреблению, alpen"
+  },
+  "light ice cream, creamsicle": {
+    "en": "Light ice cream, Creamsicle",
+    "ru": "легкое мороженое, creamsicle"
+  },
+  "toppings, marshmallow cream": {
+    "en": "Toppings, marshmallow cream",
+    "ru": "топпинги, крем из маршмеллоу"
+  },
+  "fish, raw, pacific, herring": {
+    "en": "Fish, raw, Pacific, herring",
+    "ru": "рыба, сырая, тихоокеанская, сельдь"
+  },
+  "sandwich spread, beef, pork": {
+    "en": "Sandwich spread, beef, pork",
+    "ru": "распределение для сэндвича, говядина, свинина"
+  },
+  "nuts, hazelnuts or filberts": {
+    "en": "Nuts, hazelnuts or filberts",
+    "ru": "орехи, лесные орехи или фальберты"
+  },
+  "babyfood, teething biscuits": {
+    "en": "Babyfood, teething biscuits",
+    "ru": "детское питание, прорезывательные печенья"
+  },
+  "pace, organic picante sauce": {
+    "en": "PACE, Organic Picante Sauce",
+    "ru": "pace, органический пикантный соус"
+  },
+  "peppers, raw, yellow, sweet": {
+    "en": "Peppers, raw, yellow, sweet",
+    "ru": "перецы, сырые, желтые, сладкие"
+  },
+  "fish, raw, florida, pompano": {
+    "en": "Fish, raw, florida, pompano",
+    "ru": "рыба, сырая, флоридская, помпано"
+  },
+  "potato salad, home-prepared": {
+    "en": "Potato salad, home-prepared",
+    "ru": "салат из картофеля, домашний"
+  },
+  "girl scouts, chalet cookies": {
+    "en": "GIRL SCOUTS, Chalet Cookies",
+    "ru": "girl scouts, печенье chalet"
+  },
+  "girl scouts, samoas cookies": {
+    "en": "GIRL SCOUTS, Samoas Cookies",
+    "ru": "girl scouts, печенье samoas"
+  },
+  "cheese, semisoft type, goat": {
+    "en": "Cheese, semisoft type, goat",
+    "ru": "сыр, полумягкий тип, козий"
+  },
+  "game meat, raw, ground, elk": {
+    "en": "Game meat, raw, ground, elk",
+    "ru": "дичь, сырая, фарш, лось"
+  },
+  "candies, unsweetened, carob": {
+    "en": "Candies, unsweetened, carob",
+    "ru": "конфеты, без сахара, кароб"
+  },
+  "babyfood, toddler, potatoes": {
+    "en": "Babyfood, toddler, potatoes",
+    "ru": "детское питание, для малышей, картофель"
+  },
+  "veal, cooked, seam fat only": {
+    "en": "Veal, cooked, seam fat only",
+    "ru": "телятина, приготовленная, только жир с шва"
+  },
+  "sauce, ready-to-serve, duck": {
+    "en": "Sauce, ready-to-serve, duck",
+    "ru": "соус, готовый к подаче, утиный"
+  },
+  "corn dogs, prepared, frozen": {
+    "en": "Corn dogs, prepared, frozen",
+    "ru": "корн-доги, приготовленные, замороженные"
+  },
+  "seeds, paste, sesame butter": {
+    "en": "Seeds, paste, sesame butter",
+    "ru": "семена, паста, кунжутное масло"
+  },
+  "noodles, enriched, dry, egg": {
+    "en": "Noodles, enriched, dry, egg",
+    "ru": "лапша, обогащенная, сухая, яичная"
+  },
+  "persimmons, dried, japanese": {
+    "en": "Persimmons, dried, japanese",
+    "ru": "киви, сушеные, японские"
+  },
+  "carrots, unprepared, frozen": {
+    "en": "Carrots, unprepared, frozen",
+    "ru": "морковь, не обработанная, замороженная"
+  },
+  "carambola, raw, (starfruit)": {
+    "en": "Carambola, raw, (starfruit)",
+    "ru": "карамбола, сырая, (королевский фрукт)"
+  },
+  "fast foods, chicken tenders": {
+    "en": "Fast foods, chicken tenders",
+    "ru": "фастфуд, куриные полоски"
+  },
+  "beans, home prepared, baked": {
+    "en": "Beans, home prepared, baked",
+    "ru": "бобы, домашние, запеченные"
+  },
+  "cream, half and half, fluid": {
+    "en": "Cream, half and half, fluid",
+    "ru": "сливки, половина и половина, жидкие"
+  },
+  "silk light vanilla, soymilk": {
+    "en": "SILK Light Vanilla, soymilk",
+    "ru": "silk, легкий ванильный, соевое молоко"
+  },
+  "turnips, unprepared, frozen": {
+    "en": "Turnips, unprepared, frozen",
+    "ru": "репа, не обработанная, замороженная"
+  },
+  "pace, cilantro chunky salsa": {
+    "en": "PACE, Cilantro Chunky Salsa",
+    "ru": "pace, сальса с кинзой, кусочками"
+  },
+  "pace, chipotle chunky salsa": {
+    "en": "PACE, Chipotle Chunky Salsa",
+    "ru": "pace, сальса с чипотле, кусочками"
+  },
+  "jams and preserves, apricot": {
+    "en": "Jams and preserves, apricot",
+    "ru": "джемы и консервы, абрикосовые"
+  },
+  "butter, with salt, whipped": {
+    "en": "Butter, with salt, whipped",
+    "ru": "масло, с солью, взбитое"
+  },
+  "ham, cooked, smoked, honey": {
+    "en": "Ham, cooked, smoked, honey",
+    "ru": "ветчина, приготовленная, копченая, медовая"
+  },
+  "spaghetti, cooked, spinach": {
+    "en": "Spaghetti, cooked, spinach",
+    "ru": "спагетти, приготовленные, со шпинатом"
+  },
+  "bockwurst, raw, veal, pork": {
+    "en": "Bockwurst, raw, veal, pork",
+    "ru": "боквюрст, сырая, телятина, свинина"
+  },
+  "guinea hen, raw, meat only": {
+    "en": "Guinea hen, raw, meat only",
+    "ru": "гуinea hen, сырая, только мясо"
+  },
+  "cookies, soft-type, raisin": {
+    "en": "Cookies, soft-type, raisin",
+    "ru": "печенье, мягкого типа, с изюмом"
+  },
+  "squash, raw, acorn, winter": {
+    "en": "Squash, raw, acorn, winter",
+    "ru": "тыква, сырая, желудевая, зимняя"
+  },
+  "candies, kit kat wafer bar": {
+    "en": "Candies, KIT KAT Wafer Bar",
+    "ru": "конфеты, вафля бар кит кат"
+  },
+  "creamer, hazelnut, silk": {
+    "en": "creamer, hazelnut, silk",
+    "ru": "кремер, миндальный, silk"
+  },
+  "soup mix, dry, onion": {
+    "en": "soup mix, dry, onion",
+    "ru": "суп, сухой, луковый"
+  },
+  "horned melon, kiwano": {
+    "en": "horned melon, kiwano",
+    "ru": "рогатая дыня, кивано"
+  },
+  "yambean, jicama, raw": {
+    "en": "yambean, jicama, raw",
+    "ru": "ямбейн, джикама, сырой"
+  },
+  "yautia, tannier, raw": {
+    "en": "yautia, tannier, raw",
+    "ru": "яутия, таньер, сырой"
+  },
+  "soymilk, vanilla, silk": {
+    "en": "soymilk, vanilla, silk",
+    "ru": "соевое молоко, ванильное, silk"
+  },
+  "yogurt, soy, peach, silk": {
+    "en": "yogurt, soy, peach, silk",
+    "ru": "йогурт, соевый, персиковый, silk"
+  },
+  "yogurt, soy, plain, silk": {
+    "en": "yogurt, soy, plain, silk",
+    "ru": "йогурт, соевый, обычный, silk"
+  },
+  "sauce, enchilada, pace": {
+    "en": "sauce, enchilada, pace",
+    "ru": "соус, энчилада, пэйс"
+  },
+  "spread, yeast extract": {
+    "en": "spread, yeast extract",
+    "ru": "паштет, экстракт дрожжей"
+  },
+  "sage, ground": {
+    "en": "sage, ground",
+    "ru": "сальвия, молотая"
+  },
+  "red taco sauce, pace": {
+    "en": "red taco sauce, pace",
+    "ru": "красный соус для тако, pace"
+  },
+  "hash browns, denny's": {
+    "en": "hash browns, denny's",
+    "ru": "хэшбрауны, denny's"
+  },
+  "onion rings, denny's": {
+    "en": "onion rings, denny's",
+    "ru": "кольца лука, denny's"
+  },
+  "matzo, egg": {
+    "en": "matzo, egg",
+    "ru": "матзо, с яйцом"
+  },
+  "soybean curd cheese": {
+    "en": "soybean curd cheese",
+    "ru": "тофу, сырный"
+  },
+  "swordfish, raw": {
+    "en": "swordfish, raw",
+    "ru": "меч-рыба, сырая"
+  },
+  "jellybeans": {
+    "en": "jellybeans",
+    "ru": "желеобразные бобы"
+  },
+  "celery seed": {
+    "en": "celery seed",
+    "ru": "семена сельдерея"
+  },
+  "peanut bar": {
+    "en": "peanut bar",
+    "ru": "печенье с арахисом"
+  },
+  "york bites": {
+    "en": "york bites",
+    "ru": "йоркские укусы"
+  },
+  "pico de gallo, pace": {
+    "en": "pico de gallo, pace",
+    "ru": "пико де галло, pace"
+  },
+  "hard cider, amber": {
+    "en": "hard cider, amber",
+    "ru": "яблочное сидр, амбер"
+  },
+  "apple-banana juice": {
+    "en": "apple-banana juice",
+    "ru": "яблочно-банановый сок для детского питания"
+  },
+  "mustard seed, ground": {
+    "en": "mustard seed, ground",
+    "ru": "горчица, семена, молотые"
+  },
+  "refried beans, on the border": {
+    "en": "refried beans, on the border",
+    "ru": "фасоль жареная, на границе"
+  },
+  "kanpyo, dried gourd strips": {
+    "en": "kanpyo, dried gourd strips",
+    "ru": "канпё, сушёные лоскуты тыквы"
+  },
+  "beef, canned": {
+    "en": "beef, canned",
+    "ru": "говядина, консервы"
+  },
+  "hotcakes, plain (mcdonald's)": {
+    "en": "hotcakes, plain (mcdonald's)",
+    "ru": "блинчики, простые (макдональдс)"
+  },
+  "vanilla wafers, murray, jacks": {
+    "en": "vanilla wafers, murray, jacks",
+    "ru": "вафли ванильные, мюррей, джекс"
+  },
+  "cocoa mix, powder": {
+    "en": "cocoa mix, powder",
+    "ru": "смесь какао, порошок"
+  },
+  "cheese sauce mix, dry": {
+    "en": "cheese sauce mix, dry",
+    "ru": "смесь для сырного соуса, сухая"
   },
   "apple": {
     "en": "apple",
     "ru": "яблоко"
   },
+  "mngo": {
+    "en": "mngo",
+    "ru": "мнго"
+  },
   "strawberry": {
     "en": "strawberry",
-    "ru": "клубника"
+    "ru": "земляника"
   },
   "blackberry": {
     "en": "blackberry",
     "ru": "черника"
   },
-  "raspberry": {
-    "en": "raspberry",
-    "ru": "малина"
+  "~herbs": {
+    "en": "~herbs",
+    "ru": "~травы"
   },
-  "blueberry": {
-    "en": "blueberry",
-    "ru": "черника"
-  },
-  "cranberry": {
-    "ru": "~клюква",
-    "en": "cranberry"
-  },
-  "~egg, poached": {
-    "ru": "~яйцо пашот",
-    "en": "~egg, poached"
-  },
-  "~bread, chicken": {
-    "ru": "~хлеб, куриный",
-    "en": "~bread, chicken"
-  },
-  "~apple": {
-    "ru": "~яблоко",
-    "en": "~apple"
-  },
-  "~strawberry": {
-    "ru": "~клубника",
-    "en": "~strawberry"
-  },
-  "~blueberry": {
-    "ru": "~голубика",
-    "en": "~blueberry"
-  },
-  "~cherry": {
-    "ru": "~вишня",
-    "en": "~cherry"
-  },
-  "cherry, sweet": {
-    "ru": "вишня, сладкая",
-    "en": "cherry, sweet"
-  },
-  "grapes": {
-    "en": "grapes",
-    "ru": "виноград"
-  },
-  "mulberry": {
-    "ru": "шелковица",
-    "en": "mulberry"
+  "kivi, peeled": {
+    "en": "kiwi",
+    "ru": "киви"
   }
 }

@@ -4,6 +4,7 @@ Handles image upload, displays preview, manages user description input,
 and provides navigation to save recognized meals or return to home.
 Supports async translation synchronization before saving.
 """
+
 import asyncio
 import streamlit as st
 from PIL import Image
@@ -66,17 +67,12 @@ if middle.button(text, width="stretch", disabled=not bool(uploaded_file)):
     check_activity()
     if st.session_state.get("table_ingredients") is not None:
         with st.spinner(t("ui.processing")):
-            try:
-                loop = asyncio.get_running_loop()
-                task = asyncio.create_task(translate_table_ingredients())
-                loop.run_until_complete(task)
-            except RuntimeError:
-                asyncio.run(translate_table_ingredients())
-            print(st.session_state.get("table_ingredients"))
+            asyncio.run(translate_table_ingredients())
+
             if recognition_handler.save_meal():
                 nutrition_table.clear_new_uploader()
                 clear_session_states()
-                st.switch_page("pages/home.py")       
+                st.switch_page("pages/home.py")
     else:
         with st.spinner(t("ui.processing")):
             if image_base64:

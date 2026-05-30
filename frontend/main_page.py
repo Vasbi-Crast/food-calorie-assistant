@@ -3,6 +3,7 @@
 Handles user authentication interface, session initialization,
 and navigation to registration or home pages.
 """
+
 import streamlit as st
 
 from handlers.init_session_state import default_session_state

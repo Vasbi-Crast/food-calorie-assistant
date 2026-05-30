@@ -331,6 +331,7 @@ class LLMAssistant:
         Normalizes and translates ingredient names in batches.
 
         Processes the payload in chunks to avoid context window limits and manages retries.
+        Applies tilde-mask normalization to preserve LLM marker semantics (~ prefix).
 
         Args:
             payload (Dict[str, List[str]]): Dictionary where keys are ingredient names
@@ -368,6 +369,8 @@ class LLMAssistant:
 
         for i, chunk in enumerate(chunks):
             try:
+                tilde_mask = {key: key.startswith("~") for key in chunk.keys()}
+
                 payload_json = json.dumps(
                     chunk, ensure_ascii=False, separators=(",", ":")
                 )
@@ -386,7 +389,19 @@ class LLMAssistant:
                 parsed = self._parse_response(response["message"]["content"])
 
                 if parsed["status"] == "success":
-                    merged_results.update(parsed["result"])
+                    chunk_results = parsed["result"]
+                    for key, translations in chunk_results.items():
+                        original_had_tilde = tilde_mask.get(key, False)
+
+                        if isinstance(translations, dict):
+                            for lang, val in translations.items():
+                                if isinstance(val, str):
+                                    val_has_tilde = val.startswith("~")
+                                    if original_had_tilde and not val_has_tilde:
+                                        translations[lang] = "~" + val
+                                    elif not original_had_tilde and val_has_tilde:
+                                        translations[lang] = val[1:]
+                    merged_results.update(chunk_results)
                     logger.debug(f"Chunk {i+1} translated successfully")
                 else:
                     logger.warning(
@@ -397,9 +412,6 @@ class LLMAssistant:
             except Exception as e:
                 logger.error(f"Translation chunk {i+1} exception: {e}", exc_info=True)
                 errors.append(f"Chunk {i+1} failed: {str(e)}")
-
-            if i < len(chunks) - 1:
-                await asyncio.sleep(0.3)
 
         if not errors:
             logger.info("Translation batch completed successfully")
@@ -470,7 +482,9 @@ class LLMAssistant:
                     }
 
                 if isinstance(raw_val, (int, float)):
-                    closest = min(self.allowed_bmr_values, key=lambda x: abs(x - raw_val))
+                    closest = min(
+                        self.allowed_bmr_values, key=lambda x: abs(x - raw_val)
+                    )
                     logger.warning(
                         f"LLM returned non-standard bmr={raw_val}, clamping to {closest}"
                     )

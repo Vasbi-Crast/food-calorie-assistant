@@ -1,4 +1,5 @@
 """Handler module for main page authentication logic."""
+
 import streamlit as st
 import datetime as dt
 from typing import Optional, Dict, Any
@@ -33,7 +34,9 @@ def authorization(username: str, password: str) -> bool:
 
     payload = {"username": username.lower(), "password": password}
 
-    response: Optional[Dict[str, Any]] = api_request("POST", "authentication", json=payload)
+    response: Optional[Dict[str, Any]] = api_request(
+        "POST", "authentication", json=payload
+    )
 
     if response:
         st.session_state["token"] = response.get("access_token")

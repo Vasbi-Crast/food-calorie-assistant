@@ -33,11 +33,14 @@ def default_session_state():
     st.session_state.setdefault("empty_day", False)
 
     # Statistics data
-    st.session_state.setdefault("stat_data", {
-        "weight": None,
-        "info_nutrition": None,
-        "norms": None,
-    })
+    st.session_state.setdefault(
+        "stat_data",
+        {
+            "weight": None,
+            "info_nutrition": None,
+            "norms": None,
+        },
+    )
 
     # Language detection with fallback
     try:

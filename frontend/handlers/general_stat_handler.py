@@ -3,6 +3,7 @@
 Provides functions to fetch weight history, nutrition data, and norms
 from the backend API, and renders comparative charts using Matplotlib.
 """
+
 import streamlit as st
 from typing import Dict, List, Optional, Any, Union
 import datetime as dt
@@ -65,10 +66,10 @@ def _fetch_history_data(
 
     params = {"start": start, "end": end}
     response = api_request("GET", endpoint, params=params)
-    
+
     if not response:
         return None
-    
+
     if convert_values:
         parsed = {
             r_key: {key: float(val) for key, val in r_val.items()}
@@ -76,7 +77,7 @@ def _fetch_history_data(
         }
     else:
         parsed = {key: float(val) for key, val in response.items()}
-    
+
     return parsed.get(start, one_day_default) if one_day else parsed
 
 
@@ -184,7 +185,9 @@ def plot_general_stat() -> None:
         return
 
     dates = sorted(nutrition.keys())
-    date_labels = [dt.datetime.strptime(date, "%Y-%m-%d").strftime("%d-%m") for date in dates]
+    date_labels = [
+        dt.datetime.strptime(date, "%Y-%m-%d").strftime("%d-%m") for date in dates
+    ]
     x_pos = range(len(dates))
 
     weight_values = [
@@ -230,9 +233,13 @@ def plot_general_stat() -> None:
     )
 
     bar_width = 0.35
-    
-    def style_dark_axis(ax: plt.Axes, title: str, ylabel: str, xlabel: str = "", pad_title: float = 50.0):
-        ax.set_title(title, loc="center", fontweight="bold", pad=pad_title, color="white")
+
+    def style_dark_axis(
+        ax: plt.Axes, title: str, ylabel: str, xlabel: str = "", pad_title: float = 50.0
+    ):
+        ax.set_title(
+            title, loc="center", fontweight="bold", pad=pad_title, color="white"
+        )
         ax.set_ylabel(ylabel, color="white")
         if xlabel:
             ax.set_xlabel(xlabel, color="white")
@@ -257,7 +264,9 @@ def plot_general_stat() -> None:
             edgecolor="black",
             linewidth=0.5,
         )
-        style_dark_axis(ax, t("chart.weight.title"), t("chart.weight.ylabel"), pad_title=10)
+        style_dark_axis(
+            ax, t("chart.weight.title"), t("chart.weight.ylabel"), pad_title=10
+        )
         st.pyplot(fig, width="stretch")
         st.divider()
         plt.close(fig)

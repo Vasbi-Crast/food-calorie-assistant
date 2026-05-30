@@ -4,6 +4,7 @@ Provides functions to fetch user profile, nutrition history, norms,
 and ingredients from the backend API. Also handles rendering of
 today's nutrition overview using Matplotlib donut charts.
 """
+
 import streamlit as st
 from typing import Dict, Any, List
 import datetime as dt

@@ -3,6 +3,7 @@
 Displays user nutrition overview, provides navigation to daily logs,
 dish recognition, statistics, and settings. Handles session data initialization.
 """
+
 import streamlit as st
 
 from menu import menu

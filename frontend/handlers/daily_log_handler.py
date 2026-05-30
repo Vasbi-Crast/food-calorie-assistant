@@ -3,6 +3,7 @@
 Provides functions to fetch, save, and update daily nutrition logs,
 and handles date-based data synchronization with the backend API.
 """
+
 import streamlit as st
 from typing import Dict, List, Optional
 import datetime as dt
@@ -47,7 +48,7 @@ def save_daily_log(date: dt.datetime) -> bool:
     if not ingredients:
         st.error(t("error.meal.no_ingredients"))
         return False
-    
+
     payload = {
         "table": ingredients,
         "modified_ingredients": st.session_state.get("modified_ingredients", []),

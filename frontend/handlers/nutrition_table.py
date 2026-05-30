@@ -3,7 +3,7 @@ import datetime as dt
 import uuid
 
 from handlers.api_handler import check_activity, ing_translator
-from translator import Translator, detect_input_language, get_canonical_name
+from translator import Translator, get_canonical_name
 
 t = Translator()
 
@@ -17,12 +17,11 @@ def add_new_ingredient(
     carbohydrates: float,
 ) -> bool:
     """Adds a new ingredient to session_state"""
-    input_lang = detect_input_language(name)
 
-    canonical_key = ing_translator.register(name, input_lang)
+    canonical_key = ing_translator.register(name)
 
     for item in st.session_state.get("table_ingredients", []):
-        if ing_translator.resolve(item["name"],  st.session_state.get("language")) == canonical_key:
+        if item["name"] == canonical_key:
             return False
 
     st.session_state["table_ingredients"].append(
@@ -508,7 +507,10 @@ def show_add_ingredient_dialog():
                     else:
                         canonical = get_canonical_name(name)
                         if any(
-                            ing_translator.resolve(ing["name"], st.session_state.get("language")) == canonical
+                            ing_translator.resolve(
+                                ing["name"], st.session_state.get("language")
+                            )
+                            == canonical
                             for ing in st.session_state.get("users_ingredients", [])
                         ):
                             st.error(
@@ -591,10 +593,12 @@ def plot_nutritional_info():
                             vertical_alignment="center",
                             gap="xsmall",
                         )
+                        ing_name = ing_translator.resolve(
+                            row["name"], st.session_state.get("language")
+                        )
+                        ing_name = ing_name[0].upper() + ing_name[1:]
                         cols[0].text(
-                            ing_translator.resolve(
-                                row["name"], st.session_state.get("language")
-                            ),
+                            ing_name,
                             width="stretch",
                             text_alignment="left",
                         )

@@ -3,6 +3,7 @@
 Allows updating user information (age, weight, height, goal, lifestyle),
 visualizes current settings, and handles saving changes via the handler.
 """
+
 import streamlit as st
 
 from menu import menu

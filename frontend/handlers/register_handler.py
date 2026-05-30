@@ -3,6 +3,7 @@
 Provides utilities for mapping UI labels to database values
 and handles registration form validation and API submission.
 """
+
 import streamlit as st
 from typing import Dict, Any
 
@@ -92,7 +93,9 @@ def registration(
         "username": username,
         "password": password,
         "age": age,
-        "bmr": get_db_value(lifestyle_description, "register.lifestyle.selector.options", None),
+        "bmr": get_db_value(
+            lifestyle_description, "register.lifestyle.selector.options", None
+        ),
         "lifestyle_description": lifestyle_description,
         "goal": get_db_value(goal, "register.goal.options", "weight_maintenance"),
         "gender": get_db_value(gender, "register.gender.options", "None"),

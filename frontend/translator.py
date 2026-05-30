@@ -8,24 +8,7 @@ from typing import Dict, List, Optional, Iterable, Any, Set, Callable
 import asyncio
 import re
 
-
-def detect_input_language(text: str, supported: Optional[Set[str]] = None) -> str:
-    """Detects the input language based on Cyrillic character presence.
-
-    Args:
-        text (str): The text to analyze.
-        supported (Optional[Set[str]]): Set of supported language codes.
-            Defaults to {"en", "ru"}.
-
-    Returns:
-        str: Detected language code.
-    """
-    if supported is None:
-        supported = {"en", "ru"}
-    
-    if re.search(r"[\u0400-\u04FF]", text):
-        return "ru" if "ru" in supported else "en"
-    return "en"
+import threading
 
 
 def get_canonical_name(name: str) -> str:
@@ -46,13 +29,13 @@ class IngredientTranslator:
     Handles caching, normalization, and asynchronous synchronization with
     the backend API. Implements debounced saving to prevent excessive I/O.
     """
-    
+
     def __init__(
         self,
         path: str = "resources/locales/ingredient_translations.json",
         app_languages: Iterable[str] = ("en", "ru"),
     ):
-        """Initializes the translator with cache and I/O locks.
+        """Initializes the translator with cache, pending queue, and I/O locks.
 
         Args:
             path (str): Path to the JSON translation cache file.
@@ -63,11 +46,9 @@ class IngredientTranslator:
         self.path.parent.mkdir(parents=True, exist_ok=True)
 
         self._cache: Dict[str, Dict[str, str]] = self._load()
-        self._pending: Dict[str, Dict[str, str]] = {}
-        self._missing_translations: Dict[str, set] = {}
+        self._pending: Dict[str, set[str]] = {}
 
-        self._io_lock = asyncio.Lock()
-        self._dirty = False
+        self._io_lock = threading.Lock()
         self._save_task: Optional[asyncio.Task] = None
 
     def _load(self) -> Dict[str, Dict[str, str]]:
@@ -97,15 +78,13 @@ class IngredientTranslator:
         Returns:
             str: The normalized canonical name.
         """
-        prefix = "~" if name.startswith("~") else ""
-        clean = name[1:] if name.startswith("~") else name
-        return prefix + re.sub(r"\s+", " ", clean.strip().lower())
+        return re.sub(r"\s+", " ", name.strip().lower())
 
     def resolve(self, key: str, lang: str) -> str:
         """Retrieves the translation for a specific ingredient key and language.
 
-        Checks the cache and pending updates. If the translation is missing,
-        records it for future synchronization.
+        Checks the cache. If the translation is missing, records all missing
+        language variants for future synchronization.
 
         Args:
             key (str): The normalized ingredient key.
@@ -114,58 +93,42 @@ class IngredientTranslator:
         Returns:
             str: The translated ingredient name, or the original key if not found.
         """
-        entry = self._cache.get(key) or self._pending.get(key)
+        entry = self._cache.get(key, {})
 
-        if entry:
-            if lang in entry:
-                return entry[lang]
-            self._missing_translations.setdefault(key, set()).add(lang)
-            return entry.get("en") or key
+        if entry and lang in entry:
+            return entry[lang]
 
-        self._pending.setdefault(key, {})[lang] = key
-        self._missing_translations.setdefault(key, set()).add(lang)
+        missing = self.app_languages - set(entry)
+        if missing:
+            self._pending.setdefault(key, set()).update(missing)
         return key
 
-    def register(self, name: str, input_lang: str) -> str:
+    def register(self, name: str) -> str:
         """Registers a new ingredient name into the cache or pending list.
 
-        Normalizes the name and stores it. If the input language is English,
-        it is added directly to the cache; otherwise, it is marked as pending
-        for translation.
+        Normalizes the name and stores it. If already cached, marks missing
+        languages as pending. Otherwise, queues it for all app languages.
 
         Args:
             name (str): The raw ingredient name.
-            input_lang (str): The language of the input name.
 
         Returns:
             str: The normalized canonical key for the ingredient.
         """
         key = self.normalize(name)
 
-        existing_entry = self._cache.get(key) or self._pending.get(key)
+        existing_entry = self._cache.get(key)
         if existing_entry:
-            if key in self._cache:
-                missing = self.app_languages - set(existing_entry.keys())
-                if missing:
-                    self._missing_translations.setdefault(key, set()).update(missing)
-            return key
-
-        if input_lang == "en":
-            self._cache[key] = {"en": name}
-
-            missing = self.app_languages - {"en"}
+            missing = self.app_languages - set(existing_entry)
             if missing:
-                self._missing_translations.setdefault(key, set()).update(missing)
-                
-            self._dirty = True
+                self._pending.setdefault(key, set()).update(missing)
             return key
 
-        self._pending[key] = {input_lang: name}
-        self._missing_translations.setdefault(key, set()).update(self.app_languages - {input_lang})
+        self._pending[key] = self.app_languages
         return key
 
     async def sync(
-        self, api_fetch_func: Callable, limit_to_lang: Optional[str] = None
+        self, api_fetch_func: Callable, limit_to_lang: Optional[set[str]] = None
     ) -> Dict[str, str]:
         """Synchronizes pending and missing translations with the backend API.
 
@@ -175,54 +138,46 @@ class IngredientTranslator:
 
         Args:
             api_fetch_func (Callable): An async function to call the backend API.
-                Expected to accept method, endpoint, timeout, and json arguments.
-            limit_to_lang (Optional[str]): If provided, only fetch translations
-                for this specific language. Defaults to None (fetch all missing).
+            limit_to_lang (Optional[set[str]]): If provided, only fetch translations
+                for these specific languages. Defaults to None (fetch all missing).
 
         Returns:
-            Dict[str, str]: A mapping of old keys to new canonical keys for
-                session state table updates.
+            Dict[str, str]: A mapping of old keys to new canonical keys.
         """
         payload: Dict[str, set] = {}
 
-        for key in self._pending:
-            payload[key] = set(self.app_languages)
-
-        for key, langs in self._missing_translations.items():
-            filtered = (
-                {l for l in langs if l == limit_to_lang} if limit_to_lang else langs
-            )
-            if filtered:
-                payload.setdefault(key, set()).update(filtered)
+        for key, val in self._pending.items():
+            if not limit_to_lang:
+                payload[key] = val
+            else:
+                payload[key] = val & self.app_languages & limit_to_lang
 
         for key, entry in self._cache.items():
             if key in payload:
                 continue
-            missing = self.app_languages - set(entry.keys())
+            missing = self.app_languages - set(entry)
             if limit_to_lang:
-                if limit_to_lang in missing:
-                    payload[key] = {limit_to_lang}
-            elif missing:
-                payload[key] = set(missing)
+                payload[key] = missing & self.app_languages & limit_to_lang
+            else:
+                payload[key] = missing
 
         payload = {k: list(v) for k, v in payload.items() if v}
         if not payload:
             return {}
 
         try:
-            print(payload)
             results = await api_fetch_func(
                 method="POST",
                 endpoint="translate_ingredients",
                 timeout=100000,
                 json={"ingredients": payload},
             )
-            print(results)
         except Exception as e:
             print(f"⚠️ Sync failed: {e}")
             return {}
 
         if not isinstance(results, dict):
+            print("⚠️ Sync failed, unexpected result received from backend.")
             return {}
 
         status = results.get("status")
@@ -235,10 +190,15 @@ class IngredientTranslator:
 
         for old_key, translations in results.items():
             has_llm_marker = old_key.startswith("~")
+
             if has_llm_marker:
                 for lang, val in translations.items():
-                    if not val.startswith("~"):
+                    if isinstance(val, str) and not val.startswith("~"):
                         translations[lang] = "~" + val
+            else:
+                for lang, val in translations.items():
+                    if isinstance(val, str) and val.startswith("~"):
+                        translations[lang] = val[1:]
 
             en_translation = translations.get("en", old_key)
             canonical = self.normalize(en_translation)
@@ -250,32 +210,24 @@ class IngredientTranslator:
                 self._pending.pop(old_key, None)
                 norm_mapping[old_key] = canonical
 
-            self._missing_translations.pop(old_key, None)
-            self._missing_translations.pop(canonical, None)
+            self._pending.pop(canonical, None)
 
-        self._dirty = True
         self._schedule_save()
         return norm_mapping
 
-    def _schedule_save(self):
-        """Schedules a debounced save operation if one is not already running.
-
-        Creates an asyncio task to save the cache to disk, preventing excessive
-        I/O operations during rapid updates.
-        """
+    def _schedule_save(self) -> None:
+        """Schedules a debounced save operation if one is not already running."""
         if self._save_task is None or self._save_task.done():
             self._save_task = asyncio.create_task(self._debounced_save())
 
-    async def _debounced_save(self):
-        """Debounce writes to disk. Doesn't block reads or other syncs."""
-        async with self._io_lock:
-            if self._dirty:
-                tmp = self.path.with_suffix(".tmp")
-                tmp.write_text(
-                    json.dumps(self._cache, ensure_ascii=False, indent=2), "utf-8"
-                )
-                os.replace(tmp, self.path)
-                self._dirty = False
+    async def _debounced_save(self) -> None:
+        """Debounces writes to disk using atomic replacement. Doesn't block reads."""
+        with self._io_lock:
+            tmp = self.path.with_suffix(".tmp")
+            tmp.write_text(
+                json.dumps(self._cache, ensure_ascii=False, indent=2), "utf-8"
+            )
+            os.replace(tmp, self.path)
 
 
 class Translator:

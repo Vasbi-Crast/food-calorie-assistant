@@ -3,7 +3,6 @@
 -- ============================================
 CREATE EXTENSION IF NOT EXISTS vector;
 
--- Безопасное создание типов (обходит отсутствие IF NOT EXISTS)
 DO $$ BEGIN
     CREATE TYPE user_goal AS ENUM ('weight_loss', 'weight_maintenance', 'weight_gain');
 EXCEPTION WHEN duplicate_object THEN NULL; END $$;

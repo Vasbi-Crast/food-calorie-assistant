@@ -32,10 +32,14 @@ class DBConnector:
         API boundary: actual ↔ per-100g conversion via to_actual()
     """
 
-    def __init__(self, model_name: str = "intfloat/multilingual-e5-small", embedding_batch_size: int = 32):
+    def __init__(
+        self,
+        model_name: str = "intfloat/multilingual-e5-small",
+        embedding_batch_size: int = 32,
+    ):
         """
         Initializes DBConnector configuration.
-        
+
         Args:
             model_name (str): Name of the SentenceTransformer model. Default: "intfloat/multilingual-e5-small".
             embedding_batch_size (int): Batch size for embedding generation. Default: 32.
@@ -75,22 +79,19 @@ class DBConnector:
     async def load_model(self) -> None:
         """
         Loads the embedding model asynchronously.
-        
+
         Must be called after __init__ and before any embedding operations.
-        
+
         Raises:
             Exception: If model loading fails.
         """
         if self.encoder is not None:
             logger.debug("Embedding model already loaded")
             return
-            
+
         logger.info(f"Loading embedding model: {self.model_name}")
         try:
-            self.encoder = await asyncio.to_thread(
-                SentenceTransformer, 
-                self.model_name
-            )
+            self.encoder = await asyncio.to_thread(SentenceTransformer, self.model_name)
             logger.info("✅ Embedding model loaded successfully")
         except Exception as e:
             logger.error(f"Failed to load embedding model: {e}", exc_info=True)
@@ -1099,7 +1100,11 @@ class DBConnector:
             raise
 
     async def _add_day(
-        self, conn: asyncpg.Connection, username: str, created_at: dt.datetime, timeout: int = 20
+        self,
+        conn: asyncpg.Connection,
+        username: str,
+        created_at: dt.datetime,
+        timeout: int = 20,
     ) -> int:
         """
         Creates or retrieves a daily record ID for the user.
@@ -1205,7 +1210,10 @@ class DBConnector:
         return True
 
     async def _change_ingredient(
-        self, conn: asyncpg.Connection, modified_ingredients: List[IngredientItem], timeout: int = 20
+        self,
+        conn: asyncpg.Connection,
+        modified_ingredients: List[IngredientItem],
+        timeout: int = 20,
     ) -> None:
         """
         Updates per-100g nutritional values for existing user-owned ingredients.
@@ -1240,7 +1248,11 @@ class DBConnector:
                 )
 
     async def _get_or_create_ingredient(
-        self, conn: asyncpg.Connection, ingredient: IngredientItem, timeout: int = 20, max_retries: int = 3
+        self,
+        conn: asyncpg.Connection,
+        ingredient: IngredientItem,
+        timeout: int = 20,
+        max_retries: int = 3,
     ) -> Tuple[int, str]:
         """
         Resolves an ingredient ID, creating it if necessary with a semantic embedding.

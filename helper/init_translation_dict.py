@@ -4,12 +4,14 @@ Reads ingredient names from a CSV, generates a base JSON dictionary,
 and optionally synchronizes missing translations via the backend API
 using the IngredientTranslator class. Designed for one-time data preparation.
 """
+
 import csv
 import json
 import os
 import re
 from pathlib import Path
 from typing import List, Optional
+
 
 def _normalize(name: str) -> str:
     """Normalizes an ingredient name by lowercasing and collapsing whitespace.
@@ -21,6 +23,7 @@ def _normalize(name: str) -> str:
         str: Normalized name suitable for dictionary keys.
     """
     return re.sub(r"\s+", " ", name.strip().lower())
+
 
 def generate_base_translations_from_csv(
     csv_path: str,
@@ -112,5 +115,5 @@ if __name__ == "__main__":
         output_path=OUTPUT_JSON,
         extra_languages=["ru", "eu"],
         fill_with_empty=False,
-    )    
+    )
     print("🏁 Script finished successfully.")

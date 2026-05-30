@@ -3,6 +3,7 @@
 Handles date selection, displays nutritional info chart, manages ingredient table,
 and provides save/back navigation. Supports async translation synchronization.
 """
+
 import asyncio
 import streamlit as st
 import datetime as dt
@@ -48,18 +49,12 @@ with st.container(border=False):
 
     if middle.button(t("daily_log.save_changes"), width="stretch"):
         with st.spinner(t("ui.processing")):
-            try:
-                loop = asyncio.get_running_loop()
-                task = asyncio.create_task(translate_table_ingredients())
-                loop.run_until_complete(task)
 
-            except RuntimeError:
-                asyncio.run(translate_table_ingredients())
+            asyncio.run(translate_table_ingredients())
 
             st.session_state["successful_save_daily_log"] = (
                 daily_log_handler.save_daily_log(st.session_state.get("daily_log_date"))
             )
-
             st.session_state["table_ingredients"] = []
             st.session_state["first_daily_log"] = True
         st.rerun()

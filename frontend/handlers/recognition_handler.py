@@ -3,6 +3,7 @@
 Provides functions to send images for ingredient recognition,
 parse nutrition data, and save meals to the backend database.
 """
+
 import streamlit as st
 from typing import List, Optional, Dict
 import datetime as dt

@@ -21,52 +21,19 @@ if not SERVER_URL:
 INACTIVITY_MINUTES = 15
 
 # ==============================================================================
-# CLIENTS INITIALIZATION
-# ==============================================================================
-
-
-@st.cache_resource
-def get_sync_client() -> requests.Session:
-    """
-    Creates and caches a synchronous requests.Session for GET operations.
-
-    Returns:
-        requests.Session: Configured session with default headers.
-    """
-    session = requests.Session()
-    return session
-
-
-client = get_sync_client()
-
-
-@st.cache_resource
-def get_async_client() -> httpx.AsyncClient:
-    """
-    Creates and caches an asynchronous httpx.AsyncClient for POST/PUT operations.
-    
-    Note:
-        Default timeout is None because all requests specify timeout explicitly.
-    """
-    return httpx.AsyncClient(timeout=None, follow_redirects=True)
-
-
-asynch_client = get_async_client()
-
-
-# ==============================================================================
 # API REQUEST WRAPPERS
 # ==============================================================================
 
+
 def _handle_response(resp: Union[requests.Response, httpx.Response]) -> Optional[Dict]:
     """Unified handler for API responses (sync and async).
-    
+
     Parses JSON, handles HTTP errors (401, 422), and formats validation messages.
-    
+
     Args:
-        resp (Union[requests.Response, httpx.Response]): Response object from 
+        resp (Union[requests.Response, httpx.Response]): Response object from
             either requests or httpx client.
-    
+
     Returns:
         Optional[Dict]: Parsed JSON on success (2xx), None on error.
     """
@@ -94,7 +61,7 @@ def _handle_response(resp: Union[requests.Response, httpx.Response]) -> Optional
         if detail == "username":
             st.error(t("error.form.user_already_exists"))
         else:
-            st.error(t("error.form.duplicate_error").format(field = detail))
+            st.error(t("error.form.duplicate_error").format(field=detail))
 
     elif resp.status_code == 422:
         detail_data = data.get("errors", [])
@@ -121,13 +88,9 @@ def _handle_response(resp: Union[requests.Response, httpx.Response]) -> Optional
                         field=field
                     )
                 elif error_type == "less_than_equal":
-                    text_err = t("error.validation.less_than_equal").format(
-                        field=field
-                    )
+                    text_err = t("error.validation.less_than_equal").format(field=field)
                 elif error_type == "greater_than":
-                    text_err = t("error.validation.greater_than").format(
-                        field=field
-                    )
+                    text_err = t("error.validation.greater_than").format(field=field)
                 elif error_type == "less_than":
                     text_err = t("error.validation.less_than").format(field=field)
                 elif error_type == "value_error" and field == "password":
@@ -149,6 +112,7 @@ def _handle_response(resp: Union[requests.Response, httpx.Response]) -> Optional
     else:
         st.error(f"{base_msg}: {detail}")
     return None
+
 
 async def async_api_request(
     method: str, endpoint: str, timeout: float = 20, **kwargs
@@ -176,22 +140,23 @@ async def async_api_request(
     if token:
         headers["Authorization"] = f"Bearer {token}"
     kwargs["headers"] = headers
+    async with httpx.AsyncClient(timeout=None, follow_redirects=True) as asynch_client:
+        try:
+            resp = await asynch_client.request(
+                method, f"{SERVER_URL}/{endpoint}", timeout=timeout, **kwargs
+            )
 
-    try:
-        resp = await asynch_client.request(
-            method, f"{SERVER_URL}/{endpoint}", timeout=timeout, **kwargs
-        )
-    except httpx.TimeoutException:
-        st.error(t("error.network.timeout"))
-        return None
-    except httpx.ConnectError:
-        st.error(t("error.network.connection"))
-        return None
-    except Exception as e:
-        st.error(t("error.network.generic").format(error=str(e)))
-        return None
-    
-    return _handle_response(resp)
+        except httpx.TimeoutException:
+            st.error(t("error.network.timeout"))
+            return None
+        except httpx.ConnectError:
+            st.error(t("error.network.connection"))
+            return None
+        except Exception as e:
+            st.error(t("error.network.generic").format(error=str(e)))
+            return None
+
+        return _handle_response(resp)
 
 
 def api_request(
@@ -218,22 +183,22 @@ def api_request(
     if token:
         headers["Authorization"] = f"Bearer {token}"
     kwargs["headers"] = headers
+    with requests.Session() as client:
+        try:
+            resp = client.request(
+                method, f"{SERVER_URL}/{endpoint}", timeout=timeout, **kwargs
+            )
+        except requests.exceptions.Timeout:
+            st.error(t("error.network.timeout"))
+            return None
+        except requests.exceptions.ConnectionError:
+            st.error(t("error.network.connection"))
+            return None
+        except requests.exceptions.RequestException as e:
+            st.error(t("error.network.generic").format(error=str(e)))
+            return None
 
-    try:
-        resp = client.request(
-            method, f"{SERVER_URL}/{endpoint}", timeout=timeout, **kwargs
-        )
-    except requests.exceptions.Timeout:
-        st.error(t("error.network.timeout"))
-        return None
-    except requests.exceptions.ConnectionError:
-        st.error(t("error.network.connection"))
-        return None
-    except requests.exceptions.RequestException as e:
-        st.error(t("error.network.generic").format(error=str(e)))
-        return None
-    
-    return _handle_response(resp)
+        return _handle_response(resp)
 
 
 async def translate_table_ingredients() -> bool:
@@ -250,20 +215,18 @@ async def translate_table_ingredients() -> bool:
     ings = st.session_state.get("table_ingredients", [])
     if not ings:
         return False
-
     mapping = await ing_translator.sync(async_api_request)
-    
+
     if mapping:
         for ing in ings:
             raw_name = ing.get("name")
             if not raw_name:
                 continue
-            
-            old_key = get_canonical_name(raw_name)
-            if old_key in mapping:
-                ing["name"] = mapping[old_key]
-            
-    return True
+
+            if raw_name in mapping:
+                ing["name"] = mapping[raw_name]
+        return True
+    return False
 
 
 def parse_meals(nutritional_info: list[dict]) -> None:
@@ -282,6 +245,7 @@ def parse_meals(nutritional_info: list[dict]) -> None:
         Uses safe_float conversion to prevent crashes on malformed numeric values.
         Each row receives a unique UUID for stable Streamlit component keying.
     """
+
     def safe_float(value: Any) -> float:
         """Safely converts a value to float, returning 0.0 on failure."""
         try:
@@ -291,7 +255,7 @@ def parse_meals(nutritional_info: list[dict]) -> None:
 
     if not nutritional_info:
         return
-    
+
     rows = []
     for item in nutritional_info:
         rows.append(
