@@ -2,12 +2,12 @@
 
 A smart nutrition assistant that helps you track calories and macros with minimal effort. Simply take a photo of your meal, and the app will recognize ingredients, estimate portions, and calculate nutritional values. Designed for people who want to maintain a healthy lifestyle without manual food logging.
 
->  **Before you start**: We recommend reading the in-app help section (`Settings → Help`) for detailed usage instructions, tips, and explanations of all features.
+> 📚 **Before you start**: We recommend reading the in-app guide (`How it works?` in the sidebar) for detailed usage instructions, tips, and explanations of all features.
 
 ## ✨ What It Does
 
-- **📷 Photo Recognition** : Upload a photo of your meal → AI identifies ingredients and estimates weights using a local vision LLM
-- **🌍 Multi-language Support**: Ingredient names are available in **English and Russian**. The translation system is modular and allows easy extension to other languages by simply adding entries to the translation JSON file
+- **📸 Photo Recognition**: Upload a photo of your meal → AI identifies ingredients and estimates weights using a local vision LLM
+- **🌍 Multi-language Support**: Ingredient names are available in **English and Russian**. The translation system is modular — just add new localization files or edit existing ones to extend support to other languages
 - **📊 Statistics & Analytics**: View calorie/macro breakdowns, track weight changes, and compare nutrient intake against your personal norms over time using static matplotlib charts
 - **🎯 Personalized Goals**: Set weight loss, maintenance, or gain targets with custom BMR calculations based on your profile
 - **🔐 Private & Secure**: All data stays on your server; authentication via JWT tokens
@@ -25,8 +25,9 @@ Perfect for fitness enthusiasts, dietitians, or anyone who wants a smarter way t
 | **Database** | PostgreSQL 16 with pgvector (semantic search) |
 | **AI/ML** | Sentence Transformers (embeddings), Ollama (vision LLM) |
 | **Auth** | JWT (python-jose), bcrypt password hashing (passlib) |
-| **HTTP Clients** | httpx (async) |
-| **Data Processing** | pandas, numpy, matplotlib |
+| **HTTP Clients** | `requests` (sync), `httpx` (async) |
+| **Data Processing** | numpy, matplotlib |
+| **Validation** | pydantic (data validation and settings management) |
 | **Deployment** | Docker + Docker Compose |
 
 ---
@@ -48,7 +49,13 @@ Perfect for fitness enthusiasts, dietitians, or anyone who wants a smarter way t
 | **GPU** | None (CPU inference) | NVIDIA GPU with 12 GB VRAM (CUDA 12) |
 | **Storage** | 10 GB free | 20+ GB SSD (for models + cache) |
 
-> 💡 **Note**: The application was tested and runs smoothly on NVIDIA GPU with 12 GB VRAM (CUDA 12) using the `qwen3.5:9b` model (~9B parameters). CPU-only inference is also supported but may be slower (~10–30 seconds per image).
+> 💡 **Note**: The application was tested on NVIDIA GPU with 12 GB VRAM (CUDA 12) using the `qwen3.5:9b` model (~9B parameters). 
+> 
+> **Performance reference**:
+> - **CPU inference**: ~1.5 min cold start (Ollama load), ~20–40 seconds per image on warm start
+> - **GPU inference**: ~3–4× faster than CPU for both cold and warm runs
+> 
+> CPU-only mode is fully supported; GPU is recommended for smoother interactive experience.
 
 ---
 
@@ -66,35 +73,27 @@ cd calorie-tracker
 Create a `.env` file in the project root:
 
 ```env
-# === AI Provider (Ollama) ===
-OLLAMA_HOST=http://host.docker.internal:11434
-MODEL_NAME=qwen3.5:9b
-
-# === Server URLs ===
-SERVER_URL=http://backend:8000
-STREAMLIT_URL=http://localhost:8501
-
-# === Database ===
-DB_PASSWORD=your_secure_db_password
-
-# === Authentication & Security ===
-SECRET_KEY=your_jwt_secret_key_here
-ADMIN_PASSWORD=admin
-TOKEN_EXPIRE_MINUTES=1440
-
-# === Logging ===
-LOG_LEVEL=INFO
+OLLAMA_HOST = http://172.22.224.1:11434
+MODEL_NAME = qwen3.5:9b
+SERVER_URL = http://127.0.0.1:8000
+STREAMLIT_URL = http://localhost:8501
+DB_CONFIG = '{"host": "localhost", "port": 5432, "database": "calorie_tracker_db", "user": "postgres", "password": "your_db_password"}'
+DB_PASSWORD='your_secure_db_password'
+SECRET_KEY = 'your_jwt_secret_key_here'
+LOG_LEVEL = INFO
+TOKEN_EXPIRE_MINUTES = 1440
+ADMIN_PASSWORD = "your_admin_password_here"
 ```
 
 > ⚠️ **Important for WSL2/Docker Desktop**: 
-> - `OLLAMA_HOST=http://host.docker.internal:11434` allows containers to reach Ollama on your host machine
-> - Make sure Ollama is running and accessible
+> - `OLLAMA_HOST` should point to your WSL host IP (e.g., `172.22.224.1`) to allow containers to reach Ollama
+> - `DB_CONFIG` must be a valid JSON string — keep outer single quotes, double quotes inside JSON
+> - Never commit `.env` to version control
 
 #### 3. Prepare nutrition dataset
 Place your nutrition dataset as `nutrition.csv` in the `helper/` folder:
 
-```bash
-# Example structure:
+```csv
 name,calories,protein,fats,carbohydrates
 "Apple, raw",52,0.3,0.2,14
 "Chicken breast",165,31,3.6,0
@@ -164,17 +163,7 @@ docker exec -i calorie-db psql -U postgres -d calorie_tracker_db < backend/creat
 ```
 
 #### 4. Configure `.env` for local development
-```env
-OLLAMA_HOST=http://localhost:11434
-MODEL_NAME=qwen3.5:9b
-SERVER_URL=http://127.0.0.1:8000
-STREAMLIT_URL=http://localhost:8501
-DB_CONFIG='{"host": "localhost", "port": 5432, "database": "calorie_tracker_db", "user": "postgres", "password": "postgres"}'
-SECRET_KEY=your_secret_key
-ADMIN_PASSWORD=admin
-TOKEN_EXPIRE_MINUTES=1440
-LOG_LEVEL=INFO
-```
+Use the same format as shown in Step 2 above, adjusting `DB_CONFIG` and `OLLAMA_HOST` for localhost if needed.
 
 #### 5. Load ingredients and generate translations
 ```bash
@@ -209,16 +198,17 @@ calorie-tracker/
 │   ├── assistant.py            # LLM client (Ollama integration)
 │   ├── auth.py                 # JWT authentication
 │   ├── db_connector.py         # PostgreSQL asyncpg connector
-│   ├── schemas.py              # Pydantic models
+│   ├── schemas.py              # Pydantic models for request/response validation
 │   ├── create_db.sql           # Database schema initialization
-│   └── prompt_*.txt            # LLM system prompts
+│   ├── Dockerfile              # Backend container setup
+│   └── prompt_*.txt            # LLM system prompts (BMR, recognition, translation, macros)
 │
 ├── db/
 │   └── Dockerfile              # PostgreSQL + pgvector setup
 │
-── frontend/
+├── frontend/
 │   ├── main_page.py            # Streamlit entry point (router)
-│   ├── menu.py                 # Navigation sidebar
+│   ├── menu.py                 # Navigation sidebar with "How it works?" guide
 │   ├── translator.py           # Translation manager for ingredients
 │   ├── Dockerfile              # Frontend container setup
 │   ├── .streamlit/
@@ -227,7 +217,7 @@ calorie-tracker/
 │   │   ├── home.py             # Main dashboard page after authentication
 │   │   ├── recognition.py      # Photo recognition interface
 │   │   ├── daily_log.py        # Meal logging interface
-│   │   ├── settings.py         # User settings and help
+│   │   ├── settings.py         # User profile and nutrition goals
 │   │   ├── general_stat.py     # Statistics and charts (matplotlib-based)
 │   │   └── register.py         # User registration
 │   ├── handlers/
@@ -239,12 +229,13 @@ calorie-tracker/
 │   │   ├── general_stat_handler.py
 │   │   ├── register_handler.py
 │   │   ├── nutrition_table.py  # Table initializer and handler for ingredients
+│   │   ├── main_page_handler.py
 │   │   └── init_session_state.py  # Initializes Streamlit session_state for persistent UI data
 │   └── resources/
 │       ├── locales/
 │       │   ├── en.yaml         # English UI translations
 │       │   ├── ru.yaml         # Russian UI translations
-│       │   └── ingredient_translations.json  # Database of ingredient name translations (EN ↔ RU)
+│       │   └── ingredient_translations.json  # Ingredient name translations (EN ↔ RU)
 │       └── icons8-chinese-noodle-100.png
 │
 ├── helper/
@@ -257,25 +248,12 @@ calorie-tracker/
 ├── requirements-backend.txt    # Backend dependencies
 ├── requirements-frontend.txt   # Frontend dependencies
 ├── .env                        # Environment variables (git-ignored)
+├── .gitignore                  # Git ignore rules
+├── .dockerignore               # Docker ignore rules
 ├── Makefile                    # Quick start commands for local development
-└── .streamlit/                 # Global Streamlit config (optional, for local development)
-    └── config.toml
+├── LICENSE                     # Project license
+└── README.md                   # This file
 ```
-
-### Key Files Reference
-
-| File | Purpose |
-|------|---------|
-| `backend/service.py` | Backend server entry point (FastAPI app) |
-| `frontend/main_page.py` | Frontend server entry point (Streamlit router) |
-| `frontend/pages/home.py` | Main dashboard page after authentication |
-| `frontend/handlers/init_session_state.py` | Initializes Streamlit `session_state` for persistent UI data |
-| `frontend/handlers/nutrition_table.py` | Initializes and handles ingredient tables in the UI |
-| `frontend/resources/locales/ingredient_translations.json` | Database of ingredient name translations (English ↔ Russian) |
-| `helper/csv_to_db.py` | Initializes basic ingredients in the database + generates semantic embeddings |
-| `helper/pre_run_sync.py` | Runs on first frontend startup: generates base translations and syncs with backend |
-| `frontend/.streamlit/config.toml` | Streamlit configuration (theme, server address, etc.) |
-| `.streamlit/config.toml` | Global Streamlit config (optional, for local development) |
 
 ### Customizing CSV Column Names
 

@@ -7,7 +7,7 @@ import datetime as dt
 from typing import Optional, Dict, Union, Any
 import uuid
 
-from translator import Translator, IngredientTranslator, get_canonical_name
+from translator import Translator, IngredientTranslator
 
 t = Translator()
 

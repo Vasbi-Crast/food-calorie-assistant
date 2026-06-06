@@ -10,7 +10,7 @@ import datetime as dt
 
 from handlers.api_handler import api_request, check_activity, parse_meals
 from handlers.home_handler import get_user_ingredients
-from translator import Translator, IngredientTranslator
+from translator import Translator
 
 t = Translator()
 

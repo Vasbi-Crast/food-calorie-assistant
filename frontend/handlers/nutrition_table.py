@@ -1,5 +1,4 @@
 import streamlit as st
-import datetime as dt
 import uuid
 
 from handlers.api_handler import check_activity, ing_translator
