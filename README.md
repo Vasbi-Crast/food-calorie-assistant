@@ -1,4 +1,4 @@
-# Calorie Tracker
+# Food Assistant
 
 A smart nutrition assistant that helps you track calories and macros with minimal effort. Simply take a photo of your meal, and the app will recognize ingredients, estimate portions, and calculate nutritional values. Designed for people who want to maintain a healthy lifestyle without manual food logging.
 
