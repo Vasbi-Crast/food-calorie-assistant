@@ -6,7 +6,7 @@ A smart nutrition assistant that helps you track calories and macros with minima
 
 ## ✨ What It Does
 
-- ** Photo Recognition**: Upload a photo of your meal → AI identifies ingredients and estimates weights using a local vision LLM
+- **📷 Photo Recognition** : Upload a photo of your meal → AI identifies ingredients and estimates weights using a local vision LLM
 - **🌍 Multi-language Support**: Ingredient names are available in **English and Russian**. The translation system is modular and allows easy extension to other languages by simply adding entries to the translation JSON file
 - **📊 Statistics & Analytics**: View calorie/macro breakdowns, track weight changes, and compare nutrient intake against your personal norms over time using static matplotlib charts
 - **🎯 Personalized Goals**: Set weight loss, maintenance, or gain targets with custom BMR calculations based on your profile
