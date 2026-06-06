@@ -1,4 +1,13 @@
-# helper/pre_run_sync.py
+"""Pre-run synchronization script for ingredient translations.
+
+Generates base translations from CSV and syncs missing translations
+via the backend API. Runs once on first frontend startup.
+
+Usage:
+    python helper/pre_run_sync.py
+
+Or via docker-compose command in frontend service.
+"""
 import asyncio
 import os
 import httpx
@@ -19,14 +28,27 @@ from init_translation_dict import generate_base_translations_from_csv
 
 
 class AuthenticatedClient:
-    """HTTP-клиент с автоматической авторизацией и добавлением токена."""
+    """HTTP client with automatic JWT authentication for backend API requests."""
+    
     def __init__(self, base_url: str, username: str, password: str):
+        """Initialize authenticated client.
+        
+        Args:
+            base_url: Backend API base URL.
+            username: Admin username for authentication.
+            password: Admin password for authentication.
+        """
         self.base_url = base_url.rstrip("/")
         self.username = username
         self.password = password
         self.token = None
 
     async def authenticate(self) -> bool:
+        """Authenticate with backend and store JWT token.
+        
+        Returns:
+            bool: True if authentication succeeded, False otherwise.
+        """
         try:
             async with httpx.AsyncClient() as client:
                 resp = await client.post(
@@ -47,6 +69,19 @@ class AuthenticatedClient:
             return False
 
     async def request(self, method: str, endpoint: str, **kwargs):
+        """Send authenticated request to backend API.
+        
+        Args:
+            method: HTTP method (GET, POST, etc.).
+            endpoint: API endpoint path.
+            **kwargs: Additional arguments for httpx.AsyncClient.request().
+            
+        Returns:
+            Any: Parsed JSON response.
+            
+        Raises:
+            RuntimeError: If authentication fails.
+        """
         if not self.token and not await self.authenticate():
             raise RuntimeError("Authentication required but failed")
         
@@ -60,6 +95,18 @@ class AuthenticatedClient:
 
 
 async def wait_for_backend(url: str, max_attempts: int = 30, delay: float = 2.0) -> bool:
+    """Wait for backend API to become available.
+    
+    Polls /docs endpoint until response received or max_attempts reached.
+    
+    Args:
+        url: Backend base URL to check.
+        max_attempts: Maximum connection attempts (default: 30).
+        delay: Seconds between attempts (default: 2.0).
+        
+    Returns:
+        bool: True if backend responded, False if all attempts failed.
+    """
     health_url = f"{url}/docs"
     for attempt in range(max_attempts):
         try:
@@ -78,6 +125,17 @@ async def wait_for_backend(url: str, max_attempts: int = 30, delay: float = 2.0)
 
 
 async def main():
+    """Main entry point: generate base translations and sync via API.
+    
+    Workflow:
+    1. Skip if CACHE_FILE already exists.
+    2. Generate base translations from helper/nutrition.csv.
+    3. Wait for backend to be ready.
+    4. Authenticate as admin.
+    5. Sync missing translations via backend API.
+    
+    Exits early on any failure (non-fatal, logged only).
+    """
     if os.path.exists(CACHE_FILE):
         print("✅ Translations cache found. Skipping sync.")
         return
