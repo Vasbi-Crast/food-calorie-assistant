@@ -57,9 +57,6 @@ HELPER_DIR: Path = Path(__file__).parent.resolve()
 sys.path.insert(0, str(APP_DIR))
 sys.path.insert(0, str(HELPER_DIR))
 
-from init_translation_dict import generate_base_translations_from_csv
-
-
 class AuthenticatedClient:
     """HTTP client with automatic JWT authentication and token management.
 
