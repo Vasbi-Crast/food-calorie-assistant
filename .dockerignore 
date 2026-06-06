@@ -1,0 +1,12 @@
+.git
+.venv
+__pycache__
+*.pyc
+.env
+.env.example
+logs/
+.streamlit
+.vscode
+.idea
+*.md
+Makefile

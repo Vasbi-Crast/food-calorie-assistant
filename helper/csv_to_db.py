@@ -289,9 +289,13 @@ if __name__ == "__main__":
         "carbohydrates": "carbohydrate",
     }
 
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    
+    csv_path = os.path.join(current_dir, "nutrition.csv")
+    
     asyncio.run(
         load_ingredients_to_db(
-            dataset_path="nutrition.csv",
+            dataset_path=csv_path,
             db_config=DB_CONFIG,
             admin_password=ADMIN_PASSWORD,
             fields_config=fields_config,

@@ -1,0 +1,95 @@
+services:
+  # ============================================
+  # PostgreSQL + pgvector
+  # ============================================
+  db:
+    build:
+      context: .
+      dockerfile: db/Dockerfile
+    container_name: db
+    environment:
+      POSTGRES_DB: calorie_tracker_db
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+    ports:
+      - "5432:5432"
+    volumes:
+      - calorie_db_data:/var/lib/postgresql/data
+      - ./backend/create_db.sql:/docker-entrypoint-initdb.d/02_init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ============================================
+  # DB Initialization (CSV load)
+  # ============================================
+  db-init:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    command: python helper/csv_to_db.py
+    volumes:
+      - ./helper/csv_to_db.py:/app/helper/csv_to_db.py:ro
+      - ./helper/nutrition.csv:/app/helper/nutrition.csv:ro
+    env_file:
+      - .env
+    environment:
+      DB_CONFIG: '{"host": "db", "port": 5432, "database": "calorie_tracker_db", "user": "postgres", "password": "${DB_PASSWORD}"}'
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
+
+  # ============================================
+  # Backend API
+  # ============================================
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: backend
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      DB_CONFIG: '{"host": "db", "port": 5432, "database": "calorie_tracker_db", "user": "postgres", "password": "${DB_PASSWORD:-postgres}"}'
+      OLLAMA_HOST: http://host.docker.internal:11434
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # ============================================
+  # Frontend Streamlit
+  # ============================================
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    container_name: frontend
+    ports:
+      - "8501:8501"
+    env_file:
+      - .env
+    environment:
+      - SERVER_URL=http://backend:8000
+      - PYTHONUNBUFFERED=1
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin}
+    depends_on:
+      - backend
+    volumes:
+      - ./helper/init_translation_dict.py:/app/helper/init_translation_dict.py:ro
+      - ./helper/pre_run_sync.py:/app/helper/pre_run_sync.py:ro
+      - ./helper/nutrition.csv:/app/helper/nutrition.csv:ro
+      - ./frontend/resources/locales:/app/resources/locales:rw
+    command: >
+      sh -c "
+        python helper/pre_run_sync.py &&
+        streamlit run main_page.py --server.address 0.0.0.0 --server.port 8501
+      "
+
+volumes:
+  calorie_db_data:
